@@ -6,6 +6,7 @@ const { createDefinitivePromptSystem } = require('./prompt-system');
 const { MemoryManager, createMemoryManager } = require('./memory-system');
 const { ResponsePolishingSystem } = require('./response-polishing');
 const { ObservabilityManager, createObservabilityManager } = require('./observability');
+const { createFallbackLogicManager } = require('./fallback-logic-manager');
 
 /**
  * Clasifica la intención de la pregunta del usuario basándose en palabras clave
@@ -252,6 +253,13 @@ async function handleUserQuery(question) {
     // Crear instancia de observabilidad aislada para este request
     const observabilityManager = createObservabilityManager();
     
+    // Crear instancia de fallback logic manager
+    const fallbackManager = createFallbackLogicManager({
+        adaptiveScoring: true,
+        minScoreThreshold: 0.3,
+        maxFallbackScore: 2.0
+    });
+    
     try {
         console.log("=== INICIANDO BÚSQUEDA RAG CON MEMORIA ===");
         console.log("Pregunta:", question);
@@ -355,42 +363,60 @@ async function handleUserQuery(question) {
             console.error("Error en RAG, usando fallback:", ragError.message);
         }
 
-        // 3. Fallback al sistema original basado en palabras clave
-        console.log("=== USANDO SISTEMA ORIGINAL (FALLBACK) ===");
-        const categories = classifyQuestion(question);
-        const relevantFiles = getRelevantFiles(categories);
-        const context = readFiles(relevantFiles);
-
-        // Usar sistema definitivo incluso en fallback con memoria
-        const promptSystem = createDefinitivePromptSystem(context, question, memory);
-        const aiResponse = await getAIResponse(promptSystem.prompt);
+        // 3. Fallback inteligente con el nuevo sistema
+        console.log("=== USANDO SISTEMA INTELIGENTE DE FALLBACK ===");
         
-        // Validar respuesta en fallback también
-        const validation = promptSystem.validateResponse(aiResponse);
+        // Evaluar si se debe activar el fallback
+        const fallbackDecision = fallbackManager.shouldActivateFallback(searchResults || [], question);
         
-        if (!validation.isValid) {
-            console.warn("Fallback: Respuesta inválida detectada:", validation.reason);
+        if (fallbackDecision.activate) {
+            console.log("Fallback activado:", fallbackDecision.reason);
+            console.log("Estrategia seleccionada:", fallbackDecision.strategy);
+            console.log("Confianza:", fallbackDecision.confidence);
             
-            // Aplicar response polishing
-            const polishedResponse = ResponsePolishingSystem.polish(validation.correctedResponse, 'fallback');
+            // Ejecutar la estrategia de fallback
+            const fallbackResult = await fallbackManager.executeFallback(
+                fallbackDecision.strategy, 
+                question, 
+                { searchResults: searchResults, memory: memory }
+            );
+            
+            console.log("Fallback ejecutado:", fallbackResult.strategy);
+            console.log("Score fallback:", fallbackResult.score);
+            console.log("Confianza respuesta:", fallbackResult.confidence);
+            
+            // Validar respuesta del fallback
+            const promptSystem = createDefinitivePromptSystem(fallbackResult.response, question, memory);
+            const validation = promptSystem.validateResponse(fallbackResult.response);
+            
+            if (!validation.isValid) {
+                console.warn("Fallback: Respuesta inválida detectada:", validation.reason);
+                
+                // Aplicar response polishing
+                const polishedResponse = ResponsePolishingSystem.polish(validation.correctedResponse, 'fallback');
+                console.log("Fallback: Response polishing aplicado:", polishedResponse.changes);
+                
+                // Añadir intercambio a la memoria con respuesta pulida
+                memoryManager.addExchange(question, polishedResponse.answer);
+                return polishedResponse.answer;
+            }
+
+            console.log("Fallback: Respuesta validada exitosamente");
+            
+            // Aplicar response polishing a respuesta válida
+            const polishedResponse = ResponsePolishingSystem.polish(fallbackResult.response, 'fallback');
             console.log("Fallback: Response polishing aplicado:", polishedResponse.changes);
             
-            // Añadir intercambio a la memoria con respuesta pulida
+            // Añadir intercambio exitoso a la memoria con respuesta pulida
             memoryManager.addExchange(question, polishedResponse.answer);
-            return polishedResponse.answer;
+            finalResponse = polishedResponse.answer;
+            source = 'fallback_intelligent';
+            promptMode = 'fallback';
+        } else {
+            console.log("Fallback no necesario - usando respuesta directa");
+            finalResponse = "Lo siento, no pude encontrar información relevante para tu consulta. Por favor, intenta reformular tu pregunta o contacta directamente con el instituto.";
+            source = 'no_results';
         }
-
-        console.log("Fallback: Respuesta validada con sistema definitivo");
-        
-        // Aplicar response polishing a respuesta válida
-        const polishedResponse = ResponsePolishingSystem.polish(aiResponse, 'fallback');
-        console.log("Fallback: Response polishing aplicado:", polishedResponse.changes);
-        
-        // Añadir intercambio exitoso a la memoria con respuesta pulida
-        memoryManager.addExchange(question, polishedResponse.answer);
-        finalResponse = polishedResponse.answer;
-        source = 'fallback';
-        promptMode = 'fallback';
 
         // Logging de observabilidad para fallback
         const endTime = Date.now();
