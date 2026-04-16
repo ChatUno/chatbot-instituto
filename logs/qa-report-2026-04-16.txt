@@ -1,0 +1,64 @@
+📊 QA REPORT - CHATBOT IES LANUZA
+
+FINAL SCORE: 78/100
+
+📈 CATEGORY SCORES:
+✔ Correctness: 82
+✔ Retrieval: 73
+✔ Anti-hallucination: 85
+✔ Consistency: 38
+✔ Robustness: 100
+✔ Latency: 99
+
+📋 PERFORMANCE BY CATEGORY:
+  Greetings: 91/100 (2 tests)
+  Academic: 79/100 (6 tests)
+  Robustness: 78/100 (36 tests)
+  Information: 75/100 (8 tests)
+  Unknown: 69/100 (2 tests)
+
+❌ CRITICAL ISSUES:
+  • 6 tests with critical failures (<50 score)
+  • 16 tests with poor correctness (<60)
+  • 2 failed HTTP requests
+
+⚠️  INCONSISTENCIES:
+  • High score variance (44 points) for: "qué asignaturas hay..."
+  • High score variance (44 points) for: "qué estudias en bachiller..."
+  • High score variance (44 points) for: "qué es el centro..."
+
+📊 TEST SUMMARY:
+  Total Tests: 54
+  Passed: 38
+  Failed: 16
+  Average Latency: 127ms
+
+🔍 WORST PERFORMING TESTS:
+  • edge_case_empty: 36/100
+    Message: "..."
+    Issue: Low correctness, Request failed
+  • edge_case_empty: 36/100
+    Message: "..."
+    Issue: Low correctness, Request failed
+  • subjects_1: 47/100
+    Message: "qué asignaturas hay..."
+    Issue: Low correctness
+  • bachiller_content_1: 47/100
+    Message: "qué estudias en bachiller..."
+    Issue: Low correctness
+  • center_info_1: 47/100
+    Message: "qué es el centro..."
+    Issue: Low correctness
+
+🌟 BEST PERFORMING TESTS:
+  • greeting_1: 91/100
+    Message: "hola..."
+  • bachillerato_1: 91/100
+    Message: "qué bachilleratos hay..."
+  • subjects_1: 91/100
+    Message: "qué asignaturas hay..."
+
+🎯 RECOMMENDATIONS:
+• Improve response consistency across similar inputs
+
+🚀 DEPLOYMENT STATUS: ⚠️  NEEDS IMPROVEMENT

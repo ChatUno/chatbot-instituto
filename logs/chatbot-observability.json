@@ -1,89 +1,169 @@
 {
-  "last_updated": "2026-04-16T17:25:20.063Z",
+  "last_updated": "2026-04-16T17:39:22.366Z",
   "metrics": {
-    "totalRequests": 3,
-    "ragHits": 3,
+    "totalRequests": 4,
+    "ragHits": 4,
     "fallbackUsed": 0,
     "hallucinationDetected": 2,
-    "memoryUsed": 2,
-    "averageLatency": 154.33333333333334,
+    "memoryUsed": 3,
+    "averageLatency": 240,
     "retrievalHitRate": 100
   },
   "recent_logs": [
     {
-      "timestamp": "2026-04-16T17:25:19.817Z",
-      "query": "¿Qué bachilleratos hay?",
+      "timestamp": "2026-04-16T17:39:21.590Z",
+      "query": "¿Qué FP hay?",
       "intent": "detected_by_search",
       "memory_used": false,
       "top_chunks": [
         {
+          "id": 8,
+          "score": 7,
+          "source": "oferta"
+        },
+        {
           "id": 9,
-          "score": 15,
+          "score": 7,
           "source": "oferta"
         },
         {
           "id": 10,
-          "score": 15,
+          "score": 7,
           "source": "oferta"
-        },
-        {
-          "id": 5,
-          "score": 9,
-          "source": "centro"
         }
       ],
       "selected_chunks": [
+        8,
         9,
-        10,
-        5
+        10
       ],
-      "context_length": 227,
+      "context_length": 199,
       "prompt_mode": "relevant",
-      "response_length": 106,
-      "latency_ms": 228,
+      "response_length": 31,
+      "latency_ms": 230,
       "source": "rag",
-      "confidence": 1,
-      "failures": [],
+      "confidence": 0.2,
+      "failures": [
+        {
+          "type": "low_confidence_response",
+          "description": "Respuesta con baja confianza"
+        }
+      ],
       "chunk_trace": [
         {
+          "chunk_id": 8,
+          "final_score": 7,
+          "score_breakdown": [
+            "+1 substring \"hay\" en \"a\"",
+            "Base score: 1 (exactas: 0, substrings: 1)",
+            "Boosts: +5 intención coincidente, +1 substrings relevantes",
+            "Penalizaciones: ninguna",
+            "Score final: 7"
+          ]
+        },
+        {
           "chunk_id": 9,
-          "final_score": 15,
+          "final_score": 7,
           "score_breakdown": [
             "+1 substring \"hay\" en \"y\"",
             "Base score: 1 (exactas: 0, substrings: 1)",
-            "Boosts: +5 intención coincidente, +8 término exacto 'bachillerato', +1 substrings relevantes",
+            "Boosts: +5 intención coincidente, +1 substrings relevantes",
             "Penalizaciones: ninguna",
-            "Score final: 15"
+            "Score final: 7"
           ]
         },
         {
           "chunk_id": 10,
-          "final_score": 15,
+          "final_score": 7,
           "score_breakdown": [
             "+1 substring \"hay\" en \"y\"",
             "Base score: 1 (exactas: 0, substrings: 1)",
-            "Boosts: +5 intención coincidente, +8 término exacto 'bachillerato', +1 substrings relevantes",
+            "Boosts: +5 intención coincidente, +1 substrings relevantes",
             "Penalizaciones: ninguna",
-            "Score final: 15"
-          ]
-        },
-        {
-          "chunk_id": 5,
-          "final_score": 9,
-          "score_breakdown": [
-            "+1 substring \"bachilleratos\" en \"bachillerato\"",
-            "+1 substring \"hay\" en \"y\"",
-            "Base score: 2 (exactas: 0, substrings: 2)",
-            "Boosts: +8 término exacto 'bachillerato', +1 substrings relevantes",
-            "Penalizaciones: -2 genérico sin coincidencia de intención",
-            "Score final: 9"
+            "Score final: 7"
           ]
         }
       ]
     },
     {
-      "timestamp": "2026-04-16T17:25:19.966Z",
-      "query": "¿y ese cuál es más difícil?",
+      "timestamp": "2026-04-16T17:39:21.878Z",
+      "query": "qué formación profesional tienen",
+      "intent": "detected_by_search",
+      "memory_used": true,
+      "top_chunks": [
+        {
+          "id": 13,
+          "score": 43,
+          "source": "oferta"
+        },
+        {
+          "id": 11,
+          "score": 39,
+          "source": "oferta"
+        },
+        {
+          "id": 12,
+          "score": 39,
+          "source": "oferta"
+        }
+      ],
+      "selected_chunks": [
+        13,
+        11,
+        12
+      ],
+      "context_length": 258,
+      "prompt_mode": "relevant",
+      "response_length": 284,
+      "latency_ms": 286,
+      "source": "rag",
+      "confidence": 1,
+      "failures": [],
+      "chunk_trace": [
+        {
+          "chunk_id": 13,
+          "final_score": 43,
+          "score_breakdown": [
+            "+3 coincidencia exacta \"formación\"",
+            "+1 substring \"formación\" en \"a\"",
+            "+3 coincidencia exacta \"profesional\"",
+            "+1 substring \"profesional\" en \"a\"",
+            "+1 substring \"tienen\" en \"en\"",
+            "Base score: 9 (exactas: 2, substrings: 3)",
+            "Boosts: +5 intención coincidente, +5 contiene palabras exactas, +5 palabra clave principal, +10 término exacto 'formación profesional', +8 contiene 'Formación Profesional', +1 substrings relevantes",
+            "Penalizaciones: ninguna",
+            "Score final: 43"
+          ]
+        },
+        {
+          "chunk_id": 11,
+          "final_score": 39,
+          "score_breakdown": [
+            "+3 coincidencia exacta \"formación\"",
+            "+3 coincidencia exacta \"profesional\"",
+            "Base score: 6 (exactas: 2, substrings: 0)",
+            "Boosts: +5 intención coincidente, +5 contiene palabras exactas, +5 palabra clave principal, +10 término exacto 'formación profesional', +8 contiene 'Formación Profesional'",
+            "Penalizaciones: ninguna",
+            "Score final: 39"
+          ]
+        },
+        {
+          "chunk_id": 12,
+          "final_score": 39,
+          "score_breakdown": [
+            "+3 coincidencia exacta \"formación\"",
+            "+3 coincidencia exacta \"profesional\"",
+            "Base score: 6 (exactas: 2, substrings: 0)",
+            "Boosts: +5 intención coincidente, +5 contiene palabras exactas, +5 palabra clave principal, +10 término exacto 'formación profesional', +8 contiene 'Formación Profesional'",
+            "Penalizaciones: ninguna",
+            "Score final: 39"
+          ]
+        }
+      ]
+    },
+    {
+      "timestamp": "2026-04-16T17:39:22.097Z",
+      "query": "ciclos de fp",
       "intent": "detected_by_search",
       "memory_used": true,
       "top_chunks": [
@@ -105,7 +185,7 @@
       "context_length": 36,
       "prompt_mode": "relevant",
       "response_length": 31,
-      "latency_ms": 143,
+      "latency_ms": 193,
       "source": "rag",
       "confidence": 0.2,
       "failures": [
@@ -117,77 +197,76 @@
       "chunk_trace": []
     },
     {
-      "timestamp": "2026-04-16T17:25:20.063Z",
-      "query": "¿cuál recomendarías?",
+      "timestamp": "2026-04-16T17:39:22.365Z",
+      "query": "formación profesional",
       "intent": "detected_by_search",
       "memory_used": true,
       "top_chunks": [
         {
           "id": 13,
-          "score": 3,
+          "score": 42,
           "source": "oferta"
         },
         {
-          "id": 7,
-          "score": 2,
-          "source": "centro"
+          "id": 11,
+          "score": 39,
+          "source": "oferta"
         },
         {
-          "id": 8,
-          "score": 2,
+          "id": 12,
+          "score": 39,
           "source": "oferta"
         }
       ],
       "selected_chunks": [
         13,
-        7,
-        8
+        11,
+        12
       ],
-      "context_length": 140,
+      "context_length": 258,
       "prompt_mode": "relevant",
-      "response_length": 31,
-      "latency_ms": 92,
+      "response_length": 284,
+      "latency_ms": 251,
       "source": "rag",
-      "confidence": 0.2,
-      "failures": [
-        {
-          "type": "low_confidence_response",
-          "description": "Respuesta con baja confianza"
-        }
-      ],
+      "confidence": 1,
+      "failures": [],
       "chunk_trace": [
         {
           "chunk_id": 13,
-          "final_score": 3,
+          "final_score": 42,
           "score_breakdown": [
-            "+1 substring \"recomendarías\" en \"a\"",
-            "+1 substring \"recomendarías\" en \"en\"",
-            "Base score: 2 (exactas: 0, substrings: 2)",
-            "Boosts: +1 substrings relevantes",
+            "+3 coincidencia exacta \"formación\"",
+            "+1 substring \"formación\" en \"a\"",
+            "+3 coincidencia exacta \"profesional\"",
+            "+1 substring \"profesional\" en \"a\"",
+            "Base score: 8 (exactas: 2, substrings: 2)",
+            "Boosts: +5 intención coincidente, +5 contiene palabras exactas, +5 palabra clave principal, +10 término exacto 'formación profesional', +8 contiene 'Formación Profesional', +1 substrings relevantes",
             "Penalizaciones: ninguna",
-            "Score final: 3"
+            "Score final: 42"
           ]
         },
         {
-          "chunk_id": 7,
-          "final_score": 2,
+          "chunk_id": 11,
+          "final_score": 39,
           "score_breakdown": [
-            "+1 substring \"recomendarías\" en \"en\"",
-            "Base score: 1 (exactas: 0, substrings: 1)",
-            "Boosts: +1 substrings relevantes",
+            "+3 coincidencia exacta \"formación\"",
+            "+3 coincidencia exacta \"profesional\"",
+            "Base score: 6 (exactas: 2, substrings: 0)",
+            "Boosts: +5 intención coincidente, +5 contiene palabras exactas, +5 palabra clave principal, +10 término exacto 'formación profesional', +8 contiene 'Formación Profesional'",
             "Penalizaciones: ninguna",
-            "Score final: 2"
+            "Score final: 39"
           ]
         },
         {
-          "chunk_id": 8,
-          "final_score": 2,
+          "chunk_id": 12,
+          "final_score": 39,
           "score_breakdown": [
-            "+1 substring \"recomendarías\" en \"a\"",
-            "Base score: 1 (exactas: 0, substrings: 1)",
-            "Boosts: +1 substrings relevantes",
+            "+3 coincidencia exacta \"formación\"",
+            "+3 coincidencia exacta \"profesional\"",
+            "Base score: 6 (exactas: 2, substrings: 0)",
+            "Boosts: +5 intención coincidente, +5 contiene palabras exactas, +5 palabra clave principal, +10 término exacto 'formación profesional', +8 contiene 'Formación Profesional'",
             "Penalizaciones: ninguna",
-            "Score final: 2"
+            "Score final: 39"
           ]
         }
       ]

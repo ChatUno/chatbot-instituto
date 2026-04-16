@@ -44,7 +44,10 @@ function detectIntent(question) {
  * @returns {string} - Texto normalizado
  */
 function normalizeText(text) {
-    return text.toLowerCase()
+    // Preservar "FP" antes de normalizar
+    const hasFP = text.toUpperCase().includes('FP');
+    
+    let normalized = text.toLowerCase()
               .replace(/[áàäâ]/g, 'a')
               .replace(/[éèëê]/g, 'e')
               .replace(/[íìïî]/g, 'i')
@@ -53,6 +56,13 @@ function normalizeText(text) {
               .replace(/[ñ]/g, 'n')
               .replace(/[^\w\s]/g, '') // Solo letras y espacios
               .trim();
+    
+    // Restaurar "fp" si estaba presente
+    if (hasFP && !normalized.includes('fp')) {
+        normalized += ' fp';
+    }
+    
+    return normalized;
 }
 
 /**
@@ -63,7 +73,7 @@ function normalizeText(text) {
 function tokenize(text) {
     return normalizeText(text)
               .split(/\s+/)
-              .filter(word => word.length > 2) // Ignorar palabras muy cortas
+              .filter(word => word.length > 1) // Ignorar palabras muy cortas (permitir "fp")
               .filter((word, index, arr) => arr.indexOf(word) === index); // Eliminar duplicados
 }
 
@@ -171,13 +181,20 @@ function calculateScore(question, chunk, intent) {
         boosts.push("+8 término exacto 'bachillerato'");
     }
     
-    // Boost especial para términos exactos de FP/formación (+6)
+    // Boost especial para términos exactos de FP/formación (+10)
     if ((questionWords.some(word => word.includes('fp') || word.includes('formación')) && 
         (chunk.text.toLowerCase().includes('formación profesional') || 
          chunk.text.toLowerCase().includes('fp') || 
          chunk.text.toLowerCase().includes('grado')))) {
-        totalScore += 6;
-        boosts.push("+6 término exacto 'formación profesional'");
+        totalScore += 10;
+        boosts.push("+10 término exacto 'formación profesional'");
+    }
+    
+    // Boost extra para chunks que contienen "Formación Profesional" explícitamente (+8)
+    if (chunk.text.toLowerCase().includes('formación profesional') &&
+        questionWords.some(word => word.includes('fp') || word.includes('formación'))) {
+        totalScore += 8;
+        boosts.push("+8 contiene 'Formación Profesional'");
     }
     
     // Boost especial para términos de ubicación (+8)
