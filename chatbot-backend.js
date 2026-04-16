@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { getAIResponse } = require('./ai-client');
+const { semanticSearch, buildContextFromResults } = require('./search');
 
 /**
  * Clasifica la intención de la pregunta del usuario basándose en palabras clave
@@ -131,25 +132,65 @@ ${question}`;
 }
 
 /**
- * Función principal que maneja la consulta del usuario
+ * Construye prompt para RAG con contexto semántico
+ * @param {string} context - Contexto de búsqueda semántica
+ * @param {string} question - Pregunta del usuario
+ * @returns {string} - Prompt formateado
+ */
+function buildRAGPrompt(context, question) {
+    return `Eres un asistente del IES Juan de Lanuza.
+
+Responde SOLO con esta información:
+
+${context}
+
+Pregunta: ${question}`;
+}
+
+/**
+ * Función principal que maneja la consulta del usuario con RAG
  * @param {string} question - Pregunta del usuario
  * @returns {Promise<string>} - Respuesta de la IA
  */
 async function handleUserQuery(question) {
     try {
+        console.log("=== INICIANDO BÚSQUEDA RAG ===");
+        console.log("Pregunta:", question);
+
+        // 1. Intentar búsqueda semántica primero (RAG)
+        try {
+            const searchResults = await semanticSearch(question, 3);
+            
+            if (searchResults.length > 0) {
+                console.log("RAG: Se encontraron resultados semánticos");
+                const context = buildContextFromResults(searchResults);
+                const prompt = buildRAGPrompt(context, question);
+                
+                const aiResponse = await getAIResponse(prompt);
+                console.log("RAG: Respuesta generada exitosamente");
+                return aiResponse;
+            } else {
+                console.log("RAG: No se encontraron resultados, usando fallback");
+            }
+        } catch (ragError) {
+            console.error("Error en RAG, usando fallback:", ragError.message);
+        }
+
+        // 2. Fallback al sistema original basado en palabras clave
+        console.log("=== USANDO SISTEMA ORIGINAL (FALLBACK) ===");
         const categories = classifyQuestion(question);
         const relevantFiles = getRelevantFiles(categories);
         const context = readFiles(relevantFiles);
 
         const prompt = buildPrompt(context, question);
-
         const aiResponse = await getAIResponse(prompt);
 
+        console.log("Fallback: Respuesta generada con sistema original");
         return aiResponse;
 
     } catch (error) {
         console.error('Error procesando la consulta:', error.message);
-        return 'Error al procesar la consulta';
+        return 'Error al procesar la consulta. Por favor, inténtalo de nuevo.';
     }
 }
 
