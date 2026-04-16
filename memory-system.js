@@ -111,57 +111,67 @@ class ConversationMemory {
     }
 }
 
-// Instancia global de memoria (no persistente entre sesiones)
-const globalMemory = new ConversationMemory(5);
+/**
+ * Factory function para crear instancias de memoria aisladas por request
+ * @param {number} maxExchanges - Máximo de intercambios a mantener
+ * @returns {Object} - MemoryManager instance con estado aislado
+ */
+function createMemoryManager(maxExchanges = 5) {
+    const memory = new ConversationMemory(maxExchanges);
+    
+    return {
+        /**
+         * Añade intercambio a la memoria de esta instancia
+         */
+        addExchange: (userMessage, botResponse) => {
+            memory.addExchange(userMessage, botResponse);
+        },
+
+        /**
+         * Obtiene memoria formateada para el prompt
+         */
+        getMemory: () => {
+            return memory.getFormattedMemory();
+        },
+
+        /**
+         * Limpia la memoria de esta instancia
+         */
+        clearMemory: () => {
+            memory.clearMemory();
+        },
+
+        /**
+         * Verifica si hay referencias conversacionales
+         */
+        hasReferences: (currentMessage) => {
+            return memory.hasConversationalReferences(currentMessage);
+        },
+
+        /**
+         * Obtiene contexto para referencias
+         */
+        getReferenceContext: () => {
+            return memory.getContextForReferences();
+        },
+
+        /**
+         * Obtiene estadísticas
+         */
+        getStats: () => {
+            return memory.getStats();
+        }
+    };
+}
 
 /**
- * Gestiona la memoria conversacional
+ * Legacy MemoryManager para compatibilidad temporal (DEPRECATED)
+ * @deprecated Usar createMemoryManager() en su lugar
  */
-const MemoryManager = {
-    /**
-     * Añade intercambio a la memoria global
-     */
-    addExchange: (userMessage, botResponse) => {
-        globalMemory.addExchange(userMessage, botResponse);
-    },
-
-    /**
-     * Obtiene memoria formateada para el prompt
-     */
-    getMemory: () => {
-        return globalMemory.getFormattedMemory();
-    },
-
-    /**
-     * Limpia la memoria global
-     */
-    clearMemory: () => {
-        globalMemory.clearMemory();
-    },
-
-    /**
-     * Verifica si hay referencias conversacionales
-     */
-    hasReferences: (currentMessage) => {
-        return globalMemory.hasConversationalReferences(currentMessage);
-    },
-
-    /**
-     * Obtiene contexto para referencias
-     */
-    getReferenceContext: () => {
-        return globalMemory.getContextForReferences();
-    },
-
-    /**
-     * Obtiene estadísticas
-     */
-    getStats: () => {
-        return globalMemory.getStats();
-    }
-};
+const MemoryManager = createMemoryManager();
 
 module.exports = {
     ConversationMemory,
-    MemoryManager
+    MemoryManager,
+    createMemoryManager
 };

@@ -3,7 +3,7 @@ const path = require('path');
 const { getAIResponse } = require('./ai-client');
 const { semanticSearch, buildContextFromResults } = require('./search');
 const { createDefinitivePromptSystem } = require('./prompt-system');
-const { MemoryManager } = require('./memory-system');
+const { MemoryManager, createMemoryManager } = require('./memory-system');
 const { ResponsePolishingSystem } = require('./response-polishing');
 const { ObservabilityManager } = require('./observability');
 
@@ -246,10 +246,13 @@ async function handleUserQuery(question) {
     let source = 'rag';
     let promptMode = 'relevant';
     
+    // Crear instancia de memoria aislada para este request
+    const memoryManager = createMemoryManager(5);
+    
     try {
         console.log("=== INICIANDO BÚSQUEDA RAG CON MEMORIA ===");
         console.log("Pregunta:", question);
-        console.log("Estado memoria:", MemoryManager.getStats());
+        console.log("Estado memoria:", memoryManager.getStats());
 
         // 0. Manejo de saludos y preguntas simples
         const greetingResponse = handleSimpleGreetings(question);
@@ -274,7 +277,7 @@ async function handleUserQuery(question) {
         }
 
         // 1. Obtener memoria conversacional actual
-        const memory = MemoryManager.getMemory();
+        const memory = memoryManager.getMemory();
         
         // 2. Intentar búsqueda simple primero (RAG)
         try {
@@ -301,7 +304,7 @@ async function handleUserQuery(question) {
                     console.log("RAG: Response polishing aplicado:", polishedResponse.changes);
                     
                     // Añadir intercambio a la memoria con respuesta pulida
-                    MemoryManager.addExchange(question, polishedResponse.answer);
+                    memoryManager.addExchange(question, polishedResponse.answer);
                     return polishedResponse.answer;
                 }
                 
@@ -312,7 +315,7 @@ async function handleUserQuery(question) {
                 console.log("RAG: Response polishing aplicado:", polishedResponse.changes);
                 
                 // Añadir intercambio exitoso a la memoria con respuesta pulida
-                MemoryManager.addExchange(question, polishedResponse.answer);
+                memoryManager.addExchange(question, polishedResponse.answer);
                 finalResponse = polishedResponse.answer;
                 
                 // Logging de observabilidad para RAG exitoso
@@ -370,7 +373,7 @@ async function handleUserQuery(question) {
             console.log("Fallback: Response polishing aplicado:", polishedResponse.changes);
             
             // Añadir intercambio a la memoria con respuesta pulida
-            MemoryManager.addExchange(question, polishedResponse.answer);
+            memoryManager.addExchange(question, polishedResponse.answer);
             return polishedResponse.answer;
         }
 
@@ -381,7 +384,7 @@ async function handleUserQuery(question) {
         console.log("Fallback: Response polishing aplicado:", polishedResponse.changes);
         
         // Añadir intercambio exitoso a la memoria con respuesta pulida
-        MemoryManager.addExchange(question, polishedResponse.answer);
+        memoryManager.addExchange(question, polishedResponse.answer);
         finalResponse = polishedResponse.answer;
         source = 'fallback';
         promptMode = 'fallback';
