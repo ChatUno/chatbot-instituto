@@ -1,7 +1,7 @@
 {
-  "main": "server-debug.js",
+  "main": "server-minimal.js",
   "scripts": {
-    "start": "node server-debug.js"
+    "start": "node server-minimal.js"
   },
   "dependencies": {
     "axios": "^1.15.0",
