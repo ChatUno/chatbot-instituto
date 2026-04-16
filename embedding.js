@@ -148,20 +148,55 @@ function calculateScore(question, chunk, intent) {
         boosts.push("+5 intención coincidente");
     }
     
-    // Boost por palabra exacta de la pregunta (+3)
+    // Boost por palabra exacta de la pregunta (+5)
     if (exactMatches > 0) {
-        totalScore += 3;
-        boosts.push("+3 contiene palabras exactas");
+        totalScore += 5;
+        boosts.push("+5 contiene palabras exactas");
     }
     
-    // Boost por palabras clave principales (+2)
+    // Boost por palabras clave principales (+5 - aumentado)
     const mainKeywords = ['bachillerato', 'fp', 'formación', 'teléfono', 'contacto', 'dirección'];
     const hasMainKeyword = mainKeywords.some(keyword => 
         chunk.text.toLowerCase().includes(keyword) && questionWords.includes(keyword)
     );
     if (hasMainKeyword) {
-        totalScore += 2;
-        boosts.push("+2 palabra clave principal");
+        totalScore += 5;
+        boosts.push("+5 palabra clave principal");
+    }
+    
+    // Boost especial para términos exactos de bachillerato (+8)
+    if (questionWords.some(word => word.includes('bachillerato')) && 
+        chunk.text.toLowerCase().includes('bachillerato')) {
+        totalScore += 8;
+        boosts.push("+8 término exacto 'bachillerato'");
+    }
+    
+    // Boost especial para términos exactos de FP/formación (+6)
+    if ((questionWords.some(word => word.includes('fp') || word.includes('formación')) && 
+        (chunk.text.toLowerCase().includes('formación profesional') || 
+         chunk.text.toLowerCase().includes('fp') || 
+         chunk.text.toLowerCase().includes('grado')))) {
+        totalScore += 6;
+        boosts.push("+6 término exacto 'formación profesional'");
+    }
+    
+    // Boost especial para términos de ubicación (+8)
+    if ((questionWords.some(word => word.includes('dónde') || word.includes('ubicación') || word.includes('dirección') || word.includes('está')) && 
+        (chunk.text.toLowerCase().includes('ubicación') || 
+         chunk.text.toLowerCase().includes('c/') || 
+         chunk.text.toLowerCase().includes('borja') ||
+         chunk.text.toLowerCase().includes('zaragoza')))) {
+        totalScore += 8;
+        boosts.push("+8 término exacto 'ubicación'");
+    }
+    
+    // Boost especial para términos de contacto (+7)
+    if ((questionWords.some(word => word.includes('teléfono') || word.includes('contacto') || word.includes('email')) && 
+        (chunk.text.toLowerCase().includes('teléfono') || 
+         chunk.text.toLowerCase().includes('contacto') ||
+         chunk.text.toLowerCase().includes('email')))) {
+        totalScore += 7;
+        boosts.push("+7 término exacto 'contacto'");
     }
     
     // Boost por substrings relevantes (+1)

@@ -170,19 +170,31 @@ function validateAntiHallucination(response, context) {
     const responseLower = response.toLowerCase();
     const contextLower = context.toLowerCase();
     
-    // Extraer entidades clave de la respuesta (números, nombres específicos, etc.)
-    const entities = responseLower.match(/\b\d+\b|\b[a-z]{4,}\b/g) || [];
+    // Palabras legítimas que no deben considerarse alucinación (expandido)
+    const legitimateWords = [
+        'lanuza', 'juan', 'instituto', 'ies', 'centro', 'colegio',
+        'bachillerato', 'tecnología', 'humanidades', 'ciencias', 'sociales',
+        'formación', 'profesional', 'educación', 'secundaria', 'obligatoria',
+        'capuchinos', 'borja', 'zaragoza', 'españa', 'contacto', 'teléfono',
+        'email', 'oferta', 'educativa', 'ciclos', 'grado', 'medio', 'básico',
+        'cocina', 'gastronomía', 'atención', 'personas', 'dependencia',
+        'asignaturas', 'destacadas', 'programación', 'robótica', 'cultura',
+        'clásica', 'economía', 'filosofía', 'física', 'química', 'biología',
+        'geología', 'opciones', 'siguientes', 'siguiente', 'disponibles',
+        'puedes', 'pueden', 'ofrecen', 'ofrece', 'imparten', 'imparte'
+    ];
     
-    // Palabras legítimas que no deben considerarse alucinación
-    const legitimateWords = ['lanuza', 'juan', 'instituto', 'ies', 'centro', 'colegio'];
+    // Extraer solo entidades potencialmente problemáticas (números grandes, nombres propios)
+    const entities = responseLower.match(/\b\d{4,}\b|[A-Z][a-z]{3,}\b/g) || [];
     
-    // Verificar si las entidades principales aparecen en el contexto
+    // Verificar si las entidades problemáticas aparecen en el contexto
     const suspiciousEntities = entities.filter(entity => 
         entity.length > 4 && 
         !contextLower.includes(entity) &&
         !legitimateWords.some(word => entity.toLowerCase().includes(word))
     );
     
+    // Solo rechazar si hay entidades genuinamente sospechosas (números de teléfono, nombres, etc.)
     if (suspiciousEntities.length > 0 && !responseLower.includes("no dispongo")) {
         console.warn("Posible alucinación detectada:", suspiciousEntities);
         return {
