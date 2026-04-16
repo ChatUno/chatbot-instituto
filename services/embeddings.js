@@ -48,8 +48,16 @@ async function getEmbedding(text) {
             return getEmbedding(text); // Retry once
         }
         
+        // Si es error de autenticación (401), registrar y devolver null
+        if (error.response?.status === 401) {
+            console.error("❌ ERROR DE AUTENTICACIÓN 401 - API Key inválida o sin permisos");
+            console.error("🔍 Verificar API key en dashboard de OpenRouter");
+            console.error("📋 La key puede estar expirada o no tener permisos para embeddings");
+            return null;
+        }
+        
         // Fallback: devolver null para indicar fallo
-        console.warn("Embedding falló, devolviendo null");
+        console.warn("Embedding falló, devolviendo null - el sistema usará búsqueda textual");
         return null;
     }
 }
