@@ -99,19 +99,15 @@ app.use((err, req, res, next) => {
 });
 
 // Configuración del puerto para Railway
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 console.log("PORT final:", PORT);
-
-if (!PORT) {
-    console.error("ERROR CRÍTICO: process.env.PORT está undefined");
-    process.exit(1);
-}
 
 try {
     app.listen(PORT, "0.0.0.0", () => {
         console.log(`=== SERVIDOR DEBUG ACTIVO ===`);
         console.log(`Puerto: ${PORT}`);
         console.log(`Host: 0.0.0.0`);
+        console.log(`NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
         console.log(`Endpoints disponibles:`);
         console.log(`  GET  / - Test endpoint`);
         console.log(`  GET  /health - Health check`);
@@ -120,5 +116,4 @@ try {
 } catch (error) {
     console.error("ERROR CRÍTICO al iniciar servidor:", error);
     console.error("Stack trace:", error.stack);
-    process.exit(1);
 }
