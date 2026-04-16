@@ -12,6 +12,7 @@ const {
     validateChunksQuery,
     configurationSanityCheck 
 } = require("./validation");
+const { createAuthService, createAuthMiddleware } = require("./auth");
 
 console.log("Módulos Express y CORS cargados");
 
@@ -86,6 +87,10 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(express.json());
 
+// Initialize authentication
+const authService = createAuthService();
+const authMiddleware = createAuthMiddleware(authService);
+
 // Root endpoint for testing
 app.get("/", (req, res) => {
     res.send("Chatbot activo");
@@ -105,8 +110,8 @@ app.get("/health", (req, res) => {
     });
 });
 
-// Endpoint principal del chatbot
-app.post("/chat", validateChatRequest, async (req, res) => {
+// Endpoint principal del chatbot (protegido)
+app.post("/chat", authMiddleware.authenticate({ required: true, permissions: ['read'] }), validateChatRequest, async (req, res) => {
     console.log("=== POST /chat llamado ===");
     console.log("Headers:", req.headers);
     console.log("Body:", req.body);
@@ -228,8 +233,8 @@ app.get("/debug-chunks", async (req, res) => {
     }
 });
 
-// Endpoint para guardar chunks
-app.post("/chunks", validateChunksRequest, async (req, res) => {
+// Endpoint para guardar chunks (protegido)
+app.post("/chunks", authMiddleware.authenticate({ required: true, permissions: ['write'] }), validateChunksRequest, async (req, res) => {
     console.log("=== POST /chunks llamado ===");
     console.log("Request headers:", req.headers);
     console.log("Request body:", req.body);

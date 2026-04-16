@@ -85,8 +85,19 @@ const baseConfig = {
 
     // Frontend Configuration
     frontend: {
-        maxInputLength: parseInt(process.env.Frontend_MAX_INPUT_LENGTH) || 1000,
-        typingIndicatorDelay: parseInt(process.env.FRONTEND_TYPING_DELAY) || 500
+        maxInputLength: parseInt(process.env.FRONTEND_MAX_INPUT_LENGTH) || 1000,
+        typingIndicatorDelay: parseInt(process.env.FRONTEND_TYPING_INDICATOR_DELAY) || 500
+    },
+
+    // Authentication Configuration
+    auth: {
+        jwtSecret: process.env.JWT_SECRET || 'default-secret-key-change-in-production',
+        jwtExpiration: parseInt(process.env.JWT_EXPIRATION) || (24 * 60 * 60), // 24 hours
+        apiKeys: process.env.API_KEYS ? process.env.API_KEYS.split(',') : [
+            'dev-api-key-123',
+            'test-api-key-456'
+        ],
+        bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS) || 12
     }
 };
 
