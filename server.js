@@ -52,9 +52,42 @@ app.get("/health", (req, res) => {
         timestamp: new Date().toISOString(),
         endpoints: {
             chat: "POST /chat",
-            health: "GET /health"
+            health: "GET /health",
+            "test-embedding": "GET /test-embedding"
         }
     });
+});
+
+// Test embedding endpoint
+app.get("/test-embedding", async (req, res) => {
+    try {
+        const { getEmbedding } = require('./services/embeddings');
+        const testText = "hola mundo";
+        
+        console.log("=== TEST EMBEDDING ===");
+        const embedding = await getEmbedding(testText);
+        
+        if (embedding) {
+            res.json({
+                status: "success",
+                test_text: testText,
+                embedding_size: embedding.length,
+                sample_values: embedding.slice(0, 5),
+                message: "Embedding generado exitosamente"
+            });
+        } else {
+            res.status(500).json({
+                status: "error",
+                message: "No se pudo generar el embedding"
+            });
+        }
+    } catch (error) {
+        console.error("Error en /test-embedding:", error.message);
+        res.status(500).json({
+            status: "error",
+            message: error.message
+        });
+    }
 });
 
 // Endpoint principal del chatbot
