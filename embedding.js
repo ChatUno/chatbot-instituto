@@ -1,4 +1,12 @@
 /**
+ * Sistema de Embeddings y Búsqueda Semántica para Chatbot IES Juan de Lanuza
+ * Implementa búsqueda BM25-lite mejorada con scoring inteligente
+ */
+
+const { getValidatedConfig } = require('./config');
+const config = getValidatedConfig();
+
+/**
  * Detecta la intención del usuario basada en palabras clave específicas
  * @param {string} question - Pregunta del usuario
  * @returns {string} - Intención detectada (oferta, centro, general)
@@ -99,157 +107,150 @@ function calculateTF(tokens) {
 }
 
 /**
- * Calcula score BM25-lite con boosts inteligentes
  * @param {string} question - Pregunta del usuario
- * @param {Object} chunk - Chunk con texto y source
- * @param {string} intent - Intención detectada
- * @returns {Object} - Score calculado con desglose
+ * @param {Object} chunk - Chunk a evaluar
+ * @returns {Object} - { baseScore, exactMatches, substringMatches, debugInfo }
  */
-function calculateScore(question, chunk, intent) {
+function calculateBaseScore(question, chunk) {
     const debugInfo = [];
-    let totalScore = 0;
+    let baseScore = 0;
+    let exactMatches = 0;
+    let substringMatches = 0;
     
-    // 1. TOKENIZACIÓN Y NORMALIZACIÓN
-    const questionTokens = tokenize(question);
-    const chunkTokens = tokenize(chunk.text);
     const questionWords = question.toLowerCase()
         .split(/\s+/)
         .filter(word => word.length > 2)
         .map(word => word.replace(/[^\wáéíóúñü]/g, ''));
+    
+    questionWords.forEach(word => {
+        // Coincidencia exacta de palabra clave (peso alto)
+        if (chunk.text.toLowerCase().includes(word)) {
+            exactMatches++;
+            baseScore += config.rag.scoring.exactMatch;
+            debugInfo.push(`+${config.rag.scoring.exactMatch} coincidencia exacta "${word}"`);
+        }
+        
+        // Coincidencia de substring (peso medio)
+        else if (chunk.text.toLowerCase().includes(word.substring(0, 3))) {
+            substringMatches++;
+            baseScore += config.rag.scoring.partialMatch;
+            debugInfo.push(`+${config.rag.scoring.partialMatch} substring "${word.substring(0, 3)}"`);
+        }
+    });
+    
+    debugInfo.push(`Coincidencias: ${exactMatches} exactas, ${substringMatches} substring`);
+    
+    return { baseScore, exactMatches, substringMatches, debugInfo };
+}
+
+/**
+ * Calcula boosts inteligentes basados en intención y contenido
+ * @param {string} intent - Intención detectada
+ * @param {Object} chunk - Chunk a evaluar
+ * @param {string} question - Pregunta original
+ * @returns {Object} - { boostScore, debugInfo }
+ */
+function calculateIntelligentBoosts(intent, chunk, question) {
+    const debugInfo = [];
+    let boostScore = 0;
+    
+    // Boost por categoría/intención
+    if (intent && chunk.source === intent) {
+        boostScore += config.rag.scoring.intentMatch;
+        debugInfo.push(`+${config.rag.scoring.intentMatch} boost categoría (${intent})`);
+    }
+    
+    // Boost por palabras clave específicas de la categoría
+    if (intent === 'oferta') {
+        const ofertaKeywords = ['fp', 'ciclo', 'grado', 'bachiller', 'formación', 'educación'];
+        ofertaKeywords.forEach(keyword => {
+            if (question.toLowerCase().includes(keyword) && chunk.text.toLowerCase().includes(keyword)) {
+                boostScore += config.rag.scoring.categoryMatch;
+                debugInfo.push(`+${config.rag.scoring.categoryMatch} keyword oferta "${keyword}"`);
+            }
+        });
+    }
+    
+    // Boost por longitud óptima del chunk
+    const chunkLength = chunk.text.length;
+    if (chunkLength >= 50 && chunkLength <= 500) {
+        boostScore += 2;
+        debugInfo.push("+2 longitud óptima");
+    } else if (chunkLength < 50) {
+        boostScore -= 1;
+        debugInfo.push("-1 demasiado corto");
+    }
+    
+    return { boostScore, debugInfo };
+}
+
+/**
+ * Calcula penalizaciones por calidad del chunk
+ * @param {Object} chunk - Chunk a evaluar
+ * @returns {Object} - { penalties, debugInfo }
+ */
+function calculatePenalties(chunk) {
+    const debugInfo = [];
+    let penalties = 0;
+    
+    const chunkLength = chunk.text.length;
+    
+    // Penalización por chunks muy largos
+    if (chunkLength > 1000) {
+        penalties -= 2;
+        debugInfo.push("-2 demasiado largo");
+    }
+    
+    // Penalización por chunks sin contenido útil
+    if (chunk.text.split(/\s+/).length < 5) {
+        penalties -= 1;
+        debugInfo.push("-1 muy poco contenido");
+    }
+    
+    // Penalización por repetición excesiva
+    const words = chunk.text.toLowerCase().split(/\s+/);
+    const uniqueWords = new Set(words);
+    if (uniqueWords.size / words.length < 0.3) {
+        penalties -= 1;
+        debugInfo.push("-1 mucha repetición");
+    }
+    
+    debugInfo.push(`Penalizaciones: ${penalties !== 0 ? 'aplicadas' : 'ninguna'}`);
+    
+    return { penalties, debugInfo };
+}
+
+/**
+ * Función principal de cálculo de score (refactorizada)
+ * @param {string} question - Pregunta del usuario
+ * @param {Object} chunk - Chunk a evaluar
+ * @param {string} intent - Intención detectada
+ * @returns {Object} - Score y debug information
+ */
+function calculateScore(question, chunk, intent) {
+    const debugInfo = [];
+    
+    // 1. TOKENIZACIÓN Y NORMALIZACIÓN
+    const questionTokens = tokenize(question);
+    const chunkTokens = tokenize(chunk.text);
     
     if (questionTokens.length === 0 || chunkTokens.length === 0) {
         debugInfo.push("No hay tokens válidos");
         return { score: 0, debug: debugInfo };
     }
     
-    // 2. BASE: Frecuencia de términos (TF-lite)
-    let baseScore = 0;
-    let exactMatches = 0;
-    let substringMatches = 0;
+    // 2. CALCULAR COMPONENTES
+    const baseResult = calculateBaseScore(question, chunk);
+    const boostResult = calculateIntelligentBoosts(intent, chunk, question);
+    const penaltyResult = calculatePenalties(chunk);
     
-    questionWords.forEach(word => {
-        // Coincidencia exacta de palabra clave (peso alto)
-        if (chunk.text.toLowerCase().includes(word)) {
-            exactMatches++;
-            baseScore += 3;
-            debugInfo.push(`+3 coincidencia exacta "${word}"`);
-        }
-        
-        // Substring match (peso medio)
-        const chunkWords = chunk.text.toLowerCase().split(/\s+/);
-        chunkWords.forEach(chunkWord => {
-            if ((chunkWord.includes(word) || word.includes(chunkWord)) && chunkWord !== word) {
-                substringMatches++;
-                baseScore += 1;
-                debugInfo.push(`+1 substring "${word}" en "${chunkWord}"`);
-            }
-        });
-    });
+    // 3. COMBINAR SCORES
+    const totalScore = baseResult.baseScore + boostResult.boostScore + penaltyResult.penalties;
     
-    totalScore += baseScore;
-    debugInfo.push(`Base score: ${baseScore} (exactas: ${exactMatches}, substrings: ${substringMatches})`);
-    
-    // 3. BOOSTS
-    const boosts = [];
-    
-    // Boost por intención (+5 si chunk.source == intención detectada)
-    if (chunk.source === intent) {
-        totalScore += 5;
-        boosts.push("+5 intención coincidente");
-    }
-    
-    // Boost por palabra exacta de la pregunta (+5)
-    if (exactMatches > 0) {
-        totalScore += 5;
-        boosts.push("+5 contiene palabras exactas");
-    }
-    
-    // Boost por palabras clave principales (+5 - aumentado)
-    const mainKeywords = ['bachillerato', 'fp', 'formación', 'teléfono', 'contacto', 'dirección'];
-    const hasMainKeyword = mainKeywords.some(keyword => 
-        chunk.text.toLowerCase().includes(keyword) && questionWords.includes(keyword)
-    );
-    if (hasMainKeyword) {
-        totalScore += 5;
-        boosts.push("+5 palabra clave principal");
-    }
-    
-    // Boost especial para términos exactos de bachillerato (+8)
-    if (questionWords.some(word => word.includes('bachillerato')) && 
-        chunk.text.toLowerCase().includes('bachillerato')) {
-        totalScore += 8;
-        boosts.push("+8 término exacto 'bachillerato'");
-    }
-    
-    // Boost especial para términos exactos de FP/formación (+10)
-    if ((questionWords.some(word => word.includes('fp') || word.includes('formación')) && 
-        (chunk.text.toLowerCase().includes('formación profesional') || 
-         chunk.text.toLowerCase().includes('fp') || 
-         chunk.text.toLowerCase().includes('grado')))) {
-        totalScore += 10;
-        boosts.push("+10 término exacto 'formación profesional'");
-    }
-    
-    // Boost extra para chunks que contienen "Formación Profesional" explícitamente (+8)
-    if (chunk.text.toLowerCase().includes('formación profesional') &&
-        questionWords.some(word => word.includes('fp') || word.includes('formación'))) {
-        totalScore += 8;
-        boosts.push("+8 contiene 'Formación Profesional'");
-    }
-    
-    // Boost especial para términos de ubicación (+8)
-    if ((questionWords.some(word => word.includes('dónde') || word.includes('ubicación') || word.includes('dirección') || word.includes('está')) && 
-        (chunk.text.toLowerCase().includes('ubicación') || 
-         chunk.text.toLowerCase().includes('c/') || 
-         chunk.text.toLowerCase().includes('borja') ||
-         chunk.text.toLowerCase().includes('zaragoza')))) {
-        totalScore += 8;
-        boosts.push("+8 término exacto 'ubicación'");
-    }
-    
-    // Boost especial para términos de contacto (+7)
-    if ((questionWords.some(word => word.includes('teléfono') || word.includes('contacto') || word.includes('email')) && 
-        (chunk.text.toLowerCase().includes('teléfono') || 
-         chunk.text.toLowerCase().includes('contacto') ||
-         chunk.text.toLowerCase().includes('email')))) {
-        totalScore += 7;
-        boosts.push("+7 término exacto 'contacto'");
-    }
-    
-    // Boost por substrings relevantes (+1)
-    if (substringMatches > 0) {
-        totalScore += 1;
-        boosts.push("+1 substrings relevantes");
-    }
-    
-    debugInfo.push(`Boosts: ${boosts.length > 0 ? boosts.join(', ') : 'ninguno'}`);
-    
-    // 4. PENALIZACIONES
-    const penalties = [];
-    
-    // Penalización si chunk es genérico y no coincide con intención (-2)
-    const genericKeywords = ['instituto', 'centro', 'educativo', 'secundaria'];
-    const isGeneric = genericKeywords.some(keyword => chunk.text.toLowerCase().includes(keyword));
-    if (isGeneric && chunk.source !== intent && intent !== 'general') {
-        totalScore -= 2;
-        penalties.push("-2 genérico sin coincidencia de intención");
-    }
-    
-    // Penalización si no comparte ninguna palabra clave (-3)
-    if (exactMatches === 0 && substringMatches === 0) {
-        totalScore -= 3;
-        penalties.push("-3 sin palabras clave comunes");
-    }
-    
-    // Penalización si es demasiado corto (-1)
-    if (chunk.text.length < 20) {
-        totalScore -= 1;
-        penalties.push("-1 demasiado corto");
-    }
-    
-    debugInfo.push(`Penalizaciones: ${penalties.length > 0 ? penalties.join(', ') : 'ninguna'}`);
-    
-    // 5. LOG FINAL
+    // 4. AGREGAR DEBUG INFO
+    debugInfo.push(...baseResult.debugInfo);
+    debugInfo.push(...boostResult.debugInfo);
+    debugInfo.push(...penaltyResult.debugInfo);
     debugInfo.push(`Score final: ${totalScore}`);
     
     return { 
@@ -545,5 +546,9 @@ module.exports = {
     buildIntelligentContext,
     cleanChunks,
     groupChunksByCategory,
-    detectIntent
+    detectIntent,
+    calculateScore,
+    calculateBaseScore,
+    calculateIntelligentBoosts,
+    calculatePenalties
 };
