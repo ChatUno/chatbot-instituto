@@ -21,8 +21,12 @@ class AdminPanel {
                 throw new Error('Error loading chunks from server');
             }
             const data = await response.json();
-            this.chunks = data.chunks;
-            this.originalChunks = JSON.parse(JSON.stringify(this.chunks));
+            if (data.status === 'ok') {
+                this.chunks = data.data;
+                this.originalChunks = JSON.parse(JSON.stringify(this.chunks));
+            } else {
+                throw new Error(data.message || 'Error loading chunks');
+            }
         } catch (error) {
             console.error('Error loading chunks:', error);
             this.showNotification('Error cargando chunks', 'error');
@@ -226,8 +230,12 @@ class AdminPanel {
             }
 
             const data = await response.json();
-            console.log('Chunks saved:', data);
-            this.showNotification('Cambios guardados correctamente', 'success');
+            if (data.status === 'ok') {
+                console.log('Chunks saved:', data.message);
+                this.showNotification('Cambios guardados correctamente', 'success');
+            } else {
+                throw new Error(data.message || 'Error guardando chunks');
+            }
         } catch (error) {
             console.error('Error saving chunks:', error);
             this.showNotification('Error guardando cambios', 'error');

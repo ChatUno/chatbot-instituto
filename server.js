@@ -121,9 +121,8 @@ app.get("/chunks", async (req, res) => {
         console.log(`Chunks leídos correctamente: ${chunks.length} chunks encontrados`);
         
         res.json({
-            success: true,
-            chunks: chunks,
-            count: chunks.length
+            "status": "ok",
+            "data": chunks
         });
         
     } catch (error) {
@@ -132,19 +131,18 @@ app.get("/chunks", async (req, res) => {
         
         if (error.code === 'ENOENT') {
             res.status(404).json({
-                error: "Archivo no encontrado",
-                message: "El archivo chunks.json no existe"
+                "status": "error",
+                "message": "El archivo chunks.json no existe"
             });
         } else if (error instanceof SyntaxError) {
             res.status(400).json({
-                error: "Error de formato",
-                message: "El archivo chunks.json tiene un formato JSON inválido"
+                "status": "error",
+                "message": "El archivo chunks.json tiene un formato JSON inválido"
             });
         } else {
             res.status(500).json({
-                error: "Error leyendo chunks",
-                message: error.message,
-                stack: error.stack
+                "status": "error",
+                "message": "Error leyendo chunks"
             });
         }
     }
@@ -162,8 +160,8 @@ app.post("/chunks", async (req, res) => {
         if (!chunks || !Array.isArray(chunks)) {
             console.log("ERROR: No chunks array provided");
             return res.status(400).json({ 
-                error: "No chunks array provided",
-                message: "Se requiere el campo 'chunks' como array en el cuerpo de la petición"
+                "status": "error",
+                "message": "Se requiere el campo 'chunks' como array en el cuerpo de la petición"
             });
         }
 
@@ -174,24 +172,24 @@ app.post("/chunks", async (req, res) => {
             if (!chunk.id || typeof chunk.id !== 'number') {
                 console.log(`ERROR: Chunk ${i} - ID inválido`);
                 return res.status(400).json({
-                    error: "Validación fallida",
-                    message: `Cada chunk debe tener un 'id' numérico. Error en chunk ${i}`
+                    "status": "error",
+                    "message": `Cada chunk debe tener un 'id' numérico. Error en chunk ${i}`
                 });
             }
             
             if (!chunk.text || typeof chunk.text !== 'string' || chunk.text.trim() === '') {
                 console.log(`ERROR: Chunk ${i} - Texto inválido`);
                 return res.status(400).json({
-                    error: "Validación fallida",
-                    message: `Cada chunk debe tener un 'text' no vacío. Error en chunk ${i}`
+                    "status": "error",
+                    "message": `Cada chunk debe tener un 'text' no vacío. Error en chunk ${i}`
                 });
             }
             
             if (!chunk.source || typeof chunk.source !== 'string' || chunk.source.trim() === '') {
                 console.log(`ERROR: Chunk ${i} - Source inválido`);
                 return res.status(400).json({
-                    error: "Validación fallida",
-                    message: `Cada chunk debe tener un 'source' no vacío. Error en chunk ${i}`
+                    "status": "error",
+                    "message": `Cada chunk debe tener un 'source' no vacío. Error en chunk ${i}`
                 });
             }
         }
@@ -203,22 +201,19 @@ app.post("/chunks", async (req, res) => {
         const chunksPath = path.join(__dirname, 'data', 'chunks.json');
         await fs.writeFile(chunksPath, JSON.stringify(chunks, null, 2), 'utf8');
         
-        console.log(`Chunks guardados correctamente: ${chunks.length} chunks en ${chunksPath}`);
+        console.log(`Chunks actualizados correctamente: ${chunks.length} chunks guardados`);
 
         res.json({
-            success: true,
-            message: "Chunks guardados correctamente",
-            count: chunks.length,
-            chunks: chunks
+            "status": "ok",
+            "message": "Chunks actualizados"
         });
 
     } catch (error) {
         console.error("ERROR en /chunks:", error);
         console.error("Stack trace:", error.stack);
         res.status(500).json({
-            error: "Error guardando chunks",
-            message: error.message,
-            stack: error.stack
+            "status": "error",
+            "message": "Error guardando chunks"
         });
     }
 });
