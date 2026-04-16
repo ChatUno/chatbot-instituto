@@ -157,11 +157,65 @@ app.get("/chunks", async (req, res) => {
     }
 });
 
+// Endpoint para diagnóstico de chunks
+app.get("/debug-chunks", async (req, res) => {
+    console.log("=== GET /debug-chunks llamado ===");
+    
+    try {
+        const fs = require('fs');
+        const path = require('path');
+        
+        const chunksPath = path.join(__dirname, 'data', 'chunks.json');
+        console.log("DEBUG - Chunks path:", chunksPath);
+        console.log("DEBUG - File exists:", fs.existsSync(chunksPath));
+        
+        if (fs.existsSync(chunksPath)) {
+            const fileData = fs.readFileSync(chunksPath, 'utf8');
+            const chunks = JSON.parse(fileData);
+            
+            res.json({
+                "status": "ok",
+                "debug": {
+                    "path": chunksPath,
+                    "cwd": process.cwd(),
+                    "dirname": __dirname,
+                    "fileExists": true,
+                    "fileSize": fileData.length,
+                    "chunksCount": chunks.length,
+                    "firstChunk": chunks[0],
+                    "lastChunk": chunks[chunks.length - 1]
+                }
+            });
+        } else {
+            res.json({
+                "status": "error",
+                "debug": {
+                    "path": chunksPath,
+                    "cwd": process.cwd(),
+                    "dirname": __dirname,
+                    "fileExists": false
+                }
+            });
+        }
+        
+    } catch (error) {
+        console.error("ERROR en /debug-chunks:", error);
+        res.status(500).json({
+            "status": "error",
+            "message": "Error en diagnóstico",
+            "error": error.message
+        });
+    }
+});
+
 // Endpoint para guardar chunks
 app.post("/chunks", async (req, res) => {
     console.log("=== POST /chunks llamado ===");
     console.log("Request headers:", req.headers);
     console.log("Request body:", req.body);
+    console.log("CHUNKS PATH:", require('path').resolve(__dirname, 'chunks.json'));
+    console.log("CWD:", process.cwd());
+    console.log("__DIRNAME:", __dirname);
     
     try {
         const { chunks } = req.body;
@@ -209,25 +263,31 @@ app.post("/chunks", async (req, res) => {
         const fs = require('fs');
         const path = require('path');
         
-        // Guardar chunks en el archivo con ruta absoluta
+        // RUTA ABSOLUTA CRÍTICA
         const chunksPath = path.join(__dirname, 'data', 'chunks.json');
-        console.log("Ruta exacta donde se guardará:", chunksPath);
+        console.log("RUTA ABSOLUTA chunks.json:", chunksPath);
         
-        // Usar writeFileSync para asegurar escritura síncrona
-        fs.writeFileSync(chunksPath, JSON.stringify(chunks, null, 2), 'utf8');
-        console.log(`Chunks escritos con writeFileSync: ${chunks.length} chunks`);
+        // ESCRITURA ROBUSTA
+        const jsonData = JSON.stringify(chunks, null, 2);
+        console.log("JSON data length:", jsonData.length);
         
-        // Verificación: leer el archivo después de guardar
+        fs.writeFileSync(chunksPath, jsonData, 'utf8');
+        console.log("Chunks escritos con writeFileSync en:", chunksPath);
+        
+        // VERIFICACIÓN POST-GUARDADO
         try {
             const verificationData = fs.readFileSync(chunksPath, 'utf8');
+            console.log("VERIFICACIÓN - Archivo leído, length:", verificationData.length);
+            console.log("VERIFICACIÓN - Primer 100 chars:", verificationData.substring(0, 100));
+            
             const verificationChunks = JSON.parse(verificationData);
-            console.log("VERIFICACIÓN - Chunks leídos después de guardar:", verificationChunks.length);
-            console.log("VERIFICACIÓN - Primer chunk:", verificationChunks[0]);
+            console.log("VERIFICACIÓN - Chunks verificados:", verificationChunks.length);
+            console.log("VERIFICACIÓN - Chunk 1:", verificationChunks[0]);
         } catch (verificationError) {
-            console.error("ERROR en verificación post-escritura:", verificationError);
+            console.error("ERROR EN VERIFICACIÓN:", verificationError);
         }
         
-        console.log(`Chunks actualizados correctamente: ${chunks.length} chunks guardados en ${chunksPath}`);
+        console.log(`Chunks actualizados correctamente: ${chunks.length} chunks guardados`);
 
         res.json({
             "status": "ok",
@@ -235,10 +295,10 @@ app.post("/chunks", async (req, res) => {
         });
 
     } catch (error) {
-        console.error("ERROR en /chunks:", error);
-        console.error("Stack trace:", error.stack);
-        console.error("Error code:", error.code);
-        console.error("Error message:", error.message);
+        console.error("ERROR CRÍTICO en /chunks:", error);
+        console.error("ERROR CODE:", error.code);
+        console.error("ERROR MESSAGE:", error.message);
+        console.error("ERROR STACK:", error.stack);
         res.status(500).json({
             "status": "error",
             "message": "Error guardando chunks"
