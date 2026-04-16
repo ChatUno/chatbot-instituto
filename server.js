@@ -2,6 +2,14 @@ console.log("=== INICIANDO SERVIDOR ===");
 console.log("NODE_ENV:", process.env.NODE_ENV);
 console.log("PORT:", process.env.PORT);
 console.log("GROQ_API_KEY exists:", !!process.env.GROQ_API_KEY);
+console.log("OPENROUTER_API_KEY exists:", !!process.env.OPENROUTER_API_KEY);
+
+// Validar que OPENROUTER_API_KEY está disponible para embeddings
+if (!process.env.OPENROUTER_API_KEY) {
+    console.warn("⚠️ ADVERTENCIA: Missing OPENROUTER_API_KEY - embeddings no estarán disponibles");
+} else {
+    console.log("✅ OPENROUTER_API_KEY encontrada - embeddings disponibles");
+}
 
 const express = require("express");
 const cors = require("cors");

@@ -13,6 +13,13 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
  * @returns {Promise<number[]>} - Vector de embedding
  */
 async function getEmbedding(text) {
+    // Validar que API key existe antes de hacer request
+    if (!OPENROUTER_API_KEY) {
+        console.error("❌ ERROR CRÍTICO: OPENROUTER_API_KEY no está definida");
+        console.error("🔍 Configurar OPENROUTER_API_KEY en variables de entorno");
+        throw new Error("Missing OPENROUTER_API_KEY in environment variables");
+    }
+
     try {
         console.log(`Generando embedding para: "${text.substring(0, 50)}..."`);
         
