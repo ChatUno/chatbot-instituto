@@ -491,5 +491,6 @@ module.exports = {
     simpleSearch,
     buildIntelligentContext,
     cleanChunks,
-    groupChunksByCategory
+    groupChunksByCategory,
+    detectIntent
 };

@@ -1,0 +1,163 @@
+{
+  "last_updated": "2026-04-16T17:01:13.258Z",
+  "metrics": {
+    "totalRequests": 2,
+    "ragHits": 2,
+    "fallbackUsed": 0,
+    "hallucinationDetected": 1,
+    "memoryUsed": 2,
+    "averageLatency": 130,
+    "retrievalHitRate": 100
+  },
+  "recent_logs": [
+    {
+      "timestamp": "2026-04-16T17:01:13.156Z",
+      "query": "¿Cuál es el teléfono del instituto?",
+      "intent": "detected_by_search",
+      "memory_used": true,
+      "top_chunks": [
+        {
+          "id": 3,
+          "score": 15,
+          "source": "centro"
+        },
+        {
+          "id": 1,
+          "score": 14,
+          "source": "centro"
+        },
+        {
+          "id": 5,
+          "score": 8,
+          "source": "centro"
+        }
+      ],
+      "selected_chunks": [
+        3,
+        1,
+        5
+      ],
+      "context_length": 227,
+      "prompt_mode": "relevant",
+      "response_length": 62,
+      "latency_ms": 161,
+      "source": "rag",
+      "confidence": 1,
+      "failures": [],
+      "chunk_trace": [
+        {
+          "chunk_id": 3,
+          "final_score": 15,
+          "score_breakdown": [
+            "+3 coincidencia exacta \"teléfono\"",
+            "+1 substring \"del\" en \"de\"",
+            "Base score: 4 (exactas: 1, substrings: 1)",
+            "Boosts: +5 intención coincidente, +3 contiene palabras exactas, +2 palabra clave principal, +1 substrings relevantes",
+            "Penalizaciones: ninguna",
+            "Score final: 15"
+          ]
+        },
+        {
+          "chunk_id": 1,
+          "final_score": 14,
+          "score_breakdown": [
+            "+1 substring \"del\" en \"de\"",
+            "+1 substring \"del\" en \"de\"",
+            "+3 coincidencia exacta \"instituto\"",
+            "Base score: 5 (exactas: 1, substrings: 2)",
+            "Boosts: +5 intención coincidente, +3 contiene palabras exactas, +1 substrings relevantes",
+            "Penalizaciones: ninguna",
+            "Score final: 14"
+          ]
+        },
+        {
+          "chunk_id": 5,
+          "final_score": 8,
+          "score_breakdown": [
+            "+1 substring \"teléfono\" en \"el\"",
+            "+1 substring \"del\" en \"el\"",
+            "Base score: 2 (exactas: 0, substrings: 2)",
+            "Boosts: +5 intención coincidente, +1 substrings relevantes",
+            "Penalizaciones: ninguna",
+            "Score final: 8"
+          ]
+        }
+      ]
+    },
+    {
+      "timestamp": "2026-04-16T17:01:13.257Z",
+      "query": "¿Qué FP hay?",
+      "intent": "detected_by_search",
+      "memory_used": true,
+      "top_chunks": [
+        {
+          "id": 8,
+          "score": 7,
+          "source": "oferta"
+        },
+        {
+          "id": 9,
+          "score": 7,
+          "source": "oferta"
+        },
+        {
+          "id": 10,
+          "score": 7,
+          "source": "oferta"
+        }
+      ],
+      "selected_chunks": [
+        8,
+        9,
+        10
+      ],
+      "context_length": 199,
+      "prompt_mode": "relevant",
+      "response_length": 31,
+      "latency_ms": 99,
+      "source": "rag",
+      "confidence": 0.2,
+      "failures": [
+        {
+          "type": "low_confidence_response",
+          "description": "Respuesta con baja confianza"
+        }
+      ],
+      "chunk_trace": [
+        {
+          "chunk_id": 8,
+          "final_score": 7,
+          "score_breakdown": [
+            "+1 substring \"hay\" en \"a\"",
+            "Base score: 1 (exactas: 0, substrings: 1)",
+            "Boosts: +5 intención coincidente, +1 substrings relevantes",
+            "Penalizaciones: ninguna",
+            "Score final: 7"
+          ]
+        },
+        {
+          "chunk_id": 9,
+          "final_score": 7,
+          "score_breakdown": [
+            "+1 substring \"hay\" en \"y\"",
+            "Base score: 1 (exactas: 0, substrings: 1)",
+            "Boosts: +5 intención coincidente, +1 substrings relevantes",
+            "Penalizaciones: ninguna",
+            "Score final: 7"
+          ]
+        },
+        {
+          "chunk_id": 10,
+          "final_score": 7,
+          "score_breakdown": [
+            "+1 substring \"hay\" en \"y\"",
+            "Base score: 1 (exactas: 0, substrings: 1)",
+            "Boosts: +5 intención coincidente, +1 substrings relevantes",
+            "Penalizaciones: ninguna",
+            "Score final: 7"
+          ]
+        }
+      ]
+    }
+  ]
+}
