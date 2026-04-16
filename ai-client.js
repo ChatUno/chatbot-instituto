@@ -4,15 +4,17 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const axios = require("axios");
+const { getValidatedConfig } = require("./config");
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
+const config = getValidatedConfig();
+const GROQ_API_KEY = config.ai.apiKey;
 
 async function getAIResponse(prompt) {
     try {
         const response = await axios.post(
             "https://api.groq.com/openai/v1/chat/completions",
             {
-                model: "llama-3.1-8b-instant",
+                model: config.ai.model,
                 messages: [
                     {
                         role: "system",
@@ -23,7 +25,7 @@ async function getAIResponse(prompt) {
                         content: prompt
                     }
                 ],
-                temperature: 0.3
+                temperature: config.ai.temperature
             },
             {
                 headers: {

@@ -3,8 +3,11 @@
  * Mantiene contexto conversacional reciente sin persistencia
  */
 
+const { getValidatedConfig } = require('./config');
+const config = getValidatedConfig();
+
 class ConversationMemory {
-    constructor(maxExchanges = 5) {
+    constructor(maxExchanges = config.memory.maxExchanges) {
         this.exchanges = []; // Array de intercambios {user: string, bot: string}
         this.maxExchanges = maxExchanges;
     }
@@ -116,7 +119,7 @@ class ConversationMemory {
  * @param {number} maxExchanges - Máximo de intercambios a mantener
  * @returns {Object} - MemoryManager instance con estado aislado
  */
-function createMemoryManager(maxExchanges = 5) {
+function createMemoryManager(maxExchanges = config.memory.maxExchanges) {
     const memory = new ConversationMemory(maxExchanges);
     
     return {

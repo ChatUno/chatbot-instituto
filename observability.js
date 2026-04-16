@@ -5,11 +5,13 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getValidatedConfig } = require('./config');
+const config = getValidatedConfig();
 
 class ObservabilitySystem {
     constructor(options = {}) {
         this.logs = [];
-        this.maxLogs = options.maxLogs || 1000; // Límite de logs para prevenir memory leaks
+        this.maxLogs = options.maxLogs || config.observability.maxLogs; // Límite de logs para prevenir memory leaks
         this.metrics = {
             totalRequests: 0,
             ragHits: 0,
@@ -20,8 +22,8 @@ class ObservabilitySystem {
             retrievalHitRate: 0
         };
         
-        this.debugMode = process.env.DEBUG === 'true';
-        this.logFile = path.join(__dirname, 'logs', 'chatbot-observability.json');
+        this.debugMode = options.debugMode !== undefined ? options.debugMode : config.observability.debugMode;
+        this.logFile = path.join(__dirname, config.observability.logFile);
         
         // Asegurar que el directorio de logs existe
         this.ensureLogDirectory();
