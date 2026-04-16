@@ -1,4 +1,8 @@
 {
+  "main": "server-debug.js",
+  "scripts": {
+    "start": "node server-debug.js"
+  },
   "dependencies": {
     "axios": "^1.15.0",
     "cors": "^2.8.6",

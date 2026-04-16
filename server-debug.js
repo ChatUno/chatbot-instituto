@@ -1,4 +1,5 @@
-console.log("=== INICIANDO SERVIDOR ===");
+// DEBUG SERVER - Minimal version for Railway testing
+console.log("=== INICIANDO SERVIDOR DEBUG ===");
 console.log("NODE_ENV:", process.env.NODE_ENV);
 console.log("PORT:", process.env.PORT);
 console.log("GROQ_API_KEY exists:", !!process.env.GROQ_API_KEY);
@@ -6,16 +7,7 @@ console.log("GROQ_API_KEY exists:", !!process.env.GROQ_API_KEY);
 const express = require("express");
 const cors = require("cors");
 
-console.log("Módulos Express y CORS cargados");
-
-try {
-    const { handleUserQuery } = require("./chatbot-backend");
-    console.log("handleUserQuery importado correctamente");
-} catch (error) {
-    console.error("ERROR CRÍTICO importando handleUserQuery:", error);
-    console.error("Stack trace:", error.stack);
-    process.exit(1);
-}
+console.log("Módulos cargados correctamente");
 
 const app = express();
 
@@ -23,51 +15,55 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+console.log("Middleware configurado");
+
 // Root endpoint for testing
 app.get("/", (req, res) => {
-    res.send("Chatbot activo");
+    console.log("GET / llamado");
+    res.send("Chatbot activo - DEBUG");
 });
 
 // Health check endpoint
 app.get("/health", (req, res) => {
+    console.log("GET /health llamado");
     res.json({ 
         status: "ok", 
         timestamp: new Date().toISOString(),
-        endpoints: {
-            chat: "POST /chat",
-            health: "GET /health"
+        debug: {
+            port: process.env.PORT,
+            node_env: process.env.NODE_ENV,
+            groq_key_exists: !!process.env.GROQ_API_KEY
         }
     });
 });
 
-// Endpoint principal del chatbot
+// Minimal chat endpoint (sin IA)
 app.post("/chat", async (req, res) => {
-    console.log("=== POST /chat llamado ===");
-    console.log("Headers:", req.headers);
+    console.log("POST /chat llamado - DEBUG VERSION");
     console.log("Body:", req.body);
     
     try {
         const { message } = req.body;
-        console.log("Message extraído:", message);
+        console.log("Message recibido:", message);
 
         if (!message) {
-            console.log("ERROR: No message provided");
+            console.log("Error: No message provided");
             return res.status(400).json({ 
                 error: "No message provided",
                 message: "Se requiere el campo 'message' en el cuerpo de la petición"
             });
         }
 
-        console.log("Llamando a handleUserQuery...");
-        const response = await handleUserQuery(message);
-        console.log("handleUserQuery respondió:", response);
+        // Respuesta fija para testing
+        const response = "Respuesta de prueba - DEBUG: " + message;
+        console.log("Enviando respuesta:", response);
 
         res.json({
             response: response
         });
 
     } catch (error) {
-        console.error("ERROR en /chat:", error);
+        console.error("Error en /chat DEBUG:", error);
         console.error("Stack trace:", error.stack);
         res.status(500).json({
             error: "Error procesando la petición",
@@ -79,6 +75,7 @@ app.post("/chat", async (req, res) => {
 
 // Manejo de rutas no existentes (404)
 app.use((req, res) => {
+    console.log(`404: ${req.method} ${req.path}`);
     res.status(404).json({
         error: "Ruta no encontrada",
         message: `La ruta ${req.method} ${req.path} no existe`,
@@ -92,18 +89,18 @@ app.use((req, res) => {
 
 // Manejo de errores generales
 app.use((err, req, res, next) => {
-    console.error("Error general:", err);
+    console.error("Error general DEBUG:", err);
+    console.error("Stack trace:", err.stack);
     res.status(500).json({
         error: "Error interno del servidor",
-        message: "Ha ocurrido un error inesperado"
+        message: err.message,
+        stack: err.stack
     });
 });
 
 // Configuración del puerto para Railway
 const PORT = process.env.PORT;
-
-console.log("Verificando PORT:", PORT);
-console.log("Tipo de PORT:", typeof PORT);
+console.log("PORT final:", PORT);
 
 if (!PORT) {
     console.error("ERROR CRÍTICO: process.env.PORT está undefined");
@@ -112,10 +109,9 @@ if (!PORT) {
 
 try {
     app.listen(PORT, "0.0.0.0", () => {
-        console.log(`=== SERVIDOR INICIADO CORRECTAMENTE ===`);
+        console.log(`=== SERVIDOR DEBUG ACTIVO ===`);
         console.log(`Puerto: ${PORT}`);
         console.log(`Host: 0.0.0.0`);
-        console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
         console.log(`Endpoints disponibles:`);
         console.log(`  GET  / - Test endpoint`);
         console.log(`  GET  /health - Health check`);
