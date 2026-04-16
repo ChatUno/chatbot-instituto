@@ -591,97 +591,254 @@ function groupChunksByCategory(chunks, intent) {
 }
 
 /**
- * Construye contexto optimizado para el LLM
+ * Cache para contextos construidos (optimización de performance)
+ */
+const contextCache = new Map();
+const MAX_CACHE_SIZE = 100;
+
+/**
+ * Genera cache key para context building
+ * @param {string} query - Query normalizado
+ * @param {string} intent - Intención
+ * @param {number} chunkCount - Número de chunks
+ * @returns {string} - Cache key
+ */
+function generateContextCacheKey(query, intent, chunkCount) {
+    return `${query.toLowerCase().trim()}:${intent}:${chunkCount}`;
+}
+
+/**
+ * Calcula diversidad de chunks (para evitar redundancia)
+ * @param {Array} chunks - Array de chunks
+ * @returns {number} - Score de diversidad (0-1)
+ */
+function calculateDiversity(chunks) {
+    if (chunks.length <= 1) return 1;
+    
+    const sources = new Set(chunks.map(c => c.source));
+    const sourceDiversity = sources.size / chunks.length;
+    
+    // Calcular similitud de texto simple
+    let textSimilarity = 0;
+    let comparisons = 0;
+    
+    for (let i = 0; i < chunks.length; i++) {
+        for (let j = i + 1; j < chunks.length; j++) {
+            const words1 = new Set(chunks[i].text.toLowerCase().split(/\s+/));
+            const words2 = new Set(chunks[j].text.toLowerCase().split(/\s+/));
+            
+            const intersection = new Set([...words1].filter(x => words2.has(x)));
+            const union = new Set([...words1, ...words2]);
+            
+            const similarity = intersection.size / union.size;
+            textSimilarity += similarity;
+            comparisons++;
+        }
+    }
+    
+    const avgTextSimilarity = comparisons > 0 ? textSimilarity / comparisons : 0;
+    const textDiversity = 1 - avgTextSimilarity;
+    
+    return (sourceDiversity * 0.6 + textDiversity * 0.4);
+}
+
+/**
+ * Selección greedy de chunks optimizada para máxima relevancia y diversidad
+ * @param {Array} chunks - Array de chunks con scores
+ * @param {number} maxChunks - Máximo número de chunks
+ * @param {string} intent - Intención detectada
+ * @returns {Array} - Chunks seleccionados
+ */
+function selectOptimalChunks(chunks, maxChunks, intent) {
+    if (chunks.length <= maxChunks) return chunks;
+    
+    // Priorizar chunks por intención
+    const priorityScores = {
+        oferta: intent === 'oferta' ? 2 : 1,
+        centro: intent === 'centro' ? 2 : 1,
+        programas: intent === 'general' ? 1.5 : 0.8,
+        faq: intent === 'general' ? 1.5 : 0.8
+    };
+    
+    // Calcular score combinado (relevancia + prioridad + diversidad)
+    const scoredChunks = chunks.map(chunk => ({
+        ...chunk,
+        combinedScore: chunk.score * (priorityScores[chunk.source] || 1)
+    }));
+    
+    // Selección greedy con diversidad
+    const selected = [];
+    const remaining = [...scoredChunks].sort((a, b) => b.combinedScore - a.combinedScore);
+    
+    while (selected.length < maxChunks && remaining.length > 0) {
+        let bestIndex = 0;
+        let bestScore = remaining[0].combinedScore;
+        
+        // Considerar diversidad si ya hay chunks seleccionados
+        if (selected.length > 0) {
+            for (let i = 0; i < remaining.length; i++) {
+                const candidate = remaining[i];
+                const testSelection = [...selected, candidate];
+                const diversity = calculateDiversity(testSelection);
+                
+                // Score combinado: relevancia * diversidad
+                const combinedScore = candidate.combinedScore * (1 + diversity);
+                
+                if (combinedScore > bestScore) {
+                    bestScore = combinedScore;
+                    bestIndex = i;
+                }
+            }
+        }
+        
+        selected.push(remaining.splice(bestIndex, 1)[0]);
+    }
+    
+    return selected;
+}
+
+/**
+ * Construye contexto optimizado para el LLM (mejorado)
  * @param {string} query - Pregunta del usuario
  * @param {Array} chunks - Array de chunks rankeados
  * @param {string} intent - Intención detectada
+ * @param {Object} options - Opciones de optimización
  * @returns {string} - Contexto formateado y optimizado
  */
-function buildIntelligentContext(query, chunks, intent) {
+function buildIntelligentContext(query, chunks, intent, options = {}) {
+    const {
+        maxChunks = config.rag.maxChunks,
+        maxContextLength = config.memory.maxContextLength,
+        useCache = true,
+        enableDiversity = true
+    } = options;
+    
     if (process.env.NODE_ENV === 'development') {
-        console.log(`=== CONSTRUYENDO CONTEXTO INTELIGENTE ===`);
+        console.log(`=== CONSTRUYENDO CONTEXTO INTELIGENTE (OPTIMIZADO) ===`);
         console.log(`Query: ${query}`);
         console.log(`Intención: ${intent}`);
+        console.log(`Chunks disponibles: ${chunks.length}`);
     }
     
-    // 1. Limpieza de chunks
+    // 1. Verificar cache
+    if (useCache) {
+        const cacheKey = generateContextCacheKey(query, intent, chunks.length);
+        const cached = contextCache.get(cacheKey);
+        if (cached) {
+            if (process.env.NODE_ENV === 'development') {
+                console.log('Contexto recuperado desde cache');
+            }
+            return cached.context;
+        }
+    }
+    
+    // 2. Limpieza de chunks
     const cleanedChunks = cleanChunks(chunks);
     
-    // 2. Agrupación por categoría
-    const groups = groupChunksByCategory(cleanedChunks, intent);
-    
-    // 3. Selección inteligente según intención
-    let selectedChunks = [];
-    const maxChunks = 6; // Máximo total de chunks
-    
-    if (intent === 'oferta') {
-        // Priorizar oferta, luego centro si queda espacio
-        selectedChunks = [
-            ...groups.oferta.slice(0, 4),
-            ...groups.centro.slice(0, 2)
-        ].slice(0, maxChunks);
-    } else if (intent === 'centro') {
-        // Priorizar centro, luego oferta si queda espacio
-        selectedChunks = [
-            ...groups.centro.slice(0, 4),
-            ...groups.oferta.slice(0, 2)
-        ].slice(0, maxChunks);
+    // 3. Selección optimizada
+    let selectedChunks;
+    if (enableDiversity) {
+        selectedChunks = selectOptimalChunks(cleanedChunks, maxChunks, intent);
     } else {
-        // General: mezclar por score
-        selectedChunks = [
-            ...groups.oferta.slice(0, 3),
-            ...groups.centro.slice(0, 3)
-        ]
-        .sort((a, b) => b.score - a.score)
-        .slice(0, maxChunks);
+        // Fallback al método original
+        const groups = groupChunksByCategory(cleanedChunks, intent);
+        
+        if (intent === 'oferta') {
+            selectedChunks = [
+                ...groups.oferta.slice(0, 4),
+                ...groups.centro.slice(0, 2)
+            ].slice(0, maxChunks);
+        } else if (intent === 'centro') {
+            selectedChunks = [
+                ...groups.centro.slice(0, 4),
+                ...groups.oferta.slice(0, 2)
+            ].slice(0, maxChunks);
+        } else {
+            selectedChunks = [
+                ...groups.centro.slice(0, 2),
+                ...groups.oferta.slice(0, 2),
+                ...groups.otros.slice(0, 2)
+            ].slice(0, maxChunks);
+        }
     }
     
-    // 4. Construir contexto formateado
-    let context = "[CONTEXTO RELEVANTE]\n\n";
+    // 4. Construcción del contexto con formato optimizado
+    let context = '';
+    const sourceHeaders = {
+        oferta: 'FORMACIÓN PROFESIONAL',
+        centro: 'INFORMACIÓN DEL CENTRO',
+        programas: 'PROGRAMAS',
+        faq: 'PREGUNTAS FRECUENTES'
+    };
     
-    // Añadir sección de oferta si hay chunks
-    if (groups.oferta.length > 0 && selectedChunks.some(c => c.source === 'oferta')) {
-        context += "OFERTA EDUCATIVA:\n";
-        selectedChunks
-            .filter(chunk => chunk.source === 'oferta')
-            .forEach(chunk => {
-                context += `- ${chunk.text}\n`;
+    // Agrupar por source para mejor organización
+    const groupedBySource = {};
+    selectedChunks.forEach(chunk => {
+        if (!groupedBySource[chunk.source]) {
+            groupedBySource[chunk.source] = [];
+        }
+        groupedBySource[chunk.source].push(chunk);
+    });
+    
+    // Construir contexto ordenado por relevancia
+    const sourceOrder = intent === 'oferta' ? ['oferta', 'centro', 'programas', 'faq'] :
+                        intent === 'centro' ? ['centro', 'oferta', 'programas', 'faq'] :
+                        ['centro', 'oferta', 'programas', 'faq'];
+    
+    for (const source of sourceOrder) {
+        if (groupedBySource[source] && groupedBySource[source].length > 0) {
+            context += `\n${sourceHeaders[source] || source.toUpperCase()}:\n`;
+            
+            groupedBySource[source].forEach((chunk, index) => {
+                context += `${index + 1}. ${chunk.text.trim()}\n`;
             });
-        context += "\n";
+        }
     }
     
-    // Añadir sección de centro si hay chunks
-    if (groups.centro.length > 0 && selectedChunks.some(c => c.source === 'centro')) {
-        context += "INFORMACIÓN DEL CENTRO:\n";
-        selectedChunks
-            .filter(chunk => chunk.source === 'centro')
-            .forEach(chunk => {
-                context += `- ${chunk.text}\n`;
-            });
-        context += "\n";
+    // 5. Optimización de longitud
+    if (context.length > maxContextLength) {
+        // Truncar inteligentemente manteniendo chunks completos
+        const lines = context.split('\n');
+        let truncatedContext = '';
+        let currentLength = 0;
+        
+        for (const line of lines) {
+            if (currentLength + line.length + 1 <= maxContextLength - 100) {
+                truncatedContext += line + '\n';
+                currentLength += line.length + 1;
+            } else {
+                truncatedContext += '\n... [Contenido truncado por límite de tamaño]';
+                break;
+            }
+        }
+        
+        context = truncatedContext;
     }
     
-    // Añadir otros si hay espacio y son relevantes
-    if (groups.otros.length > 0 && selectedChunks.some(c => c.source === 'otros')) {
-        context += "INFORMACIÓN ADICIONAL:\n";
-        selectedChunks
-            .filter(chunk => chunk.source === 'otros')
-            .forEach(chunk => {
-                context += `- ${chunk.text}\n`;
-            });
-        context += "\n";
+    // 6. Guardar en cache
+    if (useCache) {
+        const cacheKey = generateContextCacheKey(query, intent, chunks.length);
+        
+        // Limitar tamaño del cache
+        if (contextCache.size >= MAX_CACHE_SIZE) {
+            const firstKey = contextCache.keys().next().value;
+            contextCache.delete(firstKey);
+        }
+        
+        contextCache.set(cacheKey, {
+            context: context,
+            timestamp: Date.now(),
+            chunks: selectedChunks.length
+        });
     }
-    
-    context += "[FIN CONTEXTO]";
     
     if (process.env.NODE_ENV === 'development') {
-        console.log(`=== CONTEXTO CONSTRUIDO ===`);
+        console.log(`Contexto construido: ${context.length} caracteres`);
         console.log(`Chunks seleccionados: ${selectedChunks.length}`);
-        console.log(`Longitud del contexto: ${context.length} caracteres`);
-        console.log(`Contexto:\n${context}`);
+        console.log(`Diversidad: ${calculateDiversity(selectedChunks).toFixed(3)}`);
     }
     
-    return context;
+    return context.trim();
 }
 
 module.exports = {
@@ -697,5 +854,8 @@ module.exports = {
     calculateBM25Score,
     calculateIDF,
     preCalculateIDF,
-    calculateTF
+    calculateTF,
+    calculateDiversity,
+    selectOptimalChunks,
+    generateContextCacheKey
 };
