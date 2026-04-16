@@ -13,6 +13,7 @@ const {
     configurationSanityCheck 
 } = require("./validation");
 const { createAuthService, createAuthMiddleware } = require("./auth");
+const { createErrorHandler, createValidationError, createAuthenticationError, createNotFoundError } = require("./error-handler");
 
 console.log("Módulos Express y CORS cargados");
 
@@ -90,6 +91,9 @@ app.use(express.json());
 // Initialize authentication
 const authService = createAuthService();
 const authMiddleware = createAuthMiddleware(authService);
+
+// Initialize error handler
+const errorHandler = createErrorHandler();
 
 // Root endpoint for testing
 app.get("/", (req, res) => {
@@ -347,13 +351,9 @@ app.use((req, res) => {
     });
 });
 
-// Manejo de errores generales
+// Comprehensive error handling middleware
 app.use((err, req, res, next) => {
-    console.error("Error general:", err);
-    res.status(500).json({
-        error: "Error interno del servidor",
-        message: "Ha ocurrido un error inesperado"
-    });
+    errorHandler.handleError(err, req, res, next);
 });
 
 // Configuración del puerto para Railway
