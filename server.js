@@ -6,6 +6,12 @@ console.log("GROQ_API_KEY exists:", !!process.env.GROQ_API_KEY);
 const express = require("express");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const { 
+    validateChatRequest, 
+    validateChunksRequest, 
+    validateChunksQuery,
+    configurationSanityCheck 
+} = require("./validation");
 
 console.log("Módulos Express y CORS cargados");
 
@@ -100,22 +106,14 @@ app.get("/health", (req, res) => {
 });
 
 // Endpoint principal del chatbot
-app.post("/chat", async (req, res) => {
+app.post("/chat", validateChatRequest, async (req, res) => {
     console.log("=== POST /chat llamado ===");
     console.log("Headers:", req.headers);
     console.log("Body:", req.body);
     
     try {
         const { message } = req.body;
-        console.log("Message extraído:", message);
-
-        if (!message) {
-            console.log("ERROR: No message provided");
-            return res.status(400).json({ 
-                error: "No message provided",
-                message: "Se requiere el campo 'message' en el cuerpo de la petición"
-            });
-        }
+        console.log("Message validado:", message);
 
         console.log("Llamando a handleUserQuery...");
         const response = await handleUserQuery(message);
@@ -231,7 +229,7 @@ app.get("/debug-chunks", async (req, res) => {
 });
 
 // Endpoint para guardar chunks
-app.post("/chunks", async (req, res) => {
+app.post("/chunks", validateChunksRequest, async (req, res) => {
     console.log("=== POST /chunks llamado ===");
     console.log("Request headers:", req.headers);
     console.log("Request body:", req.body);
@@ -241,46 +239,8 @@ app.post("/chunks", async (req, res) => {
     
     try {
         const { chunks } = req.body;
-        console.log("Chunks recibidos:", chunks);
+        console.log("Chunks validados:", chunks);
         console.log("Número de chunks:", chunks ? chunks.length : 0);
-
-        // Validaciones
-        if (!chunks || !Array.isArray(chunks)) {
-            console.log("ERROR: No chunks array provided");
-            return res.status(400).json({ 
-                "status": "error",
-                "message": "Se requiere el campo 'chunks' como array en el cuerpo de la petición"
-            });
-        }
-
-        // Validar cada chunk
-        for (let i = 0; i < chunks.length; i++) {
-            const chunk = chunks[i];
-            
-            if (!chunk.id || typeof chunk.id !== 'number') {
-                console.log(`ERROR: Chunk ${i} - ID inválido`);
-                return res.status(400).json({
-                    "status": "error",
-                    "message": `Cada chunk debe tener un 'id' numérico. Error en chunk ${i}`
-                });
-            }
-            
-            if (!chunk.text || typeof chunk.text !== 'string' || chunk.text.trim() === '') {
-                console.log(`ERROR: Chunk ${i} - Texto inválido`);
-                return res.status(400).json({
-                    "status": "error",
-                    "message": `Cada chunk debe tener un 'text' no vacío. Error en chunk ${i}`
-                });
-            }
-            
-            if (!chunk.source || typeof chunk.source !== 'string' || chunk.source.trim() === '') {
-                console.log(`ERROR: Chunk ${i} - Source inválido`);
-                return res.status(400).json({
-                    "status": "error",
-                    "message": `Cada chunk debe tener un 'source' no vacío. Error en chunk ${i}`
-                });
-            }
-        }
 
         const fs = require('fs');
         const path = require('path');
