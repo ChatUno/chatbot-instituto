@@ -7,8 +7,9 @@ const fs = require('fs');
 const path = require('path');
 
 class ObservabilitySystem {
-    constructor() {
+    constructor(options = {}) {
         this.logs = [];
+        this.maxLogs = options.maxLogs || 1000; // Límite de logs para prevenir memory leaks
         this.metrics = {
             totalRequests: 0,
             ragHits: 0,
@@ -57,7 +58,16 @@ class ObservabilitySystem {
             chunk_trace: requestData.chunkTrace || []
         };
 
+        // Implementar rotación de logs para prevenir memory leaks
         this.logs.push(logEntry);
+        
+        // Mantener solo los últimos maxLogs entries
+        if (this.logs.length > this.maxLogs) {
+            const excessLogs = this.logs.length - this.maxLogs;
+            this.logs = this.logs.slice(excessLogs); // Eliminar los logs más antiguos
+            console.log(`Rotated ${excessLogs} old log entries to prevent memory leaks`);
+        }
+        
         this.updateMetrics(logEntry);
 
         // Logging en consola según modo debug
@@ -275,7 +285,7 @@ class ObservabilitySystem {
  * @returns {Object} - ObservabilityManager instance con estado aislado
  */
 function createObservabilityManager(options = {}) {
-    const observability = new ObservabilitySystem();
+    const observability = new ObservabilitySystem(options);
     
     return {
         /**

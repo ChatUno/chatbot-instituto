@@ -1,85 +1,89 @@
 {
-  "last_updated": "2026-04-16T19:48:47.819Z",
+  "last_updated": "2026-04-16T19:49:40.109Z",
   "metrics": {
-    "totalRequests": 1,
-    "ragHits": 1,
+    "totalRequests": 10,
+    "ragHits": 10,
     "fallbackUsed": 0,
-    "hallucinationDetected": 0,
+    "hallucinationDetected": 10,
     "memoryUsed": 0,
-    "averageLatency": 251,
-    "retrievalHitRate": 100
+    "averageLatency": 100,
+    "retrievalHitRate": 0
   },
   "recent_logs": [
     {
-      "timestamp": "2026-04-16T19:48:47.819Z",
-      "query": "¿qué bachilleratos hay?",
-      "intent": "detected_by_search",
+      "timestamp": "2026-04-16T19:49:40.096Z",
+      "query": "test5",
       "memory_used": false,
-      "top_chunks": [
-        {
-          "id": 9,
-          "score": 15,
-          "source": "oferta"
-        },
-        {
-          "id": 10,
-          "score": 15,
-          "source": "oferta"
-        },
-        {
-          "id": 22,
-          "score": 11,
-          "source": "centro"
-        }
-      ],
-      "selected_chunks": [
-        9,
-        10,
-        22
-      ],
-      "context_length": 233,
-      "prompt_mode": "relevant",
-      "response_length": 106,
-      "latency_ms": 251,
+      "top_chunks": [],
+      "selected_chunks": [],
+      "context_length": 0,
+      "prompt_mode": "unknown",
+      "response_length": 0,
+      "latency_ms": 100,
       "source": "rag",
-      "confidence": 1,
+      "confidence": 0,
       "failures": [],
-      "chunk_trace": [
-        {
-          "chunk_id": 9,
-          "final_score": 15,
-          "score_breakdown": [
-            "+1 substring \"hay\" en \"y\"",
-            "Base score: 1 (exactas: 0, substrings: 1)",
-            "Boosts: +5 intención coincidente, +8 término exacto 'bachillerato', +1 substrings relevantes",
-            "Penalizaciones: ninguna",
-            "Score final: 15"
-          ]
-        },
-        {
-          "chunk_id": 10,
-          "final_score": 15,
-          "score_breakdown": [
-            "+1 substring \"hay\" en \"y\"",
-            "Base score: 1 (exactas: 0, substrings: 1)",
-            "Boosts: +5 intención coincidente, +8 término exacto 'bachillerato', +1 substrings relevantes",
-            "Penalizaciones: ninguna",
-            "Score final: 15"
-          ]
-        },
-        {
-          "chunk_id": 22,
-          "final_score": 11,
-          "score_breakdown": [
-            "+1 substring \"bachilleratos\" en \"a\"",
-            "+1 substring \"hay\" en \"a\"",
-            "Base score: 2 (exactas: 0, substrings: 2)",
-            "Boosts: +8 término exacto 'bachillerato', +1 substrings relevantes",
-            "Penalizaciones: ninguna",
-            "Score final: 11"
-          ]
-        }
-      ]
+      "chunk_trace": []
+    },
+    {
+      "timestamp": "2026-04-16T19:49:40.098Z",
+      "query": "test6",
+      "memory_used": false,
+      "top_chunks": [],
+      "selected_chunks": [],
+      "context_length": 0,
+      "prompt_mode": "unknown",
+      "response_length": 0,
+      "latency_ms": 100,
+      "source": "rag",
+      "confidence": 0,
+      "failures": [],
+      "chunk_trace": []
+    },
+    {
+      "timestamp": "2026-04-16T19:49:40.100Z",
+      "query": "test7",
+      "memory_used": false,
+      "top_chunks": [],
+      "selected_chunks": [],
+      "context_length": 0,
+      "prompt_mode": "unknown",
+      "response_length": 0,
+      "latency_ms": 100,
+      "source": "rag",
+      "confidence": 0,
+      "failures": [],
+      "chunk_trace": []
+    },
+    {
+      "timestamp": "2026-04-16T19:49:40.106Z",
+      "query": "test8",
+      "memory_used": false,
+      "top_chunks": [],
+      "selected_chunks": [],
+      "context_length": 0,
+      "prompt_mode": "unknown",
+      "response_length": 0,
+      "latency_ms": 100,
+      "source": "rag",
+      "confidence": 0,
+      "failures": [],
+      "chunk_trace": []
+    },
+    {
+      "timestamp": "2026-04-16T19:49:40.108Z",
+      "query": "test9",
+      "memory_used": false,
+      "top_chunks": [],
+      "selected_chunks": [],
+      "context_length": 0,
+      "prompt_mode": "unknown",
+      "response_length": 0,
+      "latency_ms": 100,
+      "source": "rag",
+      "confidence": 0,
+      "failures": [],
+      "chunk_trace": []
     }
   ]
 }
