@@ -1,0 +1,132 @@
+[
+  {
+    "id": 1,
+    "text": "IES Juan de Lanuza es un Instituto de Educación Secundaria público",
+    "source": "centro"
+  },
+  {
+    "id": 2,
+    "text": "Ubicación: C/ Capuchinos, 1, Borja (Zaragoza), España",
+    "source": "centro"
+  },
+  {
+    "id": 3,
+    "text": "Teléfono de contacto: 976 867 368",
+    "source": "centro"
+  },
+  {
+    "id": 4,
+    "text": "Email de contacto: iesborja@educa.aragon.es",
+    "source": "centro"
+  },
+  {
+    "id": 5,
+    "text": "El centro ofrece ESO, Bachillerato y Formación Profesional",
+    "source": "centro"
+  },
+  {
+    "id": 6,
+    "text": "Cuenta con programas bilingües",
+    "source": "centro"
+  },
+  {
+    "id": 7,
+    "text": "Centro educativo que imparte enseñanza secundaria y formación profesional en distintas áreas, incluyendo hostelería y servicios socioculturales",
+    "source": "centro"
+  },
+  {
+    "id": 8,
+    "text": "ESO (Educación Secundaria Obligatoria) de 1º a 4º curso",
+    "source": "oferta"
+  },
+  {
+    "id": 9,
+    "text": "Bachillerato: Ciencias y Tecnología",
+    "source": "oferta"
+  },
+  {
+    "id": 10,
+    "text": "Bachillerato: Humanidades y Ciencias Sociales",
+    "source": "oferta"
+  },
+  {
+    "id": 11,
+    "text": "Formación Profesional Grado Básico: Cocina y Restauración",
+    "source": "oferta"
+  },
+  {
+    "id": 12,
+    "text": "Formación Profesional Grado Medio: Cocina y Gastronomía",
+    "source": "oferta"
+  },
+  {
+    "id": 13,
+    "text": "Formación Profesional Grado Medio: Atención a Personas en Situación de Dependencia",
+    "source": "oferta"
+  },
+  {
+    "id": 14,
+    "text": "Asignaturas destacadas: Programación y robótica",
+    "source": "oferta"
+  },
+  {
+    "id": 15,
+    "text": "Asignaturas destacadas: Cultura clásica",
+    "source": "oferta"
+  },
+  {
+    "id": 16,
+    "text": "Asignaturas destacadas: Economía",
+    "source": "oferta"
+  },
+  {
+    "id": 17,
+    "text": "Asignaturas destacadas: Filosofía",
+    "source": "oferta"
+  },
+  {
+    "id": 18,
+    "text": "Asignaturas destacadas: Física y Química",
+    "source": "oferta"
+  },
+  {
+    "id": 19,
+    "text": "Asignaturas destacadas: Biología y Geología",
+    "source": "oferta"
+  },
+  {
+    "id": 20,
+    "text": "Horario general del centro: De lunes a viernes de 08:00 a 14:30",
+    "source": "centro"
+  },
+  {
+    "id": 21,
+    "text": "Horario ESO: 08:00 - 14:30, con recreo de 11:00 a 11:30",
+    "source": "centro"
+  },
+  {
+    "id": 22,
+    "text": "Horario Bachillerato: 08:00 - 14:30, con recreo de 11:15 a 11:45",
+    "source": "centro"
+  },
+  {
+    "id": 23,
+    "text": "Horario Formación Profesional: 08:30 - 15:00, con pausa de 13:00 a 13:30",
+    "source": "centro"
+  },
+  {
+    "id": 24,
+    "text": "Secretaría: Atención de lunes a viernes de 09:00 a 13:00",
+    "source": "centro"
+  },
+  {
+    "id": 25,
+    "text": "Formación Profesional disponible: Grado Básico de Cocina y Restauración, Grado Medio de Cocina y Gastronomía, Grado Medio de Atención a Personas en Situación de Dependencia",
+    "source": "oferta"
+  },
+  {
+    "id": 26,
+    "text": "Instalaciones del centro: Laboratorios de ciencias, aulas de informática, taller de cocina, biblioteca, patio deportivo",
+    "source": "centro"
+  }
+]

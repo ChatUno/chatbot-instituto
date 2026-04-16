@@ -1,0 +1,562 @@
+{
+  "timestamp": "2026-04-16T20:43:32.024Z",
+  "configuration": {
+    "minChunkLength": 15,
+    "maxChunkLength": 800,
+    "optimalChunkLength": 120,
+    "qualityThresholds": {
+      "poor": 0.3,
+      "fair": 0.5,
+      "good": 0.7,
+      "excellent": 0.9
+    },
+    "deduplicationThreshold": 0.85
+  },
+  "original": {
+    "count": 26,
+    "qualityReport": {
+      "total": 26,
+      "byQuality": {
+        "fair": 20,
+        "good": 6
+      },
+      "byCategory": {
+        "academic": 18,
+        "contact": 3,
+        "programs": 1,
+        "schedules": 2,
+        "administrative": 1,
+        "facilities": 1
+      },
+      "avgQuality": 0.64,
+      "qualityDistribution": {
+        "excellent": 0,
+        "good": 6,
+        "fair": 20,
+        "poor": 0
+      }
+    }
+  },
+  "optimized": {
+    "count": 26,
+    "qualityReport": {
+      "total": 26,
+      "byQuality": {
+        "fair": 18,
+        "good": 8
+      },
+      "byCategory": {
+        "academic": 18,
+        "contact": 3,
+        "programs": 1,
+        "schedules": 2,
+        "administrative": 1,
+        "facilities": 1
+      },
+      "avgQuality": 0.64,
+      "qualityDistribution": {
+        "excellent": 0,
+        "good": 8,
+        "fair": 18,
+        "poor": 0
+      }
+    }
+  },
+  "improvements": {
+    "qualityScore": 0,
+    "chunkReduction": 0,
+    "duplicatesRemoved": 0,
+    "chunksImproved": 26
+  },
+  "duplicates": [],
+  "removed": [],
+  "improved": [
+    {
+      "original": {
+        "id": 1,
+        "text": "IES Juan de Lanuza es un Instituto de Educación Secundaria público",
+        "source": "centro"
+      },
+      "improved": {
+        "id": 1,
+        "text": "IES Juan de Lanuza es un Instituto de Educación Secundaria público.",
+        "source": "centro",
+        "quality": "fair",
+        "score": 0.58,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.003Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 2,
+        "text": "Ubicación: C/ Capuchinos, 1, Borja (Zaragoza), España",
+        "source": "centro"
+      },
+      "improved": {
+        "id": 2,
+        "text": "Ubicación: C/ Capuchinos, 1, Borja (Zaragoza), España.",
+        "source": "centro",
+        "quality": "good",
+        "score": 0.73,
+        "category": "contact",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Include email addresses for contact information"
+      ]
+    },
+    {
+      "original": {
+        "id": 3,
+        "text": "Teléfono de contacto: 976 867 368",
+        "source": "centro"
+      },
+      "improved": {
+        "id": 3,
+        "text": "Teléfono de contacto: 976 867 368.",
+        "source": "centro",
+        "quality": "fair",
+        "score": 0.66,
+        "category": "contact",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail",
+        "Include email addresses for contact information"
+      ]
+    },
+    {
+      "original": {
+        "id": 4,
+        "text": "Email de contacto: iesborja@educa.aragon.es",
+        "source": "centro"
+      },
+      "improved": {
+        "id": 4,
+        "text": "Email de contacto: iesborja@educa.aragon.es.",
+        "source": "centro",
+        "quality": "good",
+        "score": 0.7,
+        "category": "contact",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Add specific contact numbers or identifiers"
+      ]
+    },
+    {
+      "original": {
+        "id": 5,
+        "text": "El centro ofrece ESO, Bachillerato y Formación Profesional",
+        "source": "centro"
+      },
+      "improved": {
+        "id": 5,
+        "text": "El centro ofrece ESO, Bachillerato y Formación Profesional.",
+        "source": "centro",
+        "quality": "fair",
+        "score": 0.6,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 6,
+        "text": "Cuenta con programas bilingües",
+        "source": "centro"
+      },
+      "improved": {
+        "id": 6,
+        "text": "Cuenta con programas bilingües.",
+        "source": "centro",
+        "quality": "fair",
+        "score": 0.55,
+        "category": "programs",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 7,
+        "text": "Centro educativo que imparte enseñanza secundaria y formación profesional en distintas áreas, incluyendo hostelería y servicios socioculturales",
+        "source": "centro"
+      },
+      "improved": {
+        "id": 7,
+        "text": "Centro educativo que imparte enseñanza secundaria y formación profesional en distintas áreas, incluyendo hostelería y servicios socioculturales.",
+        "source": "centro",
+        "quality": "fair",
+        "score": 0.58,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 8,
+        "text": "ESO (Educación Secundaria Obligatoria) de 1º a 4º curso",
+        "source": "oferta"
+      },
+      "improved": {
+        "id": 8,
+        "text": "ESO (Educación Secundaria Obligatoria) de 1º a 4º curso.",
+        "source": "oferta",
+        "quality": "fair",
+        "score": 0.61,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 9,
+        "text": "Bachillerato: Ciencias y Tecnología",
+        "source": "oferta"
+      },
+      "improved": {
+        "id": 9,
+        "text": "Bachillerato: Ciencias y Tecnología.",
+        "source": "oferta",
+        "quality": "fair",
+        "score": 0.61,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 10,
+        "text": "Bachillerato: Humanidades y Ciencias Sociales",
+        "source": "oferta"
+      },
+      "improved": {
+        "id": 10,
+        "text": "Bachillerato: Humanidades y Ciencias Sociales.",
+        "source": "oferta",
+        "quality": "fair",
+        "score": 0.61,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 11,
+        "text": "Formación Profesional Grado Básico: Cocina y Restauración",
+        "source": "oferta"
+      },
+      "improved": {
+        "id": 11,
+        "text": "Formación Profesional Grado Básico: Cocina y Restauración.",
+        "source": "oferta",
+        "quality": "fair",
+        "score": 0.62,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 12,
+        "text": "Formación Profesional Grado Medio: Cocina y Gastronomía",
+        "source": "oferta"
+      },
+      "improved": {
+        "id": 12,
+        "text": "Formación Profesional Grado Medio: Cocina y Gastronomía.",
+        "source": "oferta",
+        "quality": "fair",
+        "score": 0.62,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 13,
+        "text": "Formación Profesional Grado Medio: Atención a Personas en Situación de Dependencia",
+        "source": "oferta"
+      },
+      "improved": {
+        "id": 13,
+        "text": "Formación Profesional Grado Medio: Atención a Personas en Situación de Dependencia.",
+        "source": "oferta",
+        "quality": "fair",
+        "score": 0.61,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 14,
+        "text": "Asignaturas destacadas: Programación y robótica",
+        "source": "oferta"
+      },
+      "improved": {
+        "id": 14,
+        "text": "Asignaturas destacadas: Programación y robótica.",
+        "source": "oferta",
+        "quality": "fair",
+        "score": 0.59,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 15,
+        "text": "Asignaturas destacadas: Cultura clásica",
+        "source": "oferta"
+      },
+      "improved": {
+        "id": 15,
+        "text": "Asignaturas destacadas: Cultura clásica.",
+        "source": "oferta",
+        "quality": "fair",
+        "score": 0.64,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 16,
+        "text": "Asignaturas destacadas: Economía",
+        "source": "oferta"
+      },
+      "improved": {
+        "id": 16,
+        "text": "Asignaturas destacadas: Economía.",
+        "source": "oferta",
+        "quality": "fair",
+        "score": 0.64,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 17,
+        "text": "Asignaturas destacadas: Filosofía",
+        "source": "oferta"
+      },
+      "improved": {
+        "id": 17,
+        "text": "Asignaturas destacadas: Filosofía.",
+        "source": "oferta",
+        "quality": "fair",
+        "score": 0.64,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 18,
+        "text": "Asignaturas destacadas: Física y Química",
+        "source": "oferta"
+      },
+      "improved": {
+        "id": 18,
+        "text": "Asignaturas destacadas: Física y Química.",
+        "source": "oferta",
+        "quality": "fair",
+        "score": 0.61,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 19,
+        "text": "Asignaturas destacadas: Biología y Geología",
+        "source": "oferta"
+      },
+      "improved": {
+        "id": 19,
+        "text": "Asignaturas destacadas: Biología y Geología.",
+        "source": "oferta",
+        "quality": "fair",
+        "score": 0.61,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 20,
+        "text": "Horario general del centro: De lunes a viernes de 08:00 a 14:30",
+        "source": "centro"
+      },
+      "improved": {
+        "id": 20,
+        "text": "Horario general del centro: De lunes a viernes de 08:00 a 14:30.",
+        "source": "centro",
+        "quality": "fair",
+        "score": 0.69,
+        "category": "schedules",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 21,
+        "text": "Horario ESO: 08:00 - 14:30, con recreo de 11:00 a 11:30",
+        "source": "centro"
+      },
+      "improved": {
+        "id": 21,
+        "text": "Horario ESO: 08:00 - 14:30, con recreo de 11:00 a 11:30.",
+        "source": "centro",
+        "quality": "good",
+        "score": 0.74,
+        "category": "schedules",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": []
+    },
+    {
+      "original": {
+        "id": 22,
+        "text": "Horario Bachillerato: 08:00 - 14:30, con recreo de 11:15 a 11:45",
+        "source": "centro"
+      },
+      "improved": {
+        "id": 22,
+        "text": "Horario Bachillerato: 08:00 - 14:30, con recreo de 11:15 a 11:45.",
+        "source": "centro",
+        "quality": "good",
+        "score": 0.73,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": []
+    },
+    {
+      "original": {
+        "id": 23,
+        "text": "Horario Formación Profesional: 08:30 - 15:00, con pausa de 13:00 a 13:30",
+        "source": "centro"
+      },
+      "improved": {
+        "id": 23,
+        "text": "Horario Formación Profesional: 08:30 - 15:00, con pausa de 13:00 a 13:30.",
+        "source": "centro",
+        "quality": "good",
+        "score": 0.74,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": []
+    },
+    {
+      "original": {
+        "id": 24,
+        "text": "Secretaría: Atención de lunes a viernes de 09:00 a 13:00",
+        "source": "centro"
+      },
+      "improved": {
+        "id": 24,
+        "text": "Secretaría: Atención de lunes a viernes de 09:00 a 13:00.",
+        "source": "centro",
+        "quality": "good",
+        "score": 0.71,
+        "category": "administrative",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": []
+    },
+    {
+      "original": {
+        "id": 25,
+        "text": "Formación Profesional disponible: Grado Básico de Cocina y Restauración, Grado Medio de Cocina y Gastronomía, Grado Medio de Atención a Personas en Situación de Dependencia",
+        "source": "oferta"
+      },
+      "improved": {
+        "id": 25,
+        "text": "Formación Profesional disponible: Grado Básico de Cocina y Restauración, Grado Medio de Cocina y Gastronomía, Grado Medio de Atención a Personas en Situación de Dependencia.",
+        "source": "oferta",
+        "quality": "fair",
+        "score": 0.58,
+        "category": "academic",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    },
+    {
+      "original": {
+        "id": 26,
+        "text": "Instalaciones del centro: Laboratorios de ciencias, aulas de informática, taller de cocina, biblioteca, patio deportivo",
+        "source": "centro"
+      },
+      "improved": {
+        "id": 26,
+        "text": "Instalaciones del centro: Laboratorios de ciencias, aulas de informática, taller de cocina, biblioteca, patio deportivo.",
+        "source": "centro",
+        "quality": "fair",
+        "score": 0.58,
+        "category": "facilities",
+        "lastOptimized": "2026-04-16T20:43:32.005Z"
+      },
+      "improvements": [
+        "Good foundation, but could benefit from more detail"
+      ]
+    }
+  ]
+}
