@@ -5,6 +5,7 @@ console.log("GROQ_API_KEY exists:", !!process.env.GROQ_API_KEY);
 
 const express = require("express");
 const cors = require("cors");
+const rateLimit = require("express-rate-limit");
 
 console.log("Módulos Express y CORS cargados");
 
@@ -56,6 +57,27 @@ app.use(cors({
   allowedHeaders: ['Content-Type'],
   credentials: true
 }));
+
+// Rate limiting middleware to prevent DoS attacks
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: {
+    error: "Too many requests from this IP, please try again later.",
+    retryAfter: "15 minutes"
+  },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  handler: (req, res) => {
+    console.log(`Rate limit exceeded for IP: ${req.ip}`);
+    res.status(429).json({
+      error: "Too many requests from this IP, please try again later.",
+      retryAfter: "15 minutes"
+    });
+  }
+});
+
+app.use(limiter);
 app.use(express.json());
 
 // Root endpoint for testing
