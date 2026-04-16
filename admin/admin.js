@@ -4,6 +4,7 @@ class AdminPanel {
         this.originalChunks = [];
         this.currentEditingId = null;
         this.serverUrl = "https://chatbot-instituto-production.up.railway.app";
+        this.isSaving = false;
         this.init();
     }
 
@@ -215,14 +216,74 @@ class AdminPanel {
         }
     }
 
+    validateChunks(chunks) {
+        // Validar que el array no esté vacío
+        if (!chunks || chunks.length === 0) {
+            this.showNotification('No puedes dejar el sistema sin información', 'error');
+            return false;
+        }
+
+        // Validar cada chunk
+        for (let i = 0; i < chunks.length; i++) {
+            const chunk = chunks[i];
+            
+            if (!chunk.id || typeof chunk.id !== 'number') {
+                this.showNotification(`Chunk ${i + 1}: El ID debe ser un número`, 'error');
+                return false;
+            }
+            
+            if (!chunk.text || typeof chunk.text !== 'string' || chunk.text.trim() === '') {
+                this.showNotification(`Chunk ${i + 1}: El texto no puede estar vacío`, 'error');
+                return false;
+            }
+            
+            if (!chunk.source || typeof chunk.source !== 'string' || chunk.source.trim() === '') {
+                this.showNotification(`Chunk ${i + 1}: La fuente no puede estar vacía`, 'error');
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    sanitizeChunks(chunks) {
+        return chunks.map(chunk => ({
+            id: chunk.id,
+            text: typeof chunk.text === 'string' ? chunk.text.trim() : '',
+            source: typeof chunk.source === 'string' ? chunk.source.trim() : ''
+        }));
+    }
+
     async saveChunks() {
+        // Proteger contra doble click
+        if (this.isSaving) {
+            console.log('Save already in progress');
+            return;
+        }
+
+        // Validar chunks antes de guardar
+        if (!this.validateChunks(this.chunks)) {
+            return;
+        }
+
+        // Confirmación de guardado
+        if (!confirm('¿Seguro que quieres guardar los cambios?')) {
+            return;
+        }
+
         try {
+            this.isSaving = true;
+            this.setSaveButtonState(true);
+            
+            // Sanitizar datos
+            const sanitizedChunks = this.sanitizeChunks(this.chunks);
+            
             const response = await fetch(`${this.serverUrl}/chunks`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ chunks: this.chunks })
+                body: JSON.stringify({ chunks: sanitizedChunks })
             });
 
             if (!response.ok) {
@@ -233,12 +294,27 @@ class AdminPanel {
             if (data.status === 'ok') {
                 console.log('Chunks saved:', data.message);
                 this.showNotification('Cambios guardados correctamente', 'success');
+                // Actualizar chunks originales después de guardar exitosamente
+                this.originalChunks = JSON.parse(JSON.stringify(sanitizedChunks));
             } else {
                 throw new Error(data.message || 'Error guardando chunks');
             }
         } catch (error) {
             console.error('Error saving chunks:', error);
-            this.showNotification('Error guardando cambios', 'error');
+            this.showNotification('Error al guardar. Inténtalo de nuevo', 'error');
+        } finally {
+            this.isSaving = false;
+            this.setSaveButtonState(false);
+        }
+    }
+
+    setSaveButtonState(isLoading) {
+        const saveButton = document.getElementById('save-changes-btn');
+        if (saveButton) {
+            saveButton.disabled = isLoading;
+            saveButton.innerHTML = isLoading 
+                ? '<i class="fas fa-spinner fa-spin"></i> Guardando...'
+                : '<i class="fas fa-save"></i> Guardar cambios';
         }
     }
 
