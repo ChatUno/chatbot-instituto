@@ -106,8 +106,7 @@ console.log("Verificando PORT:", PORT);
 console.log("Tipo de PORT:", typeof PORT);
 
 if (!PORT) {
-    console.error("ERROR CRÍTICO: process.env.PORT está undefined");
-    process.exit(1);
+    console.error("ADVERTENCIA: process.env.PORT está undefined, usando fallback");
 }
 
 try {
@@ -124,5 +123,4 @@ try {
 } catch (error) {
     console.error("ERROR CRÍTICO al iniciar servidor:", error);
     console.error("Stack trace:", error.stack);
-    process.exit(1);
 }

@@ -1,7 +1,7 @@
 {
-  "main": "server-minimal.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node server-minimal.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "axios": "^1.15.0",
