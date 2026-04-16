@@ -3,7 +3,7 @@ class AdminPanel {
         this.chunks = [];
         this.originalChunks = [];
         this.currentEditingId = null;
-        this.serverUrl = window.location.origin;
+        this.serverUrl = "https://chatbot-instituto-production.up.railway.app";
         this.init();
     }
 

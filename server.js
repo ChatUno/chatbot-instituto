@@ -37,7 +37,16 @@ try {
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://chatbot-instituto.vercel.app',
+    'https://chatbot-instituto-production.up.railway.app',
+    'http://localhost:3000',
+    'http://localhost:5500'
+  ],
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 app.use(express.json());
 
 // Root endpoint for testing
