@@ -37,14 +37,23 @@ try {
 const app = express();
 
 // Middleware
+app.use((req, res, next) => {
+  console.log("Request origin:", req.headers.origin);
+  console.log("Request method:", req.method);
+  console.log("Request path:", req.path);
+  next();
+});
+
 app.use(cors({
   origin: [
+    'https://chatbot-instituto-57zd.vercel.app',
     'https://chatbot-instituto.vercel.app',
     'https://chatbot-instituto-production.up.railway.app',
     'http://localhost:3000',
     'http://localhost:5500'
   ],
   methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
   credentials: true
 }));
 app.use(express.json());
