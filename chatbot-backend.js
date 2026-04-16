@@ -2,6 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const { getAIResponse } = require('./ai-client');
 const { semanticSearch, buildContextFromResults } = require('./search');
+const { createDefinitivePromptSystem } = require('./prompt-system');
+const { MemoryManager } = require('./memory-system');
+const { ResponsePolishingSystem } = require('./response-polishing');
+const { ObservabilityManager } = require('./observability');
 
 /**
  * Clasifica la intención de la pregunta del usuario basándose en palabras clave
@@ -203,27 +207,90 @@ ${question}`;
 }
 
 /**
- * Función principal que maneja la consulta del usuario con RAG
+ * Función principal que maneja la consulta del usuario con RAG y memoria
  * @param {string} question - Pregunta del usuario
  * @returns {Promise<string>} - Respuesta de la IA
  */
 async function handleUserQuery(question) {
+    const startTime = Date.now();
+    let finalResponse = '';
+    let source = 'rag';
+    let promptMode = 'relevant';
+    
     try {
-        console.log("=== INICIANDO BÚSQUEDA RAG ===");
+        console.log("=== INICIANDO BÚSQUEDA RAG CON MEMORIA ===");
         console.log("Pregunta:", question);
+        console.log("Estado memoria:", MemoryManager.getStats());
 
-        // 1. Intentar búsqueda simple primero (RAG)
+        // 1. Obtener memoria conversacional actual
+        const memory = MemoryManager.getMemory();
+        
+        // 2. Intentar búsqueda simple primero (RAG)
         try {
             const searchResults = semanticSearch(question, 3);
             
             if (searchResults.length > 0) {
                 console.log("RAG: Se encontraron resultados de búsqueda simple");
-                const context = buildContextFromResults(searchResults);
-                const prompt = buildRAGPrompt(context, question);
+                const context = buildContextFromResults(searchResults, question);
                 
-                const aiResponse = await getAIResponse(prompt);
-                console.log("RAG: Respuesta generada exitosamente");
-                return aiResponse;
+                // Usar sistema definitivo de prompts con memoria
+                const promptSystem = createDefinitivePromptSystem(context, question, memory);
+                
+                const aiResponse = await getAIResponse(promptSystem.prompt);
+                
+                // Validar respuesta contra alucinaciones
+                const validation = promptSystem.validateResponse(aiResponse);
+                
+                if (!validation.isValid) {
+                    console.warn("RAG: Respuesta inválida detectada:", validation.reason);
+                    console.log("RAG: Usando respuesta corregida");
+                    
+                    // Aplicar response polishing
+                    const polishedResponse = ResponsePolishingSystem.polish(validation.correctedResponse, 'rag');
+                    console.log("RAG: Response polishing aplicado:", polishedResponse.changes);
+                    
+                    // Añadir intercambio a la memoria con respuesta pulida
+                    MemoryManager.addExchange(question, polishedResponse.answer);
+                    return polishedResponse.answer;
+                }
+                
+                console.log("RAG: Respuesta validada exitosamente");
+                
+                // Aplicar response polishing a respuesta válida
+                const polishedResponse = ResponsePolishingSystem.polish(aiResponse, 'rag');
+                console.log("RAG: Response polishing aplicado:", polishedResponse.changes);
+                
+                // Añadir intercambio exitoso a la memoria con respuesta pulida
+                MemoryManager.addExchange(question, polishedResponse.answer);
+                finalResponse = polishedResponse.answer;
+                
+                // Logging de observabilidad para RAG exitoso
+                const endTime = Date.now();
+                const requestData = {
+                    query: question,
+                    intent: 'detected_by_search',
+                    memoryUsed: memory.trim() !== '',
+                    topChunks: searchResults.map(r => ({ 
+                        id: r.id, 
+                        score: r.score, 
+                        source: r.source 
+                    })),
+                    selectedChunks: searchResults.slice(0, 3).map(r => r.id),
+                    contextLength: context.length,
+                    promptMode: promptMode,
+                    responseLength: polishedResponse.answer.length,
+                    latency: endTime - startTime,
+                    source: source,
+                    confidence: polishedResponse.confidence,
+                    chunkTrace: searchResults.map(r => r.trace).filter(t => t)
+                };
+
+                // Detectar fallos automáticamente
+                const failures = ObservabilityManager.detectFailures(requestData);
+                requestData.failures = failures;
+
+                ObservabilityManager.logRequest(requestData);
+                return polishedResponse.answer;
             } else {
                 console.log("RAG: No se encontraron resultados, usando fallback");
             }
@@ -231,20 +298,90 @@ async function handleUserQuery(question) {
             console.error("Error en RAG, usando fallback:", ragError.message);
         }
 
-        // 2. Fallback al sistema original basado en palabras clave
+        // 3. Fallback al sistema original basado en palabras clave
         console.log("=== USANDO SISTEMA ORIGINAL (FALLBACK) ===");
         const categories = classifyQuestion(question);
         const relevantFiles = getRelevantFiles(categories);
         const context = readFiles(relevantFiles);
 
-        const prompt = buildPrompt(context, question);
-        const aiResponse = await getAIResponse(prompt);
+        // Usar sistema definitivo incluso en fallback con memoria
+        const promptSystem = createDefinitivePromptSystem(context, question, memory);
+        const aiResponse = await getAIResponse(promptSystem.prompt);
+        
+        // Validar respuesta en fallback también
+        const validation = promptSystem.validateResponse(aiResponse);
+        
+        if (!validation.isValid) {
+            console.warn("Fallback: Respuesta inválida detectada:", validation.reason);
+            
+            // Aplicar response polishing
+            const polishedResponse = ResponsePolishingSystem.polish(validation.correctedResponse, 'fallback');
+            console.log("Fallback: Response polishing aplicado:", polishedResponse.changes);
+            
+            // Añadir intercambio a la memoria con respuesta pulida
+            MemoryManager.addExchange(question, polishedResponse.answer);
+            return polishedResponse.answer;
+        }
 
-        console.log("Fallback: Respuesta generada con sistema original");
-        return aiResponse;
+        console.log("Fallback: Respuesta validada con sistema definitivo");
+        
+        // Aplicar response polishing a respuesta válida
+        const polishedResponse = ResponsePolishingSystem.polish(aiResponse, 'fallback');
+        console.log("Fallback: Response polishing aplicado:", polishedResponse.changes);
+        
+        // Añadir intercambio exitoso a la memoria con respuesta pulida
+        MemoryManager.addExchange(question, polishedResponse.answer);
+        finalResponse = polishedResponse.answer;
+        source = 'fallback';
+        promptMode = 'fallback';
+
+        // Logging de observabilidad para fallback
+        const endTime = Date.now();
+        const requestData = {
+            query: question,
+            intent: 'detected_by_keywords',
+            memoryUsed: memory.trim() !== '',
+            topChunks: [], // Fallback no usa chunks
+            selectedChunks: [],
+            contextLength: context.length,
+            promptMode: promptMode,
+            responseLength: polishedResponse.answer.length,
+            latency: endTime - startTime,
+            source: source,
+            confidence: polishedResponse.confidence
+        };
+
+        // Detectar fallos automáticamente
+        const failures = ObservabilityManager.detectFailures(requestData);
+        requestData.failures = failures;
+
+        ObservabilityManager.logRequest(requestData);
+        return finalResponse;
 
     } catch (error) {
         console.error('Error procesando la consulta:', error.message);
+        
+        // Logging del error
+        const endTime = Date.now();
+        const errorRequestData = {
+            query: question,
+            intent: 'error',
+            memoryUsed: false,
+            topChunks: [],
+            selectedChunks: [],
+            contextLength: 0,
+            promptMode: 'error',
+            responseLength: error.message.length,
+            latency: endTime - startTime,
+            source: 'error',
+            confidence: 0,
+            failures: [{
+                type: 'system_error',
+                description: error.message
+            }]
+        };
+
+        ObservabilityManager.logRequest(errorRequestData);
         return 'Error al procesar la consulta. Por favor, inténtalo de nuevo.';
     }
 }

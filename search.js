@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { simpleSearch } = require('./embedding');
+const { simpleSearch, buildIntelligentContext, detectIntent } = require('./embedding');
 
 /**
  * Carga los chunks desde el archivo JSON
@@ -54,22 +54,21 @@ function semanticSearch(question, topK = 3) {
 }
 
 /**
- * Construye contexto a partir de los resultados de búsqueda
+ * Construye contexto inteligente a partir de los resultados de búsqueda
  * @param {Array} searchResults - Resultados de semanticSearch
- * @returns {string} - Contexto formateado
+ * @param {string} question - Pregunta original del usuario
+ * @returns {string} - Contexto formateado y optimizado
  */
-function buildContextFromResults(searchResults) {
+function buildContextFromResults(searchResults, question) {
     if (searchResults.length === 0) {
         return "No se encontró información relevante.";
     }
 
-    let context = "Información relevante del instituto:\n\n";
+    // Detectar intención para el contexto inteligente
+    const intent = detectIntent(question);
     
-    searchResults.forEach((result, index) => {
-        context += `${index + 1}. ${result.text} (Fuente: ${result.source})\n`;
-    });
-
-    return context;
+    // Usar el nuevo sistema de construcción de contexto inteligente
+    return buildIntelligentContext(question, searchResults, intent);
 }
 
 module.exports = {
