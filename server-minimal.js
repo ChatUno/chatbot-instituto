@@ -48,7 +48,7 @@ app.use((req, res) => {
 });
 
 // Iniciar servidor
-const PORT = process.env.PORT || 3000;
+const PORT = 3000; // Forzar puerto 3000 para Railway
 
 console.log("Iniciando servidor en puerto:", PORT);
 
