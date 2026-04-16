@@ -1,74 +1,62 @@
-// Load environment variables from .env file in development only
-if (process.env.NODE_ENV !== 'production') {
-    require("dotenv").config();
-}
-
-const axios = require("axios");
-
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
-
 /**
- * Genera embedding para un texto usando la API de Groq
- * @param {string} text - Texto para generar embedding
- * @returns {Promise<number[]>} - Vector de embedding
+ * Búsqueda textual simple basada en coincidencias de palabras
+ * @param {string} question - Pregunta del usuario
+ * @param {Array} chunks - Array de chunks con text y source
+ * @returns {Array} - Chunks con scores de similitud
  */
-async function getEmbedding(text) {
-    try {
-        const response = await axios.post(
-            "https://api.groq.com/openai/v1/embeddings",
-            {
-                model: "text-embedding-ada-002",
-                input: text
-            },
-            {
-                headers: {
-                    "Authorization": `Bearer ${GROQ_API_KEY}`,
-                    "Content-Type": "application/json"
-                }
-            }
-        );
-
-        return response.data.data[0].embedding;
-
-    } catch (error) {
-        console.error("Error generando embedding:", error.message);
+function simpleSearch(question, chunks) {
+    console.log("Iniciando búsqueda simple para:", question);
+    
+    // Tokenizar pregunta (lowercase y split)
+    const questionWords = question.toLowerCase()
+        .split(/\s+/)
+        .filter(word => word.length > 2) // ignorar palabras muy cortas
+        .map(word => word.replace(/[^\wáéíóúñü]/g, '')); // limpiar caracteres especiales
+    
+    console.log("Palabras clave:", questionWords);
+    
+    // Calcular score para cada chunk
+    const results = chunks.map(chunk => {
+        const chunkText = chunk.text.toLowerCase();
+        let score = 0;
         
-        // Fallback: devolver vector aleatorio para testing
-        console.warn("Usando embedding fallback (vector aleatorio)");
-        const size = 1536; // Tamaño estándar de embeddings
-        return Array.from({ length: size }, () => Math.random() - 0.5);
-    }
-}
-
-/**
- * Calcula la similitud coseno entre dos vectores
- * @param {number[]} a - Primer vector
- * @param {number[]} b - Segundo vector
- * @returns {number} - Similitud coseno (0 a 1)
- */
-function cosineSimilarity(a, b) {
-    if (a.length !== b.length) {
-        throw new Error("Los vectores deben tener la misma longitud");
-    }
-
-    let dotProduct = 0;
-    let normA = 0;
-    let normB = 0;
-
-    for (let i = 0; i < a.length; i++) {
-        dotProduct += a[i] * b[i];
-        normA += a[i] * a[i];
-        normB += b[i] * b[i];
-    }
-
-    if (normA === 0 || normB === 0) {
-        return 0;
-    }
-
-    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+        // Scoring basado en coincidencias
+        questionWords.forEach(word => {
+            // +2 si palabra exacta coincide
+            if (chunkText.includes(word)) {
+                score += 2;
+            }
+            
+            // +1 si contiene parte de palabra (substring)
+            const words = chunkText.split(/\s+/);
+            words.forEach(chunkWord => {
+                if (chunkWord.includes(word) || word.includes(chunkWord)) {
+                    score += 1;
+                }
+            });
+        });
+        
+        // Penalizar chunks muy largos (menos precisión)
+        if (chunk.text.length > 200) {
+            score *= 0.8;
+        }
+        
+        return {
+            text: chunk.text,
+            source: chunk.source,
+            score: score
+        };
+    });
+    
+    // Ordenar por score (mayor a menor)
+    results.sort((a, b) => b.score - a.score);
+    
+    console.log(`Búsqueda simple completada. Top 3 scores:`, 
+        results.slice(0, 3).map(r => `${r.score.toFixed(1)} (${r.source})`));
+    
+    return results;
 }
 
 module.exports = {
-    getEmbedding,
-    cosineSimilarity
+    simpleSearch
 };

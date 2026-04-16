@@ -157,12 +157,12 @@ async function handleUserQuery(question) {
         console.log("=== INICIANDO BÚSQUEDA RAG ===");
         console.log("Pregunta:", question);
 
-        // 1. Intentar búsqueda semántica primero (RAG)
+        // 1. Intentar búsqueda simple primero (RAG)
         try {
-            const searchResults = await semanticSearch(question, 3);
+            const searchResults = semanticSearch(question, 3);
             
             if (searchResults.length > 0) {
-                console.log("RAG: Se encontraron resultados semánticos");
+                console.log("RAG: Se encontraron resultados de búsqueda simple");
                 const context = buildContextFromResults(searchResults);
                 const prompt = buildRAGPrompt(context, question);
                 
