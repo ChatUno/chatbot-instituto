@@ -1,0 +1,19 @@
+NOMBRE: IES Juan de Lanuza
+
+TIPO: Instituto de Educación Secundaria público
+
+UBICACIÓN:
+C/ Capuchinos, 1
+Borja (Zaragoza), España
+
+CONTACTO:
+Teléfono: 976 867 368
+Email: iesborja@educa.aragon.es
+
+CARACTERÍSTICAS:
+- Centro público
+- Ofrece ESO, Bachillerato y Formación Profesional
+- Cuenta con programas bilingües
+
+DESCRIPCIÓN:
+Centro educativo que imparte enseñanza secundaria y formación profesional en distintas áreas, incluyendo hostelería y servicios socioculturales.
