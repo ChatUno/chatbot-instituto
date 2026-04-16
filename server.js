@@ -8,13 +8,30 @@ const cors = require("cors");
 
 console.log("Módulos Express y CORS cargados");
 
+let handleUserQuery;
+
 try {
-    const { handleUserQuery } = require("./chatbot-backend");
+    console.log("Intentando importar chatbot-backend...");
+    const backend = require("./chatbot-backend");
+    console.log("Backend importado:", Object.keys(backend));
+    
+    handleUserQuery = backend.handleUserQuery;
+    
+    if (!handleUserQuery) {
+        throw new Error("handleUserQuery no encontrado en el módulo chatbot-backend");
+    }
+    
     console.log("handleUserQuery importado correctamente");
+    console.log("Tipo de handleUserQuery:", typeof handleUserQuery);
 } catch (error) {
     console.error("ERROR CRÍTICO importando handleUserQuery:", error);
     console.error("Stack trace:", error.stack);
-    process.exit(1);
+    console.error("Continuando sin handleUserQuery - usando fallback");
+    
+    // Fallback simple para testing
+    handleUserQuery = async (message) => {
+        return `Respuesta de fallback (handleUserQuery no disponible): ${message}`;
+    };
 }
 
 const app = express();
