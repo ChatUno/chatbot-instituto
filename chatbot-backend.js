@@ -207,6 +207,35 @@ ${question}`;
 }
 
 /**
+ * Maneja saludos y preguntas simples
+ * @param {string} question - Pregunta del usuario
+ * @returns {string|null} - Respuesta de saludo o null si no es saludo
+ */
+function handleSimpleGreetings(question) {
+    const questionLower = question.toLowerCase().trim();
+    
+    // Patrones de saludo y preguntas simples
+    const greetingPatterns = {
+        hola: () => "¡Hola! Soy el asistente del IES Juan de Lanuza. ¿En qué puedo ayudarte?",
+        buenos: () => "¡Buenos días! Soy el asistente del IES Juan de Lanuza. ¿En qué puedo ayudarte?",
+        adiós: () => "¡Hasta luego! Si tienes más preguntas, estaré aquí para ayudarte.",
+        gracias: () => "¡De nada! Si necesitas más información sobre el instituto, no dudes en preguntar.",
+        ayuda: () => "Soy el asistente del IES Juan de Lanuza. Puedo ayudarte con información sobre:\n\n• Bachilleratos\n• Formación Profesional\n• ESO\n• Contacto del centro\n• Ubicación y horarios\n\n¿Qué te interesa?",
+        info: () => "Soy el asistente del IES Juan de Lanuza. Puedo提供 información sobre:\n\n• Bachilleratos\n• Formación Profesional\n• ESO\n• Contacto del centro\n• Ubicación y horarios\n\n¿Qué te gustaría saber?",
+        qué_es: () => "Soy el asistente del IES Juan de Lanuza, un instituto de educación secundaria público en Borja, Zaragoza. Puedo ayudarte con información académica y de contacto."
+    };
+    
+    // Verificar si es un saludo o pregunta simple
+    for (const [key, response] of Object.entries(greetingPatterns)) {
+        if (questionLower.includes(key)) {
+            return response();
+        }
+    }
+    
+    return null;
+}
+
+/**
  * Función principal que maneja la consulta del usuario con RAG y memoria
  * @param {string} question - Pregunta del usuario
  * @returns {Promise<string>} - Respuesta de la IA
@@ -221,6 +250,28 @@ async function handleUserQuery(question) {
         console.log("=== INICIANDO BÚSQUEDA RAG CON MEMORIA ===");
         console.log("Pregunta:", question);
         console.log("Estado memoria:", MemoryManager.getStats());
+
+        // 0. Manejo de saludos y preguntas simples
+        const greetingResponse = handleSimpleGreetings(question);
+        if (greetingResponse) {
+            const endTime = Date.now();
+            const requestData = {
+                query: question,
+                intent: 'greeting',
+                memoryUsed: false,
+                topChunks: [],
+                selectedChunks: [],
+                contextLength: 0,
+                promptMode: 'greeting',
+                responseLength: greetingResponse.length,
+                latency: endTime - startTime,
+                source: 'greeting',
+                confidence: 1.0
+            };
+
+            ObservabilityManager.logRequest(requestData);
+            return greetingResponse;
+        }
 
         // 1. Obtener memoria conversacional actual
         const memory = MemoryManager.getMemory();

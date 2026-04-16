@@ -173,9 +173,14 @@ function validateAntiHallucination(response, context) {
     // Extraer entidades clave de la respuesta (números, nombres específicos, etc.)
     const entities = responseLower.match(/\b\d+\b|\b[a-z]{4,}\b/g) || [];
     
+    // Palabras legítimas que no deben considerarse alucinación
+    const legitimateWords = ['lanuza', 'juan', 'instituto', 'ies', 'centro', 'colegio'];
+    
     // Verificar si las entidades principales aparecen en el contexto
     const suspiciousEntities = entities.filter(entity => 
-        entity.length > 4 && !contextLower.includes(entity)
+        entity.length > 4 && 
+        !contextLower.includes(entity) &&
+        !legitimateWords.some(word => entity.toLowerCase().includes(word))
     );
     
     if (suspiciousEntities.length > 0 && !responseLower.includes("no dispongo")) {

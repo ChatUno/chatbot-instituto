@@ -12,12 +12,13 @@ function detectIntent(question) {
             'bachillerato', 'fp', 'formación profesional', 'ciclo', 'ciclo formativo', 
             'estudiar', 'asignaturas', 'qué puedo estudiar', 'qué bachilleratos', 
             'formación', 'grado', 'educación', 'formativo', 'ciclo', 
-            'carrera', 'titulación', 'módulos', 'materias'
+            'carrera', 'titulación', 'módulos', 'materias', 'qué fp', 
+            'formación profesional grado', 'formación profesional medio', 'formación profesional básico'
         ],
         centro: [
             'teléfono', 'contacto', 'dónde', 'ubicación', 'dirección', 
             'instituto', 'horario', 'centro', 'secretaría', 'información',
-            'ubicar', 'localizar', 'encontrar'
+            'ubicar', 'localizar', 'encontrar', 'email'
         ],
         general: [
             'hola', 'buenos días', 'adiós', 'gracias', 'ayuda', 'información',
