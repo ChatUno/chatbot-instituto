@@ -269,57 +269,67 @@ class ObservabilitySystem {
     }
 }
 
-// Instancia global del sistema
-const observability = new ObservabilitySystem();
+/**
+ * Factory function para crear instancias de observabilidad aisladas por request
+ * @param {Object} options - Opciones de configuración
+ * @returns {Object} - ObservabilityManager instance con estado aislado
+ */
+function createObservabilityManager(options = {}) {
+    const observability = new ObservabilitySystem();
+    
+    return {
+        /**
+         * Registra una request completa
+         */
+        logRequest: (requestData) => {
+            return observability.logRequest(requestData);
+        },
+
+        /**
+         * Registra trace de RAG
+         */
+        logRAGTrace: (query, chunks, intent) => {
+            return observability.logRAGTrace(query, chunks, intent);
+        },
+
+        /**
+         * Detecta fallos automáticamente
+         */
+        detectFailures: (requestData) => {
+            return observability.detectFailures(requestData);
+        },
+
+        /**
+         * Obtiene métricas
+         */
+        getMetrics: () => {
+            return observability.getMetrics();
+        },
+
+        /**
+         * Limpia logs antiguos
+         */
+        clearOldLogs: (days) => {
+            return observability.clearOldLogs(days);
+        },
+
+        /**
+         * Verifica si está en modo debug
+         */
+        isDebugMode: () => {
+            return observability.debugMode;
+        }
+    };
+}
 
 /**
- * Interfaz pública del sistema de observabilidad
+ * Legacy ObservabilityManager para compatibilidad temporal (DEPRECATED)
+ * @deprecated Usar createObservabilityManager() en su lugar
  */
-const ObservabilityManager = {
-    /**
-     * Registra una request completa
-     */
-    logRequest: (requestData) => {
-        return observability.logRequest(requestData);
-    },
-
-    /**
-     * Registra trace de RAG
-     */
-    logRAGTrace: (query, chunks, intent) => {
-        return observability.logRAGTrace(query, chunks, intent);
-    },
-
-    /**
-     * Detecta fallos automáticamente
-     */
-    detectFailures: (requestData) => {
-        return observability.detectFailures(requestData);
-    },
-
-    /**
-     * Obtiene métricas
-     */
-    getMetrics: () => {
-        return observability.getMetrics();
-    },
-
-    /**
-     * Limpia logs antiguos
-     */
-    clearOldLogs: (days) => {
-        return observability.clearOldLogs(days);
-    },
-
-    /**
-     * Verifica si está en modo debug
-     */
-    isDebugMode: () => {
-        return observability.debugMode;
-    }
-};
+const ObservabilityManager = createObservabilityManager();
 
 module.exports = {
     ObservabilitySystem,
-    ObservabilityManager
+    ObservabilityManager,
+    createObservabilityManager
 };

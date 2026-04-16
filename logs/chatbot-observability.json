@@ -1,30 +1,85 @@
 {
-  "last_updated": "2026-04-16T19:47:37.953Z",
+  "last_updated": "2026-04-16T19:48:47.819Z",
   "metrics": {
     "totalRequests": 1,
-    "ragHits": 0,
+    "ragHits": 1,
     "fallbackUsed": 0,
     "hallucinationDetected": 0,
     "memoryUsed": 0,
-    "averageLatency": 2,
-    "retrievalHitRate": 0
+    "averageLatency": 251,
+    "retrievalHitRate": 100
   },
   "recent_logs": [
     {
-      "timestamp": "2026-04-16T19:47:37.951Z",
-      "query": "¿hola?",
-      "intent": "greeting",
+      "timestamp": "2026-04-16T19:48:47.819Z",
+      "query": "¿qué bachilleratos hay?",
+      "intent": "detected_by_search",
       "memory_used": false,
-      "top_chunks": [],
-      "selected_chunks": [],
-      "context_length": 0,
-      "prompt_mode": "greeting",
-      "response_length": 71,
-      "latency_ms": 2,
-      "source": "greeting",
+      "top_chunks": [
+        {
+          "id": 9,
+          "score": 15,
+          "source": "oferta"
+        },
+        {
+          "id": 10,
+          "score": 15,
+          "source": "oferta"
+        },
+        {
+          "id": 22,
+          "score": 11,
+          "source": "centro"
+        }
+      ],
+      "selected_chunks": [
+        9,
+        10,
+        22
+      ],
+      "context_length": 233,
+      "prompt_mode": "relevant",
+      "response_length": 106,
+      "latency_ms": 251,
+      "source": "rag",
       "confidence": 1,
       "failures": [],
-      "chunk_trace": []
+      "chunk_trace": [
+        {
+          "chunk_id": 9,
+          "final_score": 15,
+          "score_breakdown": [
+            "+1 substring \"hay\" en \"y\"",
+            "Base score: 1 (exactas: 0, substrings: 1)",
+            "Boosts: +5 intención coincidente, +8 término exacto 'bachillerato', +1 substrings relevantes",
+            "Penalizaciones: ninguna",
+            "Score final: 15"
+          ]
+        },
+        {
+          "chunk_id": 10,
+          "final_score": 15,
+          "score_breakdown": [
+            "+1 substring \"hay\" en \"y\"",
+            "Base score: 1 (exactas: 0, substrings: 1)",
+            "Boosts: +5 intención coincidente, +8 término exacto 'bachillerato', +1 substrings relevantes",
+            "Penalizaciones: ninguna",
+            "Score final: 15"
+          ]
+        },
+        {
+          "chunk_id": 22,
+          "final_score": 11,
+          "score_breakdown": [
+            "+1 substring \"bachilleratos\" en \"a\"",
+            "+1 substring \"hay\" en \"a\"",
+            "Base score: 2 (exactas: 0, substrings: 2)",
+            "Boosts: +8 término exacto 'bachillerato', +1 substrings relevantes",
+            "Penalizaciones: ninguna",
+            "Score final: 11"
+          ]
+        }
+      ]
     }
   ]
 }

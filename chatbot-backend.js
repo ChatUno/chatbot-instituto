@@ -5,7 +5,7 @@ const { semanticSearch, buildContextFromResults } = require('./search');
 const { createDefinitivePromptSystem } = require('./prompt-system');
 const { MemoryManager, createMemoryManager } = require('./memory-system');
 const { ResponsePolishingSystem } = require('./response-polishing');
-const { ObservabilityManager } = require('./observability');
+const { ObservabilityManager, createObservabilityManager } = require('./observability');
 
 /**
  * Clasifica la intención de la pregunta del usuario basándose en palabras clave
@@ -249,6 +249,9 @@ async function handleUserQuery(question) {
     // Crear instancia de memoria aislada para este request
     const memoryManager = createMemoryManager(5);
     
+    // Crear instancia de observabilidad aislada para este request
+    const observabilityManager = createObservabilityManager();
+    
     try {
         console.log("=== INICIANDO BÚSQUEDA RAG CON MEMORIA ===");
         console.log("Pregunta:", question);
@@ -272,7 +275,7 @@ async function handleUserQuery(question) {
                 confidence: 1.0
             };
 
-            ObservabilityManager.logRequest(requestData);
+            observabilityManager.logRequest(requestData);
             return greetingResponse;
         }
 
@@ -340,10 +343,10 @@ async function handleUserQuery(question) {
                 };
 
                 // Detectar fallos automáticamente
-                const failures = ObservabilityManager.detectFailures(requestData);
+                const failures = observabilityManager.detectFailures(requestData);
                 requestData.failures = failures;
 
-                ObservabilityManager.logRequest(requestData);
+                observabilityManager.logRequest(requestData);
                 return polishedResponse.answer;
             } else {
                 console.log("RAG: No se encontraron resultados, usando fallback");
@@ -406,10 +409,10 @@ async function handleUserQuery(question) {
         };
 
         // Detectar fallos automáticamente
-        const failures = ObservabilityManager.detectFailures(requestData);
+        const failures = observabilityManager.detectFailures(requestData);
         requestData.failures = failures;
 
-        ObservabilityManager.logRequest(requestData);
+        observabilityManager.logRequest(requestData);
         return finalResponse;
 
     } catch (error) {
@@ -435,7 +438,7 @@ async function handleUserQuery(question) {
             }]
         };
 
-        ObservabilityManager.logRequest(errorRequestData);
+        observabilityManager.logRequest(errorRequestData);
         return 'Error al procesar la consulta. Por favor, inténtalo de nuevo.';
     }
 }
