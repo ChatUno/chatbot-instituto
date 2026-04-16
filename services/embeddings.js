@@ -26,7 +26,7 @@ async function getEmbedding(text) {
         const response = await axios.post(
             "https://openrouter.ai/api/v1/embeddings",
             {
-                model: "openai/text-embedding-3-small",
+                model: "openai/text-embedding-ada-002",
                 input: text
             },
             {
