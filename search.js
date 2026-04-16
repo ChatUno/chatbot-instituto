@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const { simpleSearch } = require('./embedding');
-const { getEmbedding, cosineSimilarity } = require('./services/embeddings');
 
 /**
  * Carga los chunks desde el archivo JSON
@@ -19,13 +18,13 @@ function loadChunks() {
 }
 
 /**
- * Realiza búsqueda semántica con embeddings reales
+ * Realiza búsqueda simple de chunks relevantes (sin embeddings)
  * @param {string} question - Pregunta del usuario
  * @param {number} topK - Número de resultados a devolver (default: 3)
- * @returns {Promise<Array>} - Array de chunks con score de similitud
+ * @returns {Array} - Array de chunks con score de similitud
  */
-async function semanticSearch(question, topK = 3) {
-    console.log("Iniciando búsqueda semántica con embeddings para:", question);
+function semanticSearch(question, topK = 3) {
+    console.log("Iniciando búsqueda simple para:", question);
     
     try {
         // 1. Cargar chunks
@@ -35,62 +34,21 @@ async function semanticSearch(question, topK = 3) {
             return [];
         }
 
-        // 2. Generar embedding de la pregunta
-        console.log("Generando embedding de la pregunta...");
-        const questionEmbedding = await getEmbedding(question);
-        
-        if (!questionEmbedding) {
-            console.warn("No se pudo generar embedding de la pregunta, usando fallback simple");
-            // Fallback a búsqueda simple
-            const simpleResults = simpleSearch(question, chunks);
-            const topResults = simpleResults.slice(0, topK);
-            
-            console.log(`Búsqueda simple fallback completada. Encontrados ${topResults.length} resultados`);
-            return topResults;
-        }
+        // 2. Usar búsqueda simple basada en texto
+        const results = simpleSearch(question, chunks);
 
-        console.log(`Embedding generado. Tamaño: ${questionEmbedding.length}`);
-
-        // 3. Calcular similitud con cada chunk
-        console.log("Calculando similitudes coseno...");
-        const results = [];
-        
-        for (const chunk of chunks) {
-            try {
-                const chunkEmbedding = await getEmbedding(chunk.text);
-                
-                if (chunkEmbedding) {
-                    const similarity = cosineSimilarity(questionEmbedding, chunkEmbedding);
-                    
-                    results.push({
-                        text: chunk.text,
-                        source: chunk.source,
-                        score: similarity
-                    });
-                } else {
-                    console.warn(`No se pudo generar embedding para chunk ${chunk.id}`);
-                }
-            } catch (error) {
-                console.error(`Error procesando chunk ${chunk.id}:`, error.message);
-                // Continuar con el siguiente chunk
-            }
-        }
-
-        // 4. Ordenar por similitud (mayor a menor)
-        results.sort((a, b) => b.score - a.score);
-
-        // 5. Devolver top K resultados
+        // 3. Devolver top K resultados
         const topResults = results.slice(0, topK);
         
-        console.log(`Búsqueda semántica completada. Encontrados ${topResults.length} resultados relevantes`);
+        console.log(`Búsqueda simple completada. Encontrados ${topResults.length} resultados relevantes`);
         topResults.forEach((result, index) => {
-            console.log(`  ${index + 1}. Score: ${result.score.toFixed(4)} - Source: ${result.source}`);
+            console.log(`  ${index + 1}. Score: ${result.score.toFixed(1)} - Source: ${result.source}`);
         });
 
         return topResults;
 
     } catch (error) {
-        console.error("Error en búsqueda semántica:", error.message);
+        console.error("Error en búsqueda simple:", error.message);
         return [];
     }
 }

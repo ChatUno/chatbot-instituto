@@ -2,14 +2,6 @@ console.log("=== INICIANDO SERVIDOR ===");
 console.log("NODE_ENV:", process.env.NODE_ENV);
 console.log("PORT:", process.env.PORT);
 console.log("GROQ_API_KEY exists:", !!process.env.GROQ_API_KEY);
-console.log("OPENROUTER_API_KEY exists:", !!process.env.OPENROUTER_API_KEY);
-
-// Validar que OPENROUTER_API_KEY está disponible para embeddings
-if (!process.env.OPENROUTER_API_KEY) {
-    console.warn("⚠️ ADVERTENCIA: Missing OPENROUTER_API_KEY - embeddings no estarán disponibles");
-} else {
-    console.log("✅ OPENROUTER_API_KEY encontrada - embeddings disponibles");
-}
 
 const express = require("express");
 const cors = require("cors");
@@ -60,42 +52,9 @@ app.get("/health", (req, res) => {
         timestamp: new Date().toISOString(),
         endpoints: {
             chat: "POST /chat",
-            health: "GET /health",
-            "test-embedding": "GET /test-embedding"
+            health: "GET /health"
         }
     });
-});
-
-// Test embedding endpoint
-app.get("/test-embedding", async (req, res) => {
-    try {
-        const { getEmbedding } = require('./services/embeddings');
-        const testText = "hola mundo";
-        
-        console.log("=== TEST EMBEDDING ===");
-        const embedding = await getEmbedding(testText);
-        
-        if (embedding) {
-            res.json({
-                status: "success",
-                test_text: testText,
-                embedding_size: embedding.length,
-                sample_values: embedding.slice(0, 5),
-                message: "Embedding generado exitosamente"
-            });
-        } else {
-            res.status(500).json({
-                status: "error",
-                message: "No se pudo generar el embedding"
-            });
-        }
-    } catch (error) {
-        console.error("Error en /test-embedding:", error.message);
-        res.status(500).json({
-            status: "error",
-            message: error.message
-        });
-    }
 });
 
 // Endpoint principal del chatbot
