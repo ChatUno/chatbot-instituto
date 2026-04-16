@@ -287,26 +287,65 @@ app.post("/chunks", async (req, res) => {
         
         // RUTA ABSOLUTA CRÍTICA
         const chunksPath = path.join(__dirname, 'data', 'chunks.json');
+        const lockPath = path.join(__dirname, 'data', 'chunks.json.lock');
         console.log("RUTA ABSOLUTA chunks.json:", chunksPath);
         
-        // ESCRITURA ROBUSTA
-        const jsonData = JSON.stringify(chunks, null, 2);
-        console.log("JSON data length:", jsonData.length);
+        // IMPLEMENTAR FILE LOCKING
+        const lockTimeout = 10000; // 10 segundos timeout
+        const lockRetryInterval = 100; // 100ms entre reintentos
+        const maxRetries = lockTimeout / lockRetryInterval;
         
-        fs.writeFileSync(chunksPath, jsonData, 'utf8');
-        console.log("Chunks escritos con writeFileSync en:", chunksPath);
+        let retries = 0;
+        while (retries < maxRetries) {
+            try {
+                // Intentar crear lock file (operación atómica)
+                fs.writeFileSync(lockPath, process.pid.toString(), { flag: 'wx' });
+                console.log("Lock adquirido para chunks.json");
+                break; // Lock adquirido exitosamente
+            } catch (error) {
+                if (error.code === 'EEXIST') {
+                    // Lock ya existe, esperar y reintentar
+                    retries++;
+                    if (retries >= maxRetries) {
+                        throw new Error("No se pudo adquirir lock para chunks.json después de 10 segundos");
+                    }
+                    await new Promise(resolve => setTimeout(resolve, lockRetryInterval));
+                    continue;
+                } else {
+                    throw error; // Otro error
+                }
+            }
+        }
         
-        // VERIFICACIÓN POST-GUARDADO
         try {
-            const verificationData = fs.readFileSync(chunksPath, 'utf8');
-            console.log("VERIFICACIÓN - Archivo leído, length:", verificationData.length);
-            console.log("VERIFICACIÓN - Primer 100 chars:", verificationData.substring(0, 100));
+            // ESCRITURA ROBUSTA CON LOCK
+            const jsonData = JSON.stringify(chunks, null, 2);
+            console.log("JSON data length:", jsonData.length);
             
-            const verificationChunks = JSON.parse(verificationData);
-            console.log("VERIFICACIÓN - Chunks verificados:", verificationChunks.length);
-            console.log("VERIFICACIÓN - Chunk 1:", verificationChunks[0]);
-        } catch (verificationError) {
-            console.error("ERROR EN VERIFICACIÓN:", verificationError);
+            fs.writeFileSync(chunksPath, jsonData, 'utf8');
+            console.log("Chunks escritos con writeFileSync en:", chunksPath);
+            
+            // VERIFICACIÓN POST-GUARDADO
+            try {
+                const verificationData = fs.readFileSync(chunksPath, 'utf8');
+                console.log("VERIFICACIÓN - Archivo leído, length:", verificationData.length);
+                console.log("VERIFICACIÓN - Primer 100 chars:", verificationData.substring(0, 100));
+                
+                const verificationChunks = JSON.parse(verificationData);
+                console.log("VERIFICACIÓN - Chunks verificados:", verificationChunks.length);
+                console.log("VERIFICACIÓN - Chunk 1:", verificationChunks[0]);
+            } catch (verificationError) {
+                console.error("ERROR EN VERIFICACIÓN:", verificationError);
+            }
+            
+        } finally {
+            // LIBERAR LOCK SIEMPRE
+            try {
+                fs.unlinkSync(lockPath);
+                console.log("Lock liberado para chunks.json");
+            } catch (unlockError) {
+                console.error("Error liberando lock:", unlockError.message);
+            }
         }
         
         console.log(`Chunks actualizados correctamente: ${chunks.length} chunks guardados`);
