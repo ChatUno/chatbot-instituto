@@ -19,14 +19,15 @@ async function getEmbedding(text) {
         const response = await axios.post(
             "https://openrouter.ai/api/v1/embeddings",
             {
-                model: "text-embedding-3-small",
+                model: "openai/text-embedding-3-small",
                 input: text
             },
             {
                 headers: {
                     "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
                     "Content-Type": "application/json",
-                    "HTTP-Referer": "https://chatbot-instituto-production.up.railway.app"
+                    "HTTP-Referer": "https://chatbot-instituto-production.up.railway.app",
+                    "OpenAI-User-Agent": "chatbot-instituto/1.0"
                 }
             }
         );
