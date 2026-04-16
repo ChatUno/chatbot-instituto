@@ -160,10 +160,13 @@ app.get("/chunks", async (req, res) => {
 // Endpoint para guardar chunks
 app.post("/chunks", async (req, res) => {
     console.log("=== POST /chunks llamado ===");
+    console.log("Request headers:", req.headers);
+    console.log("Request body:", req.body);
     
     try {
         const { chunks } = req.body;
         console.log("Chunks recibidos:", chunks);
+        console.log("Número de chunks:", chunks ? chunks.length : 0);
 
         // Validaciones
         if (!chunks || !Array.isArray(chunks)) {
@@ -203,14 +206,28 @@ app.post("/chunks", async (req, res) => {
             }
         }
 
-        const fs = require('fs').promises;
+        const fs = require('fs');
         const path = require('path');
         
-        // Guardar chunks en el archivo
+        // Guardar chunks en el archivo con ruta absoluta
         const chunksPath = path.join(__dirname, 'data', 'chunks.json');
-        await fs.writeFile(chunksPath, JSON.stringify(chunks, null, 2), 'utf8');
+        console.log("Ruta exacta donde se guardará:", chunksPath);
         
-        console.log(`Chunks actualizados correctamente: ${chunks.length} chunks guardados`);
+        // Usar writeFileSync para asegurar escritura síncrona
+        fs.writeFileSync(chunksPath, JSON.stringify(chunks, null, 2), 'utf8');
+        console.log(`Chunks escritos con writeFileSync: ${chunks.length} chunks`);
+        
+        // Verificación: leer el archivo después de guardar
+        try {
+            const verificationData = fs.readFileSync(chunksPath, 'utf8');
+            const verificationChunks = JSON.parse(verificationData);
+            console.log("VERIFICACIÓN - Chunks leídos después de guardar:", verificationChunks.length);
+            console.log("VERIFICACIÓN - Primer chunk:", verificationChunks[0]);
+        } catch (verificationError) {
+            console.error("ERROR en verificación post-escritura:", verificationError);
+        }
+        
+        console.log(`Chunks actualizados correctamente: ${chunks.length} chunks guardados en ${chunksPath}`);
 
         res.json({
             "status": "ok",
@@ -220,6 +237,8 @@ app.post("/chunks", async (req, res) => {
     } catch (error) {
         console.error("ERROR en /chunks:", error);
         console.error("Stack trace:", error.stack);
+        console.error("Error code:", error.code);
+        console.error("Error message:", error.message);
         res.status(500).json({
             "status": "error",
             "message": "Error guardando chunks"
