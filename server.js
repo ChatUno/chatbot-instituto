@@ -14,6 +14,7 @@ const {
 } = require("./validation");
 const { createAuthService, createAuthMiddleware } = require("./auth");
 const { createErrorHandler, createValidationError, createAuthenticationError, createNotFoundError } = require("./error-handler");
+const { createInputSanitizer, createSanitizationMiddleware } = require("./input-sanitizer");
 
 console.log("Módulos Express y CORS cargados");
 
@@ -94,6 +95,16 @@ const authMiddleware = createAuthMiddleware(authService);
 
 // Initialize error handler
 const errorHandler = createErrorHandler();
+
+// Initialize input sanitizer
+const inputSanitizer = createInputSanitizer({
+    maxLength: 1000,
+    maxTokens: 200,
+    strictMode: false, // Enable in production for stricter security
+    logAttacks: true
+});
+
+app.use(createSanitizationMiddleware(inputSanitizer));
 
 // Root endpoint for testing
 app.get("/", (req, res) => {
