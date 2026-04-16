@@ -76,11 +76,10 @@ app.use((err, req, res, next) => {
 });
 
 // Configuración del puerto para Railway
-const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || '0.0.0.0';
+const PORT = process.env.PORT;
 
-app.listen(PORT, HOST, () => {
-    console.log(`Servidor chatbot activo en http://${HOST}:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Servidor chatbot activo en puerto ${PORT}`);
     console.log(`Endpoints disponibles:`);
     console.log(`  GET  / - Test endpoint`);
     console.log(`  GET  /health - Health check`);

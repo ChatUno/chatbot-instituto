@@ -1,4 +1,8 @@
-require("dotenv").config();
+// Load environment variables from .env file in development only
+if (process.env.NODE_ENV !== 'production') {
+    require("dotenv").config();
+}
+
 const axios = require("axios");
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
