@@ -74,7 +74,7 @@ function normalizeText(text) {
 }
 
 /**
- * Tokeniza texto en palabras limpias
+ * Tokeniza texto en palabras limpias (mejorado para BM25)
  * @param {string} text - Texto a tokenizar
  * @returns {Array} - Array de tokens
  */
@@ -86,24 +86,105 @@ function tokenize(text) {
 }
 
 /**
- * Calcula frecuencia de términos (TF-lite)
+ * Calcula frecuencia de términos (TF) para BM25
  * @param {Array} tokens - Tokens del documento
  * @returns {Object} - Frecuencia de cada término
  */
 function calculateTF(tokens) {
     const tf = {};
-    const totalTokens = tokens.length;
     
     for (const token of tokens) {
         tf[token] = (tf[token] || 0) + 1;
     }
     
-    // Normalizar por longitud del documento
-    for (const token in tf) {
-        tf[token] = tf[token] / totalTokens;
+    return tf;
+}
+
+/**
+ * Calcula frecuencia inversa de documentos (IDF)
+ * @param {Array} documents - Array de documentos (cada documento es un array de tokens)
+ * @returns {Object} - IDF para cada término
+ */
+function calculateIDF(documents) {
+    const N = documents.length; // Total de documentos
+    const df = {}; // Document frequency para cada término
+    
+    // Calcular document frequency
+    for (const doc of documents) {
+        const uniqueTokens = new Set(doc);
+        for (const token of uniqueTokens) {
+            df[token] = (df[token] || 0) + 1;
+        }
     }
     
-    return tf;
+    // Calcular IDF con suavizado para evitar división por cero
+    const idf = {};
+    for (const term in df) {
+        idf[term] = Math.log((N + 1) / (df[term] + 0.5)) + 1;
+    }
+    
+    return idf;
+}
+
+/**
+ * Calcula score BM25 mejorado
+ * @param {string} query - Query del usuario
+ * @param {Object} chunk - Chunk a evaluar
+ * @param {Object} idf - IDF pre-calculado
+ * @param {number} avgDocLength - Longitud promedio de documentos
+ * @param {number} k1 - Parámetro k1 de BM25
+ * @param {number} b - Parámetro b de BM25
+ * @returns {Object} - Score y debug info
+ */
+function calculateBM25Score(query, chunk, idf, avgDocLength, k1 = 1.2, b = 0.75) {
+    const debugInfo = [];
+    let totalScore = 0;
+    
+    // Tokenizar query y chunk
+    const queryTokens = tokenize(query);
+    const chunkTokens = tokenize(chunk.text);
+    
+    if (queryTokens.length === 0 || chunkTokens.length === 0) {
+        debugInfo.push("No hay tokens válidos");
+        return { score: 0, debug: debugInfo };
+    }
+    
+    // Calcular TF del chunk
+    const chunkTF = calculateTF(chunkTokens);
+    const docLength = chunkTokens.length;
+    
+    debugInfo.push(`Query tokens: ${queryTokens.join(', ')}`);
+    debugInfo.push(`Chunk tokens: ${chunkTokens.length} tokens`);
+    debugInfo.push(`Doc length: ${docLength}, Avg length: ${avgDocLength.toFixed(2)}`);
+    
+    // Calcular BM25 score para cada término del query
+    for (const term of queryTokens) {
+        const tf = chunkTF[term] || 0;
+        const termIDF = idf[term] || 0;
+        
+        // Fórmula BM25: IDF * (TF * (k1 + 1)) / (TF + k1 * (1 - b + b * (docLength / avgDocLength)))
+        const numerator = tf * (k1 + 1);
+        const denominator = tf + k1 * (1 - b + b * (docLength / avgDocLength));
+        const termScore = termIDF * (numerator / denominator);
+        
+        totalScore += termScore;
+        
+        debugInfo.push(`Term "${term}": TF=${tf}, IDF=${termIDF.toFixed(3)}, Score=${termScore.toFixed(3)}`);
+    }
+    
+    debugInfo.push(`BM25 Score: ${totalScore.toFixed(3)}`);
+    
+    return { 
+        score: totalScore, 
+        debug: debugInfo,
+        trace: {
+            chunk_id: chunk.id || 'unknown',
+            final_score: totalScore,
+            algorithm: 'BM25',
+            parameters: { k1, b },
+            score_breakdown: debugInfo
+        }
+    };
 }
 
 /**
@@ -221,46 +302,108 @@ function calculatePenalties(chunk) {
 }
 
 /**
- * Función principal de cálculo de score (refactorizada)
+ * Función principal de cálculo de score con BM25 mejorado
  * @param {string} question - Pregunta del usuario
  * @param {Object} chunk - Chunk a evaluar
  * @param {string} intent - Intención detectada
+ * @param {Object} options - Opciones adicionales
  * @returns {Object} - Score y debug information
  */
-function calculateScore(question, chunk, intent) {
-    const debugInfo = [];
+function calculateScore(question, chunk, intent, options = {}) {
+    const {
+        useBM25 = true,
+        idf = null,
+        avgDocLength = 100,
+        k1 = 1.2,
+        b = 0.75
+    } = options;
     
-    // 1. TOKENIZACIÓN Y NORMALIZACIÓN
-    const questionTokens = tokenize(question);
-    const chunkTokens = tokenize(chunk.text);
-    
-    if (questionTokens.length === 0 || chunkTokens.length === 0) {
-        debugInfo.push("No hay tokens válidos");
-        return { score: 0, debug: debugInfo };
-    }
-    
-    // 2. CALCULAR COMPONENTES
-    const baseResult = calculateBaseScore(question, chunk);
-    const boostResult = calculateIntelligentBoosts(intent, chunk, question);
-    const penaltyResult = calculatePenalties(chunk);
-    
-    // 3. COMBINAR SCORES
-    const totalScore = baseResult.baseScore + boostResult.boostScore + penaltyResult.penalties;
-    
-    // 4. AGREGAR DEBUG INFO
-    debugInfo.push(...baseResult.debugInfo);
-    debugInfo.push(...boostResult.debugInfo);
-    debugInfo.push(...penaltyResult.debugInfo);
-    debugInfo.push(`Score final: ${totalScore}`);
-    
-    return { 
-        score: Math.max(0, totalScore), // No permitir scores negativos
-        debug: debugInfo,
-        trace: {
-            chunk_id: chunk.id || 'unknown',
-            final_score: Math.max(0, totalScore),
-            score_breakdown: debugInfo
+    if (useBM25 && idf) {
+        // Usar BM25 matemático si tenemos IDF pre-calculado
+        const bm25Result = calculateBM25Score(question, chunk, idf, avgDocLength, k1, b);
+        
+        // Aplicar boosts y penalidades sobre el score BM25
+        const boostResult = calculateIntelligentBoosts(intent, chunk, question);
+        const penaltyResult = calculatePenalties(chunk);
+        
+        const finalScore = bm25Result.score + boostResult.boostScore + penaltyResult.penalties;
+        
+        return {
+            score: Math.max(0, finalScore),
+            debug: [
+                ...bm25Result.debug,
+                ...boostResult.debugInfo,
+                ...penaltyResult.debugInfo,
+                `Final score: ${finalScore.toFixed(3)}`
+            ],
+            trace: {
+                ...bm25Result.trace,
+                boosts: boostResult.boostScore,
+                penalties: penaltyResult.penalties,
+                final_score: finalScore
+            }
+        };
+    } else {
+        // Fallback al sistema heurístico original
+        const debugInfo = [];
+        
+        // 1. TOKENIZACIÓN Y NORMALIZACIÓN
+        const questionTokens = tokenize(question);
+        const chunkTokens = tokenize(chunk.text);
+        
+        if (questionTokens.length === 0 || chunkTokens.length === 0) {
+            debugInfo.push("No hay tokens válidos");
+            return { score: 0, debug: debugInfo };
         }
+        
+        // 2. CALCULAR COMPONENTES
+        const baseResult = calculateBaseScore(question, chunk);
+        const boostResult = calculateIntelligentBoosts(intent, chunk, question);
+        const penaltyResult = calculatePenalties(chunk);
+        
+        // 3. COMBINAR SCORES
+        const totalScore = baseResult.baseScore + boostResult.boostScore + penaltyResult.penalties;
+        
+        // 4. AGREGAR DEBUG INFO
+        debugInfo.push(...baseResult.debugInfo);
+        debugInfo.push(...boostResult.debugInfo);
+        debugInfo.push(...penaltyResult.debugInfo);
+        debugInfo.push(`Score final (heuristic): ${totalScore}`);
+        
+        return { 
+            score: Math.max(0, totalScore),
+            debug: debugInfo,
+            trace: {
+                chunk_id: chunk.id || 'unknown',
+                final_score: Math.max(0, totalScore),
+                algorithm: 'heuristic',
+                score_breakdown: debugInfo
+            }
+        };
+    }
+}
+
+/**
+ * Pre-calcula IDF para un conjunto de chunks
+ * @param {Array} chunks - Array de chunks
+ * @returns {Object} - IDF y estadísticas
+ */
+function preCalculateIDF(chunks) {
+    // Tokenizar todos los chunks
+    const documents = chunks.map(chunk => tokenize(chunk.text));
+    
+    // Calcular IDF
+    const idf = calculateIDF(documents);
+    
+    // Calcular longitud promedio
+    const totalLength = documents.reduce((sum, doc) => sum + doc.length, 0);
+    const avgDocLength = totalLength / documents.length;
+    
+    return {
+        idf,
+        avgDocLength,
+        documentCount: documents.length,
+        vocabularySize: Object.keys(idf).length
     };
 }
 
@@ -550,5 +693,9 @@ module.exports = {
     calculateScore,
     calculateBaseScore,
     calculateIntelligentBoosts,
-    calculatePenalties
+    calculatePenalties,
+    calculateBM25Score,
+    calculateIDF,
+    preCalculateIDF,
+    calculateTF
 };
