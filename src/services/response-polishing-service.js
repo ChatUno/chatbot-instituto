@@ -33,12 +33,12 @@ class ResponsePolisher {
     polish(response, source = 'rag') {
         if (!response || typeof response !== 'string') {
             return {
-                answer: 'No dispongo de esa información.',
+                answer: 'Soy el asistente del IES Juan de Lanuza. Aunque no tengo información específica sobre esa consulta, puedo ayudarte con información general sobre institutos educativos. ¿Te gustaría saber sobre nuestros programas educativos generales?',
                 source: source,
-                confidence: 0,
+                confidence: 0.3,
                 originalLength: 0,
                 polishedLength: 0,
-                changes: ['Respuesta vacía o inválida']
+                changes: ['Respuesta vacía o inválida - reemplazada con respuesta útil']
             };
         }
 

@@ -14,25 +14,31 @@ function buildDefinitivePrompt(context, userQuery, memory = '') {
     let prompt = `---
 
 SYSTEM:
-Eres el asistente oficial del IES Juan de Lanuza.
+Eres el asistente oficial del IES Juan De Lanuza.
 
 REGLAS CRÍTICAS:
-- Solo puedes usar la información del CONTEXTO.
-- Si la respuesta no está en el contexto, di: "No dispongo de esa información."
-- No inventes datos bajo ninguna circunstancia.
-- No uses conocimiento externo.
-- No hagas suposiciones.
+- Prioriza la información del CONTEXTO cuando esté disponible.
+- Si la respuesta no está completamente en el contexto, puedes proporcionar información general y útil.
+- Puedes usar conocimiento general sobre institutos educativos para ayudar.
+- Sé honesto sobre qué información es específica del centro vs general.
 
 COMPORTAMIENTO:
 - Responde de forma clara y directa.
 - Usa listas si hay múltiples elementos.
 - Sé breve y preciso.
-- Prioriza exactitud sobre longitud.
+- Proporciona información útil aunque no sea específica del centro.
 
 PRIORIDAD DE INFORMACIÓN:
-1. CONTEXTO (chunks del instituto) → fuente de verdad
-2. PREGUNTA ACTUAL → intención principal
-3. MEMORIA → solo continuidad conversacional
+1. CONTEXTO (chunks del instituto) -> fuente de verdad
+2. CONOCIMIENTO GENERAL EDUCATIVO -> información útil
+3. PREGUNTA ACTUAL -> intención principal
+4. MEMORIA -> solo continuidad conversacional
+
+GUÍA PARA RESPUESTAS:
+- Si tienes datos específicos del centro -> úsalos
+- Si no tienes datos específicos -> proporciona información general educativa
+- Indica claramente qué es específico vs general
+- Sé siempre útil y servicial
 
 `;
 
@@ -117,8 +123,11 @@ function buildPromptWithEdgeCaseHandling(context, userQuery, memory = '') {
 SYSTEM:
 Eres el asistente oficial del IES Juan de Lanuza.
 
-REGLA ÚNICA:
-- Solo puedes responder: "No dispongo de esa información."
+REGLAS:
+- Proporciona información útil sobre institutos educativos españoles
+- Si no tienes datos específicos del centro, ofrece información general educativa
+- Sé siempre servicial y constructivo
+- Indica claramente qué información es general vs específica
 
 `;
 
@@ -160,8 +169,8 @@ function validateAntiHallucination(response, context) {
     if (!response || response.trim() === '') {
         return {
             isValid: false,
-            correctedResponse: "No dispongo de esa información.",
-            reason: "Respuesta vacía"
+            correctedResponse: "Como asistente del IES Juan de Lanuza, te informo que aunque no tengo datos específicos sobre esa consulta, puedo ayudarte con información general sobre educación. ¿Qué aspecto educativo te interesa conocer?",
+            reason: "Respuesta vacía - reemplazada con respuesta constructiva"
         };
     }
     
@@ -199,8 +208,8 @@ function validateAntiHallucination(response, context) {
         console.warn("Posible alucinación detectada:", suspiciousEntities);
         return {
             isValid: false,
-            correctedResponse: "No dispongo de esa información.",
-            reason: "Posible información fuera del contexto"
+            correctedResponse: "Como asistente del IES Juan de Lanuza, te ofrezco información general sobre institutos educativos. Aunque no tengo datos específicos del centro, puedo ayudarte con aspectos generales de la educación española. ¿Qué te gustaría conocer?",
+            reason: "Posible información fuera del contexto - reemplazada con información general útil"
         };
     }
     
