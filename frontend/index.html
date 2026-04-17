@@ -3,268 +3,371 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Debug Chat - IES Juan de Lanuza</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .status {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
-        .chat-container {
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .message {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 10px;
-        }
-        .user-message {
-            background: #007bff;
-            color: white;
-            margin-left: 50px;
-        }
-        .bot-message {
-            background: #f1f3f4;
-            color: #333;
-            margin-right: 50px;
-        }
-        .input-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        .typing {
-            color: #666;
-            font-style: italic;
-        }
-    </style>
+    <title>Chatbot IES Juan de Lanuza - Asistente Virtual</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234f46e5'><path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/></svg>">
 </head>
 <body>
-    <div class="container">
-        <h1>Debug Chat - IES Juan de Lanuza</h1>
-        
-        <div id="status" class="status info">Inicializando...</div>
-        
-        <div class="chat-container" id="chatContainer">
-            <div class="message bot-message">
-                <strong>Bot:</strong> ¡Hola! Soy el asistente del IES Juan de Lanuza. ¿En qué puedo ayudarte?
+    <!-- Navigation Header -->
+    <header class="app-header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <div class="brand-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>IES Juan de Lanuza</h1>
+                    <span class="brand-tagline">Asistente Virtual</span>
+                </div>
             </div>
+            <div class="nav-menu">
+                <button class="nav-item active" data-section="chat">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <span>Chat</span>
+                </button>
+                <button class="nav-item" data-section="faq">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <span>FAQ</span>
+                </button>
+                <button class="nav-item" data-section="info">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                    <span>Info</span>
+                </button>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </button>
+                <div class="connection-status" id="connectionStatus">
+                    <div class="status-dot online"></div>
+                    <span>Conectado</span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+        <!-- Chat Section -->
+        <section class="content-section active" id="chatSection">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="bot-info">
+                        <div class="bot-avatar">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                        </div>
+                        <div class="bot-details">
+                            <h2>Asistente Virtual</h2>
+                            <p class="bot-status">En línea y listo para ayudarte</p>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="action-button" id="clearChat">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                            Limpiar
+                        </button>
+                        <button class="action-button" id="exportChat">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Exportar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="welcome-message">
+                        <div class="message-avatar">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">Asistente IES Juan de Lanuza</span>
+                                <span class="message-time">Ahora</span>
+                            </div>
+                            <div class="message-text">
+                                <p>¡Hola! Soy tu asistente virtual del IES Juan de Lanuza. Estoy aquí para ayudarte con cualquier duda sobre nuestro centro educativo.</p>
+                                <div class="quick-actions">
+                                    <h4>Puedes preguntarme sobre:</h4>
+                                    <div class="action-grid">
+                                        <button class="quick-action" data-query="¿Qué estudios ofrecen?">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                            </svg>
+                                            Oferta Educativa
+                                        </button>
+                                        <button class="quick-action" data-query="¿Cuál es el horario del centro?">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10"/>
+                                                <polyline points="12 6 12 12 16 14"/>
+                                            </svg>
+                                            Horarios
+                                        </button>
+                                        <button class="quick-action" data-query="¿Cómo puedo contactar con el centro?">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                            </svg>
+                                            Contacto
+                                        </button>
+                                        <button class="quick-action" data-query="¿Hay plazas disponibles?">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M9 11H3v2h6v-2zm0-4H3v2h6V7zm0 8H3v2h6v-2zm12-8h-6v2h6V7zm0 4h-6v2h6v-2zm0 4h-6v2h6v-2z"/>
+                                            </svg>
+                                            Plazas
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                    <div class="typing-avatar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="typing-content">
+                        <div class="typing-dots">
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                        </div>
+                        <span class="typing-text">Escribiendo...</span>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <div class="input-wrapper">
+                        <div class="input-container">
+                            <textarea 
+                                id="messageInput" 
+                                class="message-input" 
+                                placeholder="Escribe tu pregunta aquí..."
+                                rows="1"
+                                maxlength="1000"
+                            ></textarea>
+                            <button id="sendButton" class="send-button" disabled>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="input-features">
+                            <button class="feature-button" id="voiceButton" title="Entrada de voz (próximamente)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                            </button>
+                            <button class="feature-button" id="emojiButton" title="Emojis (próximamente)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                                    <line x1="9" y1="9" x2="9.01" y2="9"/>
+                                    <line x1="15" y1="9" x2="15.01" y2="9"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="input-hint">Presiona Enter para enviar, Shift+Enter para nueva línea</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="content-section" id="faqSection">
+            <div class="faq-container">
+                <div class="faq-header">
+                    <h2>Preguntas Frecuentes</h2>
+                    <p>Respuestas rápidas a las dudas más comunes sobre el IES Juan de Lanuza</p>
+                </div>
+                
+                <div class="faq-search">
+                    <div class="search-container">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <input type="text" id="faqSearch" placeholder="Buscar preguntas...">
+                    </div>
+                </div>
+
+                <div class="faq-categories">
+                    <button class="category-button active" data-category="all">Todas</button>
+                    <button class="category-button" data-category="academica">Académica</button>
+                    <button class="category-button" data-category="administrativa">Administrativa</button>
+                    <button class="category-button" data-category="servicios">Servicios</button>
+                    <button class="category-button" data-category="instalaciones">Instalaciones</button>
+                </div>
+
+                <div class="faq-items" id="faqItems">
+                    <!-- FAQ items will be dynamically generated -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Info Section -->
+        <section class="content-section" id="infoSection">
+            <div class="info-container">
+                <div class="info-header">
+                    <h2>Información del Centro</h2>
+                    <p>Todo lo que necesitas saber sobre el IES Juan de Lanuza</p>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                            </svg>
+                        </div>
+                        <h3>Oferta Educativa</h3>
+                        <p>ESO, Bachillerato y Formación Profesional en diversas especialidades.</p>
+                        <ul>
+                            <li>ESO: 1º a 4º curso</li>
+                            <li>Bachillerato: Ciencias y Humanidades</li>
+                            <li>FP: Cocina, Atención a Dependientes</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                        </div>
+                        <h3>Horarios</h3>
+                        <p>Horarios generales del centro educativo.</p>
+                        <ul>
+                            <li>Centro: Lunes a Viernes 08:00-14:30</li>
+                            <li>ESO: 08:00-14:30 (recreo 11:00-11:30)</li>
+                            <li>Bachillerato: 08:00-14:30 (recreo 11:15-11:45)</li>
+                            <li>FP: 08:30-15:00 (pausa 13:00-13:30)</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                        </div>
+                        <h3>Contacto</h3>
+                        <p>Información de contacto del centro.</p>
+                        <ul>
+                            <li>Teléfono: 976 123 456</li>
+                            <li>Email: info@iesjuandelanuza.edu</li>
+                            <li>Dirección: Calle Ejemplo, 123</li>
+                            <li>Secretaría: 09:00-13:00</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                <polyline points="9 22 9 12 15 12 15 22"/>
+                            </svg>
+                        </div>
+                        <h3>Instalaciones</h3>
+                        <p>Recursos y espacios disponibles en el centro.</p>
+                        <ul>
+                            <li>Laboratorios de ciencias</li>
+                            <li>Aulas de informática</li>
+                            <li>Taller de cocina</li>
+                            <li>Biblioteca</li>
+                            <li>Patio deportivo</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-cta">
+                    <h3>¿Necesitas más información?</h3>
+                    <p>No dudes en contactarnos o utilizar nuestro asistente virtual para resolver cualquier duda.</p>
+                    <div class="cta-buttons">
+                        <button class="cta-button primary" onclick="navigateToSection('chat')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            Chatear con el Asistente
+                        </button>
+                        <button class="cta-button secondary" onclick="window.open('tel:976123456')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                            Llamar al Centro
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Cargando...</p>
         </div>
-        
-        <div class="input-container">
-            <input type="text" id="messageInput" placeholder="Escribe tu mensaje aquí..." />
-            <button id="sendButton">Enviar</button>
-        </div>
-        
-        <div id="logs" style="margin-top: 20px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; background: #f8f9fa; padding: 10px; border-radius: 5px;"></div>
     </div>
 
-    <script>
-        class DebugChat {
-            constructor() {
-                this.apiBaseUrl = 'https://chatbot-instituto-production.up.railway.app';
-                this.authToken = null;
-                this.isTyping = false;
-                
-                this.init();
-            }
+    <!-- Notification Toast -->
+    <div class="notification-toast" id="notificationToast" style="display: none;">
+        <div class="toast-content">
+            <div class="toast-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+            </div>
+            <div class="toast-message">
+                <p id="toastMessage">Mensaje de notificación</p>
+            </div>
+            <button class="toast-close" id="toastClose">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+    </div>
 
-            init() {
-                this.log('Inicializando debug chat...');
-                this.setupEventListeners();
-                this.authenticate();
-            }
-
-            log(message) {
-                const logs = document.getElementById('logs');
-                const timestamp = new Date().toLocaleTimeString();
-                logs.innerHTML += `[${timestamp}] ${message}\n`;
-                logs.scrollTop = logs.scrollHeight;
-                console.log(message);
-            }
-
-            updateStatus(message, type = 'info') {
-                const status = document.getElementById('status');
-                status.textContent = message;
-                status.className = `status ${type}`;
-            }
-
-            setupEventListeners() {
-                const input = document.getElementById('messageInput');
-                const button = document.getElementById('sendButton');
-
-                button.addEventListener('click', () => this.sendMessage());
-                
-                input.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.sendMessage();
-                    }
-                });
-
-                input.addEventListener('input', () => {
-                    button.disabled = !input.value.trim() || this.isTyping;
-                });
-            }
-
-            async authenticate() {
-                try {
-                    this.log('Intentando autenticación...');
-                    this.updateStatus('Autenticando...', 'info');
-
-                    const response = await fetch(`${this.apiBaseUrl}/auth/login`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            email: 'test@test.com',
-                            password: 'test123'
-                        })
-                    });
-
-                    this.log(`Auth response status: ${response.status}`);
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        this.authToken = data.token;
-                        this.log('Autenticación exitosa');
-                        this.log(`Token: ${data.token.substring(0, 50)}...`);
-                        this.updateStatus('Conectado y listo para chatear', 'success');
-                    } else {
-                        const errorData = await response.text();
-                        this.log(`Auth failed: ${response.status} - ${errorData}`);
-                        throw new Error('Authentication failed');
-                    }
-                } catch (error) {
-                    this.log(`Error de autenticación: ${error.message}`);
-                    this.updateStatus('Error de conexión', 'error');
-                }
-            }
-
-            async sendMessage() {
-                const input = document.getElementById('messageInput');
-                const message = input.value.trim();
-                
-                if (!message || this.isTyping || !this.authToken) {
-                    this.log('No se puede enviar mensaje: sin texto, escribiendo o sin token');
-                    return;
-                }
-
-                // Add user message
-                this.addMessage(message, 'user');
-                
-                // Clear input
-                input.value = '';
-                document.getElementById('sendButton').disabled = true;
-
-                // Show typing
-                this.showTyping();
-
-                try {
-                    this.log(`Enviando mensaje: "${message}"`);
-                    
-                    const response = await fetch(`${this.apiBaseUrl}/chat`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${this.authToken}`
-                        },
-                        body: JSON.stringify({ message })
-                    });
-
-                    this.log(`Chat response status: ${response.status}`);
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        this.log(`Respuesta recibida: ${data.response}`);
-                        this.addMessage(data.response, 'bot');
-                    } else {
-                        const errorData = await response.text();
-                        this.log(`Chat failed: ${response.status} - ${errorData}`);
-                        this.addMessage('Lo siento, ocurrió un error al procesar tu mensaje.', 'bot');
-                    }
-                } catch (error) {
-                    this.log(`Error enviando mensaje: ${error.message}`);
-                    this.addMessage('Lo siento, ocurrió un error de conexión.', 'bot');
-                } finally {
-                    this.hideTyping();
-                }
-            }
-
-            addMessage(text, sender) {
-                const container = document.getElementById('chatContainer');
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${sender}-message`;
-                messageDiv.innerHTML = `<strong>${sender === 'user' ? 'Tú' : 'Bot'}:</strong> ${text}`;
-                container.appendChild(messageDiv);
-                container.scrollTop = container.scrollHeight;
-            }
-
-            showTyping() {
-                this.isTyping = true;
-                const container = document.getElementById('chatContainer');
-                const typingDiv = document.createElement('div');
-                typingDiv.className = 'message bot-message typing';
-                typingDiv.innerHTML = '<strong>Bot:</strong> Escribiendo...';
-                typingDiv.id = 'typing-indicator';
-                container.appendChild(typingDiv);
-                container.scrollTop = container.scrollHeight;
-            }
-
-            hideTyping() {
-                this.isTyping = false;
-                const typing = document.getElementById('typing-indicator');
-                if (typing) {
-                    typing.remove();
-                }
-                document.getElementById('sendButton').disabled = false;
-            }
-        }
-
-        // Inicializar cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', () => {
-            new DebugChat();
-        });
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
