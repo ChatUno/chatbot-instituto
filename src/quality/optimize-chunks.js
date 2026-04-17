@@ -3,7 +3,7 @@
  * Ejecuta la optimización de calidad de chunks y genera reportes
  */
 
-const { createChunkQualityManager } = require('./chunk-quality-manager');
+const { createChunkQualityManager } = require("../quality/chunk-quality-manager");
 const fs = require('fs').promises;
 const path = require('path');
 

@@ -3,8 +3,8 @@ if (process.env.NODE_ENV !== 'production') {
     require("dotenv").config();
 }
 
-const { createCircuitBreaker } = require("./circuit-breaker");
-const { getValidatedConfig } = require("./config");
+const { createCircuitBreaker } = require("../security/circuit-breaker");
+const { getValidatedConfig } = require("../utils/config");
 
 const config = getValidatedConfig();
 

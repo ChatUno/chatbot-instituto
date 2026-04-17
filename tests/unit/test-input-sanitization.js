@@ -6,7 +6,7 @@ const {
     createInputSanitizer, 
     AttackType, 
     AttackSeverity 
-} = require('./input-sanitizer');
+} = require("../security/input-sanitizer");
 
 /**
  * Test helper para verificar resultados
@@ -409,7 +409,7 @@ function testAttackStatistics() {
 function testMiddleware() {
     console.log('Testing middleware...');
     
-    const { createSanitizationMiddleware } = require('./input-sanitizer');
+    const { createSanitizationMiddleware } = require("../security/input-sanitizer");
     const sanitizer = createInputSanitizer();
     const middleware = createSanitizationMiddleware(sanitizer);
     

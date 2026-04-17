@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { simpleSearch, buildIntelligentContext, detectIntent } = require('./embedding');
+const { simpleSearch, buildIntelligentContext, detectIntent } = require('./embedding-service');
 
 /**
  * Carga los chunks desde el archivo JSON

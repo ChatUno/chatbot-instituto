@@ -3,7 +3,7 @@
  * Mantiene contexto conversacional reciente sin persistencia
  */
 
-const { getValidatedConfig } = require('./config');
+const { getValidatedConfig } = require("../utils/config");
 const config = getValidatedConfig();
 
 class ConversationMemory {

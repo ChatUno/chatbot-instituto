@@ -1,0 +1,30 @@
+{
+  "last_updated": "2026-04-16T21:02:35.114Z",
+  "metrics": {
+    "totalRequests": 1,
+    "ragHits": 0,
+    "fallbackUsed": 0,
+    "hallucinationDetected": 0,
+    "memoryUsed": 0,
+    "averageLatency": 1,
+    "retrievalHitRate": 0
+  },
+  "recent_logs": [
+    {
+      "timestamp": "2026-04-16T21:02:35.114Z",
+      "query": "Hola, qué información tienes sobre el instituto?",
+      "intent": "greeting",
+      "memory_used": false,
+      "top_chunks": [],
+      "selected_chunks": [],
+      "context_length": 0,
+      "prompt_mode": "greeting",
+      "response_length": 71,
+      "latency_ms": 1,
+      "source": "greeting",
+      "confidence": 1,
+      "failures": [],
+      "chunk_trace": []
+    }
+  ]
+}

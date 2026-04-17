@@ -398,7 +398,7 @@ class FallbackLogicManager {
      */
     async executeSemanticFallback(query, context) {
         // Usar búsqueda semántica con umbral más bajo
-        const { simpleSearch } = require('./embedding');
+        const { simpleSearch } = require("../services/embedding-service");
         const chunks = await this.loadAllChunks();
         
         // Búsqueda con umbral reducido

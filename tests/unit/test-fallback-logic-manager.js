@@ -6,7 +6,7 @@ const {
     createFallbackLogicManager, 
     FallbackStrategy, 
     FallbackConfidence 
-} = require('./fallback-logic-manager');
+} = require("../core/fallback-logic-manager");
 
 /**
  * Test helper para verificar resultados

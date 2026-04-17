@@ -4,7 +4,7 @@
  */
 
 const Joi = require('joi');
-const { getValidatedConfig } = require('./config');
+const { getValidatedConfig } = require("../utils/config");
 const config = getValidatedConfig();
 
 /**

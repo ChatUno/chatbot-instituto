@@ -116,20 +116,20 @@ function configureContainer() {
 
     // Configuración
     container.registerSingleton('config', () => {
-        const { getValidatedConfig } = require('./config');
+        const { getValidatedConfig } = require("../utils/config");
         return getValidatedConfig();
     });
 
     // Sistema de memoria
     container.registerTransient('memoryManager', (container) => {
-        const { createMemoryManager } = require('./memory-system');
+        const { createMemoryManager } = require("../services/memory-service");
         const config = container.resolve('config');
         return createMemoryManager(config.memory.maxExchanges);
     });
 
     // Sistema de observabilidad
     container.registerTransient('observabilityManager', (container) => {
-        const { createObservabilityManager } = require('./observability');
+        const { createObservabilityManager } = require("../services/observability-service");
         const config = container.resolve('config');
         return createObservabilityManager({
             maxLogs: config.observability.maxLogs,
@@ -139,13 +139,13 @@ function configureContainer() {
 
     // Cliente AI
     container.registerSingleton('aiClient', () => {
-        const { getAIResponse } = require('./ai-client');
+        const { getAIResponse } = require("../core/ai-client");
         return { getAIResponse };
     });
 
     // Sistema de búsqueda (RAG)
     container.registerSingleton('searchService', (container) => {
-        const { semanticSearch, buildIntelligentContext, detectIntent } = require('./search');
+        const { semanticSearch, buildIntelligentContext, detectIntent } = require("../services/search-service");
         return {
             semanticSearch,
             buildIntelligentContext,
@@ -161,7 +161,7 @@ function configureContainer() {
             calculateIntelligentBoosts, 
             calculatePenalties,
             detectIntent 
-        } = require('./embedding');
+        } = require("../services/embedding-service");
         return {
             calculateScore,
             calculateBaseScore,
@@ -173,13 +173,13 @@ function configureContainer() {
 
     // Sistema de prompts
     container.registerSingleton('promptSystem', () => {
-        const { createDefinitivePromptSystem } = require('./prompt-system');
+        const { createDefinitivePromptSystem } = require("../services/prompt-service");
         return createDefinitivePromptSystem();
     });
 
     // Sistema de response polishing
     container.registerSingleton('responsePolisher', () => {
-        const { ResponsePolishingSystem } = require('./response-polishing');
+        const { ResponsePolishingSystem } = require("../services/response-polishing-service");
         return ResponsePolishingSystem;
     });
 
@@ -190,7 +190,7 @@ function configureContainer() {
             validateChunksRequest, 
             validateChunksQuery,
             validateConfiguration
-        } = require('./validation');
+        } = require("../security/validation");
         return {
             validateChatRequest,
             validateChunksRequest,

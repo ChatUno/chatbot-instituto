@@ -2,7 +2,7 @@
  * Tests para circuit breaker V4-15-T1
  */
 
-const { createCircuitBreaker, CircuitState } = require('./circuit-breaker');
+const { createCircuitBreaker, CircuitState } = require("../security/circuit-breaker");
 
 /**
  * Test helper para verificar resultados

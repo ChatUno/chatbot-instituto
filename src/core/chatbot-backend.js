@@ -1,12 +1,12 @@
 const fs = require('fs');
 const path = require('path');
-const { getAIResponse } = require('./ai-client');
-const { semanticSearch, buildContextFromResults } = require('./search');
-const { createDefinitivePromptSystem } = require('./prompt-system');
-const { MemoryManager, createMemoryManager } = require('./memory-system');
-const { ResponsePolishingSystem } = require('./response-polishing');
-const { ObservabilityManager, createObservabilityManager } = require('./observability');
-const { createFallbackLogicManager } = require('./fallback-logic-manager');
+const { getAIResponse } = require("../core/ai-client");
+const { semanticSearch, buildContextFromResults } = require('../services/search-service');
+const { createDefinitivePromptSystem } = require('../services/prompt-service');
+const { MemoryManager, createMemoryManager } = require('../services/memory-service');
+const { ResponsePolishingSystem } = require('../services/response-polishing-service');
+const { ObservabilityManager, createObservabilityManager } = require('../services/observability-service');
+const { createFallbackLogicManager } = require("../core/fallback-logic-manager");
 
 /**
  * Clasifica la intención de la pregunta del usuario basándose en palabras clave

@@ -1,4 +1,4 @@
-const { semanticSearch } = require('./search');
+const { semanticSearch } = require("../services/search-service");
 
 async function testSearch() {
   console.log('=== PROBANDO BÚSQUEDA DIRECTA ===\n');

@@ -5,7 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getValidatedConfig } = require('./config');
+const { getValidatedConfig } = require("../utils/config");
 const config = getValidatedConfig();
 
 class ObservabilitySystem {

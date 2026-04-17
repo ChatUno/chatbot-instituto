@@ -5,7 +5,7 @@
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { getValidatedConfig } = require('./config');
+const { getValidatedConfig } = require("../utils/config");
 const config = getValidatedConfig();
 
 /**

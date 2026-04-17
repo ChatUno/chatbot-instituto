@@ -348,7 +348,7 @@ class APIWrapper {
     async callGroqAPI(prompt) {
         return this.circuitBreaker.execute(async () => {
             const axios = require('axios');
-            const { getValidatedConfig } = require('./config');
+            const { getValidatedConfig } = require("../utils/config");
             const config = getValidatedConfig();
             
             const response = await axios.post(

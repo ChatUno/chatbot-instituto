@@ -3,7 +3,7 @@
  * Implementa búsqueda BM25-lite mejorada con scoring inteligente
  */
 
-const { getValidatedConfig } = require('./config');
+const { getValidatedConfig } = require("../utils/config");
 const config = getValidatedConfig();
 
 /**

@@ -16,7 +16,7 @@ const {
     createTimeoutError,
     ErrorCategory,
     ErrorSeverity
-} = require('./error-handler');
+} = require("../security/error-handler");
 
 /**
  * Test helper para verificar resultados
@@ -58,7 +58,7 @@ function testErrorCreation() {
 function testErrorLogger() {
     console.log('Testing error logger...');
     
-    const { createErrorLogger } = require('./error-handler');
+    const { createErrorLogger } = require("../security/error-handler");
     const logger = createErrorLogger();
     
     // Test logging

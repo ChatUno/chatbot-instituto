@@ -6,7 +6,7 @@ const {
     createChunkQualityManager, 
     ChunkQuality, 
     ChunkCategory 
-} = require('./chunk-quality-manager');
+} = require("../quality/chunk-quality-manager");
 
 /**
  * Test helper para verificar resultados

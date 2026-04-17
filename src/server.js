@@ -3,18 +3,22 @@ console.log("NODE_ENV:", process.env.NODE_ENV);
 console.log("PORT:", process.env.PORT);
 console.log("GROQ_API_KEY exists:", !!process.env.GROQ_API_KEY);
 
+const { getAIResponse } = require("./core/ai-client");
 const express = require("express");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const { ResponsePolishingSystem } = require("./services/response-polishing-service");
 const { 
     validateChatRequest, 
     validateChunksRequest, 
     validateChunksQuery,
     configurationSanityCheck 
-} = require("./validation");
-const { createAuthService, createAuthMiddleware } = require("./auth");
-const { createErrorHandler, createValidationError, createAuthenticationError, createNotFoundError } = require("./error-handler");
-const { createInputSanitizer, createSanitizationMiddleware } = require("./input-sanitizer");
+} = require("./security/validation");
+const { semanticSearch, buildContextFromResults } = require("./services/search-service");
+const { createAuthService, createAuthMiddleware } = require("./security/auth");
+const { createErrorHandler, createValidationError, createAuthenticationError, createNotFoundError } = require("./security/error-handler");
+const { createFallbackLogicManager } = require("./core/fallback-logic-manager");
+const { createInputSanitizer, createSanitizationMiddleware } = require("./security/input-sanitizer");
 
 console.log("Módulos Express y CORS cargados");
 
@@ -22,7 +26,7 @@ let handleUserQuery;
 
 try {
     console.log("Intentando importar chatbot-backend...");
-    const backend = require("./chatbot-backend");
+    const backend = require("./core/chatbot-backend");
     console.log("Backend importado:", Object.keys(backend));
     
     handleUserQuery = backend.handleUserQuery;
@@ -120,9 +124,46 @@ app.get("/health", (req, res) => {
             chat: "POST /chat",
             health: "GET /health",
             getChunks: "GET /chunks",
-            postChunks: "POST /chunks"
+            postChunks: "POST /chunks",
+            login: "POST /auth/login"
         }
     });
+});
+
+// Temporary login endpoint for testing
+app.post("/auth/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        
+        // Simple validation for testing
+        if (email === 'test@test.com' && password === 'test123') {
+            const token = authService.generateToken({
+                email: email,
+                userId: 'test-user',
+                permissions: ['read']
+            });
+            
+            res.json({
+                success: true,
+                token: token,
+                user: {
+                    email: email,
+                    userId: 'test-user'
+                }
+            });
+        } else {
+            res.status(401).json({
+                success: false,
+                error: "Invalid credentials"
+            });
+        }
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({
+            success: false,
+            error: "Login failed"
+        });
+    }
 });
 
 // Endpoint principal del chatbot (protegido)
@@ -163,7 +204,7 @@ app.get("/chunks", async (req, res) => {
         const path = require('path');
         
         // Leer chunks del archivo
-        const chunksPath = path.join(__dirname, 'data', 'chunks.json');
+        const chunksPath = path.join(__dirname, '..', 'data', 'chunks.json');
         const chunksData = await fs.readFile(chunksPath, 'utf8');
         const chunks = JSON.parse(chunksData);
         
@@ -205,7 +246,7 @@ app.get("/debug-chunks", async (req, res) => {
         const fs = require('fs');
         const path = require('path');
         
-        const chunksPath = path.join(__dirname, 'data', 'chunks.json');
+        const chunksPath = path.join(__dirname, '..', 'data', 'chunks.json');
         console.log("DEBUG - Chunks path:", chunksPath);
         console.log("DEBUG - File exists:", fs.existsSync(chunksPath));
         
@@ -266,8 +307,8 @@ app.post("/chunks", authMiddleware.authenticate({ required: true, permissions: [
         const path = require('path');
         
         // RUTA ABSOLUTA CRÍTICA
-        const chunksPath = path.join(__dirname, 'data', 'chunks.json');
-        const lockPath = path.join(__dirname, 'data', 'chunks.json.lock');
+        const chunksPath = path.join(__dirname, '..', 'data', 'chunks.json');
+        const lockPath = path.join(__dirname, '..', 'data', 'chunks.json.lock');
         console.log("RUTA ABSOLUTA chunks.json:", chunksPath);
         
         // IMPLEMENTAR FILE LOCKING
