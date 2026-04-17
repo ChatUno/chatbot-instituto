@@ -1,0 +1,22 @@
+{
+  "name": "chatbot-ies-juan-de-lanuza-frontend",
+  "version": "1.0.0",
+  "description": "Frontend moderno para el chatbot del IES Juan de Lanuza",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 5500",
+    "build": "echo 'No build required for static site'",
+    "preview": "python -m http.server 5500"
+  },
+  "keywords": [
+    "chatbot",
+    "education",
+    "frontend",
+    "modern",
+    "responsive"
+  ],
+  "author": "IES Juan de Lanuza",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+}

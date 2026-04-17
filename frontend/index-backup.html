@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot IES Juan de Lanuza</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="chat-container">
+        <header class="chat-header">
+            <div class="header-content">
+                <div class="bot-avatar">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </div>
+                <div class="header-text">
+                    <h1>Asistente IES Juan de Lanuza</h1>
+                    <p class="status">En línea</p>
+                </div>
+            </div>
+        </header>
+        
+        <main class="chat-main">
+            <div class="chat-messages" id="chatMessages">
+                <div class="welcome-message">
+                    <div class="bot-avatar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="message-content">
+                        <p>¡Hola! Soy el asistente virtual del IES Juan de Lanuza.</p>
+                        <p>Puedo ayudarte con información sobre:</p>
+                        <ul>
+                            <li>Oferta educativa</li>
+                            <li>Calendario académico</li>
+                            <li>Contacto y servicios</li>
+                            <li>Avisos y noticias</li>
+                        </ul>
+                        <p>¿En qué puedo ayudarte hoy?</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                <div class="bot-avatar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </div>
+                <div class="typing-content">
+                    <div class="typing-dots">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                    <span class="typing-text">Escribiendo...</span>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="chat-input-container">
+            <div class="input-wrapper">
+                <div class="input-container">
+                    <textarea 
+                        id="messageInput" 
+                        class="message-input" 
+                        placeholder="Escribe tu pregunta aquí..."
+                        rows="1"
+                        maxlength="1000"
+                    ></textarea>
+                    <button id="sendButton" class="send-button" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="input-hint">Presiona Enter para enviar, Shift+Enter para nueva línea</div>
+            </div>
+        </footer>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
