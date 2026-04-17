@@ -1,132 +1,236 @@
 [
   {
     "id": 1,
-    "text": "IES Juan de Lanuza es un Instituto de Educación Secundaria público",
-    "source": "centro"
+    "text": "IES Juan de Lanuza es un Instituto de Educación Secundaria público.",
+    "source": "centro",
+    "quality": "fair",
+    "score": 0.58,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.003Z"
   },
   {
     "id": 2,
-    "text": "Ubicación: C/ Capuchinos, 1, Borja (Zaragoza), España",
-    "source": "centro"
+    "text": "Ubicación: C/ Capuchinos, 1, Borja (Zaragoza), España.",
+    "source": "centro",
+    "quality": "good",
+    "score": 0.73,
+    "category": "contact",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 3,
-    "text": "Teléfono de contacto: 976 867 368",
-    "source": "centro"
+    "text": "Teléfono de contacto: 976 867 368.",
+    "source": "centro",
+    "quality": "fair",
+    "score": 0.66,
+    "category": "contact",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 4,
-    "text": "Email de contacto: iesborja@educa.aragon.es",
-    "source": "centro"
+    "text": "Email de contacto: iesborja@educa.aragon.es.",
+    "source": "centro",
+    "quality": "good",
+    "score": 0.7,
+    "category": "contact",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 5,
-    "text": "El centro ofrece ESO, Bachillerato y Formación Profesional",
-    "source": "centro"
+    "text": "El centro ofrece ESO, Bachillerato y Formación Profesional.",
+    "source": "centro",
+    "quality": "fair",
+    "score": 0.6,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 6,
-    "text": "Cuenta con programas bilingües",
-    "source": "centro"
+    "text": "Cuenta con programas bilingües.",
+    "source": "centro",
+    "quality": "fair",
+    "score": 0.55,
+    "category": "programs",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 7,
-    "text": "Centro educativo que imparte enseñanza secundaria y formación profesional en distintas áreas, incluyendo hostelería y servicios socioculturales",
-    "source": "centro"
+    "text": "Centro educativo que imparte enseñanza secundaria y formación profesional en distintas áreas, incluyendo hostelería y servicios socioculturales.",
+    "source": "centro",
+    "quality": "fair",
+    "score": 0.58,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 8,
-    "text": "ESO (Educación Secundaria Obligatoria) de 1º a 4º curso",
-    "source": "oferta"
+    "text": "ESO (Educación Secundaria Obligatoria) de 1º a 4º curso.",
+    "source": "oferta",
+    "quality": "fair",
+    "score": 0.61,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 9,
-    "text": "Bachillerato: Ciencias y Tecnología",
-    "source": "oferta"
+    "text": "Bachillerato: Ciencias y Tecnología.",
+    "source": "oferta",
+    "quality": "fair",
+    "score": 0.61,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 10,
-    "text": "Bachillerato: Humanidades y Ciencias Sociales",
-    "source": "oferta"
+    "text": "Bachillerato: Humanidades y Ciencias Sociales.",
+    "source": "oferta",
+    "quality": "fair",
+    "score": 0.61,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 11,
-    "text": "Formación Profesional Grado Básico: Cocina y Restauración",
-    "source": "oferta"
+    "text": "Formación Profesional Grado Básico: Cocina y Restauración.",
+    "source": "oferta",
+    "quality": "fair",
+    "score": 0.62,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 12,
-    "text": "Formación Profesional Grado Medio: Cocina y Gastronomía",
-    "source": "oferta"
+    "text": "Formación Profesional Grado Medio: Cocina y Gastronomía.",
+    "source": "oferta",
+    "quality": "fair",
+    "score": 0.62,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 13,
-    "text": "Formación Profesional Grado Medio: Atención a Personas en Situación de Dependencia",
-    "source": "oferta"
+    "text": "Formación Profesional Grado Medio: Atención a Personas en Situación de Dependencia.",
+    "source": "oferta",
+    "quality": "fair",
+    "score": 0.61,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 14,
-    "text": "Asignaturas destacadas: Programación y robótica",
-    "source": "oferta"
+    "text": "Asignaturas destacadas: Programación y robótica.",
+    "source": "oferta",
+    "quality": "fair",
+    "score": 0.59,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 15,
-    "text": "Asignaturas destacadas: Cultura clásica",
-    "source": "oferta"
+    "text": "Asignaturas destacadas: Cultura clásica.",
+    "source": "oferta",
+    "quality": "fair",
+    "score": 0.64,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 16,
-    "text": "Asignaturas destacadas: Economía",
-    "source": "oferta"
+    "text": "Asignaturas destacadas: Economía.",
+    "source": "oferta",
+    "quality": "fair",
+    "score": 0.64,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 17,
-    "text": "Asignaturas destacadas: Filosofía",
-    "source": "oferta"
+    "text": "Asignaturas destacadas: Filosofía.",
+    "source": "oferta",
+    "quality": "fair",
+    "score": 0.64,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 18,
-    "text": "Asignaturas destacadas: Física y Química",
-    "source": "oferta"
+    "text": "Asignaturas destacadas: Física y Química.",
+    "source": "oferta",
+    "quality": "fair",
+    "score": 0.61,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 19,
-    "text": "Asignaturas destacadas: Biología y Geología",
-    "source": "oferta"
+    "text": "Asignaturas destacadas: Biología y Geología.",
+    "source": "oferta",
+    "quality": "fair",
+    "score": 0.61,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 20,
-    "text": "Horario general del centro: De lunes a viernes de 08:00 a 14:30",
-    "source": "centro"
+    "text": "Horario general del centro: De lunes a viernes de 08:00 a 14:30.",
+    "source": "centro",
+    "quality": "fair",
+    "score": 0.69,
+    "category": "schedules",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 21,
-    "text": "Horario ESO: 08:00 - 14:30, con recreo de 11:00 a 11:30",
-    "source": "centro"
+    "text": "Horario ESO: 08:00 - 14:30, con recreo de 11:00 a 11:30.",
+    "source": "centro",
+    "quality": "good",
+    "score": 0.74,
+    "category": "schedules",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 22,
-    "text": "Horario Bachillerato: 08:00 - 14:30, con recreo de 11:15 a 11:45",
-    "source": "centro"
+    "text": "Horario Bachillerato: 08:00 - 14:30, con recreo de 11:15 a 11:45.",
+    "source": "centro",
+    "quality": "good",
+    "score": 0.73,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 23,
-    "text": "Horario Formación Profesional: 08:30 - 15:00, con pausa de 13:00 a 13:30",
-    "source": "centro"
+    "text": "Horario Formación Profesional: 08:30 - 15:00, con pausa de 13:00 a 13:30.",
+    "source": "centro",
+    "quality": "good",
+    "score": 0.74,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 24,
-    "text": "Secretaría: Atención de lunes a viernes de 09:00 a 13:00",
-    "source": "centro"
+    "text": "Secretaría: Atención de lunes a viernes de 09:00 a 13:00.",
+    "source": "centro",
+    "quality": "good",
+    "score": 0.71,
+    "category": "administrative",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 25,
-    "text": "Formación Profesional disponible: Grado Básico de Cocina y Restauración, Grado Medio de Cocina y Gastronomía, Grado Medio de Atención a Personas en Situación de Dependencia",
-    "source": "oferta"
+    "text": "Formación Profesional disponible: Grado Básico de Cocina y Restauración, Grado Medio de Cocina y Gastronomía, Grado Medio de Atención a Personas en Situación de Dependencia.",
+    "source": "oferta",
+    "quality": "fair",
+    "score": 0.58,
+    "category": "academic",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   },
   {
     "id": 26,
-    "text": "Instalaciones del centro: Laboratorios de ciencias, aulas de informática, taller de cocina, biblioteca, patio deportivo",
-    "source": "centro"
+    "text": "Instalaciones del centro: Laboratorios de ciencias, aulas de informática, taller de cocina, biblioteca, patio deportivo.",
+    "source": "centro",
+    "quality": "fair",
+    "score": 0.58,
+    "category": "facilities",
+    "lastOptimized": "2026-04-16T20:43:32.005Z"
   }
 ]
