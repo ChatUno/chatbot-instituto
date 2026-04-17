@@ -68,7 +68,7 @@ app.use(cors({
     'http://localhost:5500'
   ],
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
 
