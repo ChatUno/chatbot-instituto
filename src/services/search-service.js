@@ -8,7 +8,7 @@ const { simpleSearch, buildIntelligentContext, detectIntent } = require('./embed
  */
 function loadChunks() {
     try {
-        const chunksPath = path.join(__dirname, 'data', 'chunks.json');
+        const chunksPath = path.join(__dirname, '..', '..', 'data', 'chunks.json');
         const chunksData = fs.readFileSync(chunksPath, 'utf8');
         return JSON.parse(chunksData);
     } catch (error) {
