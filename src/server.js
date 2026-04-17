@@ -60,6 +60,7 @@ app.use((req, res, next) => {
 
 app.use(cors({
   origin: [
+    'https://chatbot-instituto-8qes.vercel.app',
     'https://chatbot-instituto-57zd.vercel.app',
     'https://chatbot-instituto.vercel.app',
     'https://chatbot-instituto-production.up.railway.app',
