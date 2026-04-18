@@ -1,0 +1,182 @@
+{
+  "domain": "iesjuandelanuza.catedu.es",
+  "startTime": "2026-04-18T14:58:08.220Z",
+  "endTime": "2026-04-18T14:58:16.283Z",
+  "status": "completed",
+  "config": {
+    "crawler": {
+      "maxConcurrency": 5,
+      "maxDepth": 3,
+      "rateLimitDelay": 1000,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      "timeout": 30000,
+      "retryAttempts": 3,
+      "retryDelay": 5000
+    },
+    "queue": {
+      "maxQueueSize": 10000,
+      "batchSize": 100
+    },
+    "discovery": {
+      "maxLinksPerPage": 200,
+      "excludePatterns": [
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    "rateLimiter": {
+      "defaultDelay": 1000,
+      "maxDelay": 10000,
+      "minDelay": 100,
+      "adaptiveMode": true,
+      "errorThreshold": 3,
+      "successThreshold": 10
+    },
+    "retry": {
+      "maxAttempts": 3,
+      "baseDelay": 1000,
+      "maxDelay": 30000,
+      "backoffFactor": 2,
+      "jitter": true
+    },
+    "duplicate": {
+      "similarityThreshold": 0.85,
+      "maxCacheSize": 100000,
+      "enableContentHashing": true,
+      "enableUrlNormalization": true,
+      "enableTitleMatching": true
+    },
+    "reporting": {
+      "realTimeUpdates": true,
+      "includeScreenshots": false,
+      "maxReportHistory": 50
+    }
+  },
+  "stats": {
+    "totalDiscovered": 0,
+    "totalProcessed": 0,
+    "totalFailed": 0,
+    "totalSkipped": 0,
+    "totalDuplicates": 0,
+    "processingRate": 0,
+    "averageResponseTime": 0,
+    "dataSize": 0,
+    "successRate": 0,
+    "discoveryRate": 0,
+    "duplicateRate": 0,
+    "duration": {
+      "milliseconds": 8063,
+      "seconds": 8.06,
+      "minutes": 0.13,
+      "hours": 0
+    },
+    "categoryDistribution": {
+      "homepage": 0,
+      "navigation": 0,
+      "content": 0,
+      "documents": 0,
+      "media": 0,
+      "forms": 0,
+      "other": 0
+    }
+  },
+  "categories": {
+    "homepage": 0,
+    "navigation": 0,
+    "content": 0,
+    "documents": 0,
+    "media": 0,
+    "forms": 0,
+    "other": 0
+  },
+  "pages": [],
+  "errors": [],
+  "duplicates": [],
+  "timeline": [
+    {
+      "type": "report_initialized",
+      "timestamp": "2026-04-18T14:58:08.223Z",
+      "data": {
+        "domain": "iesjuandelanuza.catedu.es"
+      }
+    },
+    {
+      "type": "config_updated",
+      "timestamp": "2026-04-18T14:58:08.223Z",
+      "data": {
+        "crawler": {
+          "maxConcurrency": 5,
+          "maxDepth": 3,
+          "rateLimitDelay": 1000,
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+          "timeout": 30000,
+          "retryAttempts": 3,
+          "retryDelay": 5000
+        },
+        "queue": {
+          "maxQueueSize": 10000,
+          "batchSize": 100
+        },
+        "discovery": {
+          "maxLinksPerPage": 200,
+          "excludePatterns": [
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        },
+        "rateLimiter": {
+          "defaultDelay": 1000,
+          "maxDelay": 10000,
+          "minDelay": 100,
+          "adaptiveMode": true,
+          "errorThreshold": 3,
+          "successThreshold": 10
+        },
+        "retry": {
+          "maxAttempts": 3,
+          "baseDelay": 1000,
+          "maxDelay": 30000,
+          "backoffFactor": 2,
+          "jitter": true
+        },
+        "duplicate": {
+          "similarityThreshold": 0.85,
+          "maxCacheSize": 100000,
+          "enableContentHashing": true,
+          "enableUrlNormalization": true,
+          "enableTitleMatching": true
+        },
+        "reporting": {
+          "realTimeUpdates": true,
+          "includeScreenshots": false,
+          "maxReportHistory": 50
+        }
+      }
+    },
+    {
+      "type": "crawling_started",
+      "timestamp": "2026-04-18T14:58:08.224Z",
+      "data": {
+        "baseUrl": "https://iesjuandelanuza.catedu.es/",
+        "domain": "iesjuandelanuza.catedu.es"
+      }
+    },
+    {
+      "type": "crawling_completed",
+      "timestamp": "2026-04-18T14:58:16.283Z",
+      "data": {
+        "totalDiscovered": 1,
+        "totalProcessed": 1,
+        "totalFailed": 0,
+        "startTime": "2026-04-18T14:58:08.211Z",
+        "endTime": "2026-04-18T14:58:16.283Z"
+      }
+    }
+  ]
+}

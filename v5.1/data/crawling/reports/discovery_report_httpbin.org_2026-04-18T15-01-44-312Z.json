@@ -1,0 +1,80 @@
+{
+  "domain": "httpbin.org",
+  "startTime": "2026-04-18T15:01:41.950Z",
+  "endTime": "2026-04-18T15:01:44.312Z",
+  "status": "completed",
+  "config": {},
+  "stats": {
+    "totalDiscovered": 0,
+    "totalProcessed": 0,
+    "totalFailed": 0,
+    "totalSkipped": 0,
+    "totalDuplicates": 0,
+    "processingRate": 0,
+    "averageResponseTime": 0,
+    "dataSize": 0,
+    "successRate": 0,
+    "discoveryRate": 0,
+    "duplicateRate": 0,
+    "duration": {
+      "milliseconds": 2362,
+      "seconds": 2.36,
+      "minutes": 0.04,
+      "hours": 0
+    },
+    "categoryDistribution": {
+      "homepage": 0,
+      "navigation": 0,
+      "content": 0,
+      "documents": 0,
+      "media": 0,
+      "forms": 0,
+      "other": 0
+    }
+  },
+  "categories": {
+    "homepage": 0,
+    "navigation": 0,
+    "content": 0,
+    "documents": 0,
+    "media": 0,
+    "forms": 0,
+    "other": 0
+  },
+  "pages": [],
+  "errors": [],
+  "duplicates": [],
+  "timeline": [
+    {
+      "type": "report_initialized",
+      "timestamp": "2026-04-18T15:01:41.950Z",
+      "data": {
+        "domain": "httpbin.org"
+      }
+    },
+    {
+      "type": "config_updated",
+      "timestamp": "2026-04-18T15:01:41.950Z",
+      "data": {}
+    },
+    {
+      "type": "crawling_started",
+      "timestamp": "2026-04-18T15:01:41.950Z",
+      "data": {
+        "baseUrl": "https://httpbin.org",
+        "domain": "httpbin.org"
+      }
+    },
+    {
+      "type": "crawling_completed",
+      "timestamp": "2026-04-18T15:01:44.312Z",
+      "data": {
+        "totalDiscovered": 1,
+        "totalProcessed": 1,
+        "totalFailed": 0,
+        "startTime": "2026-04-18T15:01:41.940Z",
+        "endTime": "2026-04-18T15:01:44.312Z"
+      }
+    }
+  ]
+}

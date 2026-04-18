@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visual RAG Pro V5.2-01 - Massive Crawler</title>
+  
+  <!-- React and dependencies -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/MassiveCrawlerApp.css">
+  <link rel="stylesheet" href="styles/CrawlingConfig.css">
+  <link rel="stylesheet" href="styles/CrawlingDashboard.css">
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    #root {
+      min-height: 100vh;
+    }
+    
+    .loading-fallback {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: white;
+      font-size: 18px;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div class="loading-fallback">
+      <div class="loading-spinner"></div>
+      <span>Cargando Visual RAG Pro V5.2-01...</span>
+    </div>
+  </div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // URL validation utility
+    const validateUrl = (url) => {
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    // CrawlingConfig Component
+    const CrawlingConfig = ({ onConfigChange, initialConfig = {} }) => {
+      const [config, setConfig] = useState({
+        crawler: {
+          maxConcurrency: 5,
+          maxDepth: 3,
+          rateLimitDelay: 1000,
+          userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          timeout: 30000,
+          retryAttempts: 3,
+          retryDelay: 5000
+        },
+        queue: {
+          maxQueueSize: 10000,
+          batchSize: 100
+        },
+        discovery: {
+          maxLinksPerPage: 200,
+          excludePatterns: [
+            /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|tar|gz)$/i,
+            /\/api\//i,
+            /\/admin\//i,
+            /\/login/i,
+            /\/logout/i
+          ]
+        },
+        rateLimiter: {
+          defaultDelay: 1000,
+          maxDelay: 10000,
+          minDelay: 100,
+          adaptiveMode: true,
+          errorThreshold: 3,
+          successThreshold: 10
+        },
+        retry: {
+          maxAttempts: 3,
+          baseDelay: 1000,
+          maxDelay: 30000,
+          backoffFactor: 2,
+          jitter: true
+        },
+        duplicate: {
+          similarityThreshold: 0.85,
+          maxCacheSize: 100000,
+          enableContentHashing: true,
+          enableUrlNormalization: true,
+          enableTitleMatching: true
+        },
+        reporting: {
+          realTimeUpdates: true,
+          includeScreenshots: false,
+          maxReportHistory: 50
+        }
+      });
+
+      useEffect(() => {
+        const mergedConfig = { ...config, ...initialConfig };
+        setConfig(mergedConfig);
+      }, [initialConfig]);
+
+      const handleConfigChange = (section, field, value) => {
+        const newConfig = {
+          ...config,
+          [section]: {
+            ...config[section],
+            [field]: value
+          }
+        };
+        setConfig(newConfig);
+        onConfigChange && onConfigChange(newConfig);
+      };
+
+      return (
+        <div className="crawling-config">
+          <div className="config-header">
+            <h2>Crawling Configuration</h2>
+            <div className="config-actions">
+              <button onClick={() => {
+                const defaultConfig = {
+                  crawler: { maxConcurrency: 5, maxDepth: 3, rateLimitDelay: 1000, userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36', timeout: 30000, retryAttempts: 3, retryDelay: 5000 },
+                  queue: { maxQueueSize: 10000, batchSize: 100 },
+                  discovery: { maxLinksPerPage: 200, excludePatterns: [ /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|tar|gz)$/i, /\/api\//i, /\/admin\//i, /\/login/i, /\/logout/i ] },
+                  rateLimiter: { defaultDelay: 1000, maxDelay: 10000, minDelay: 100, adaptiveMode: true, errorThreshold: 3, successThreshold: 10 },
+                  retry: { maxAttempts: 3, baseDelay: 1000, maxDelay: 30000, backoffFactor: 2, jitter: true },
+                  duplicate: { similarityThreshold: 0.85, maxCacheSize: 100000, enableContentHashing: true, enableUrlNormalization: true, enableTitleMatching: true },
+                  reporting: { realTimeUpdates: true, includeScreenshots: false, maxReportHistory: 50 }
+                };
+                setConfig(defaultConfig);
+                onConfigChange && onConfigChange(defaultConfig);
+              }} className="btn btn-secondary">
+                Reset to Defaults
+              </button>
+            </div>
+          </div>
+
+          <div className="config-sections">
+            <div className="config-section">
+              <h3>Crawler Settings</h3>
+              <div className="config-grid">
+                <div className="config-field">
+                  <label>Max Concurrency:</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="20"
+                    value={config.crawler.maxConcurrency}
+                    onChange={(e) => handleConfigChange('crawler', 'maxConcurrency', parseInt(e.target.value))}
+                  />
+                  <small>Number of parallel crawling threads</small>
+                </div>
+                
+                <div className="config-field">
+                  <label>Max Depth:</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={config.crawler.maxDepth}
+                    onChange={(e) => handleConfigChange('crawler', 'maxDepth', parseInt(e.target.value))}
+                  />
+                  <small>Maximum link depth to follow</small>
+                </div>
+                
+                <div className="config-field">
+                  <label>Rate Limit Delay (ms):</label>
+                  <input
+                    type="number"
+                    min="100"
+                    max="10000"
+                    step="100"
+                    value={config.crawler.rateLimitDelay}
+                    onChange={(e) => handleConfigChange('crawler', 'rateLimitDelay', parseInt(e.target.value))}
+                  />
+                  <small>Delay between requests</small>
+                </div>
+                
+                <div className="config-field">
+                  <label>Timeout (ms):</label>
+                  <input
+                    type="number"
+                    min="5000"
+                    max="120000"
+                    step="1000"
+                    value={config.crawler.timeout}
+                    onChange={(e) => handleConfigChange('crawler', 'timeout', parseInt(e.target.value))}
+                  />
+                  <small>Request timeout</small>
+                </div>
+              </div>
+            </div>
+
+            <div className="config-section">
+              <h3>Rate Limiter Settings</h3>
+              <div className="config-grid">
+                <div className="config-field">
+                  <label>Default Delay (ms):</label>
+                  <input
+                    type="number"
+                    min="100"
+                    max="10000"
+                    step="100"
+                    value={config.rateLimiter.defaultDelay}
+                    onChange={(e) => handleConfigChange('rateLimiter', 'defaultDelay', parseInt(e.target.value))}
+                  />
+                </div>
+                
+                <div className="config-field">
+                  <label>Max Delay (ms):</label>
+                  <input
+                    type="number"
+                    min="1000"
+                    max="60000"
+                    step="1000"
+                    value={config.rateLimiter.maxDelay}
+                    onChange={(e) => handleConfigChange('rateLimiter', 'maxDelay', parseInt(e.target.value))}
+                  />
+                </div>
+                
+                <div className="config-field">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={config.rateLimiter.adaptiveMode}
+                      onChange={(e) => handleConfigChange('rateLimiter', 'adaptiveMode', e.target.checked)}
+                    />
+                    Adaptive Mode
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="config-section">
+              <h3>Duplicate Detection Settings</h3>
+              <div className="config-grid">
+                <div className="config-field">
+                  <label>Similarity Threshold:</label>
+                  <input
+                    type="number"
+                    min="0.1"
+                    max="1.0"
+                    step="0.05"
+                    value={config.duplicate.similarityThreshold}
+                    onChange={(e) => handleConfigChange('duplicate', 'similarityThreshold', parseFloat(e.target.value))}
+                  />
+                </div>
+                
+                <div className="config-field">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={config.duplicate.enableContentHashing}
+                      onChange={(e) => handleConfigChange('duplicate', 'enableContentHashing', e.target.checked)}
+                    />
+                    Content Hashing
+                  </label>
+                </div>
+                
+                <div className="config-field">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={config.duplicate.enableUrlNormalization}
+                      onChange={(e) => handleConfigChange('duplicate', 'enableUrlNormalization', e.target.checked)}
+                    />
+                    URL Normalization
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // CrawlingDashboard Component
+    const CrawlingDashboard = ({ sessionId, onSessionEnd }) => {
+      const [sessionData, setSessionData] = useState(null);
+      const [stats, setStats] = useState(null);
+      const [queueStats, setQueueStats] = useState(null);
+      const [reportStats, setReportStats] = useState(null);
+      const [autoRefresh, setAutoRefresh] = useState(true);
+      const [refreshInterval, setRefreshInterval] = useState(5000);
+      const intervalRef = useRef(null);
+
+      useEffect(() => {
+        if (sessionId && autoRefresh) {
+          startRealTimeUpdates();
+        } else {
+          stopRealTimeUpdates();
+        }
+
+        return () => stopRealTimeUpdates();
+      }, [sessionId, autoRefresh, refreshInterval]);
+
+      const startRealTimeUpdates = () => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+
+        fetchSessionData();
+        intervalRef.current = setInterval(fetchSessionData, refreshInterval);
+      };
+
+      const stopRealTimeUpdates = () => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+      };
+
+      const fetchSessionData = async () => {
+        try {
+          const response = await fetch(`/api/massive-crawler/status/${sessionId}`);
+          const data = await response.json();
+
+          if (data.success) {
+            setSessionData(data);
+            setStats(data.stats);
+            setQueueStats(data.queueStats);
+            setReportStats(data.reportStats);
+
+            if (data.status === 'completed' || data.status === 'failed') {
+              stopRealTimeUpdates();
+              if (onSessionEnd) {
+                onSessionEnd(data);
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching session data:', error);
+        }
+      };
+
+      const stopCrawling = async () => {
+        try {
+          const response = await fetch(`/api/massive-crawler/stop/${sessionId}`, {
+            method: 'POST'
+          });
+          const data = await response.json();
+
+          if (data.success) {
+            stopRealTimeUpdates();
+            setSessionData(prev => ({ ...prev, status: 'stopped' }));
+          }
+        } catch (error) {
+          console.error('Error stopping crawling:', error);
+        }
+      };
+
+      const formatDuration = (ms) => {
+        if (!ms) return '0s';
+        const seconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        
+        if (hours > 0) return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
+        if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+        return `${seconds}s`;
+      };
+
+      const getStatusColor = (status) => {
+        switch (status) {
+          case 'running': return '#28a745';
+          case 'completed': return '#007bff';
+          case 'failed': return '#dc3545';
+          case 'stopped': return '#ffc107';
+          default: return '#6c757d';
+        }
+      };
+
+      if (!sessionData) {
+        return (
+          <div className="crawling-dashboard">
+            <div className="loading">
+              <div className="spinner"></div>
+              <p>Loading crawling session...</p>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="crawling-dashboard">
+          <div className="dashboard-header">
+            <div className="session-info">
+              <h1>Crawling Dashboard</h1>
+              <div className="session-details">
+                <span className="session-id">Session: {sessionId}</span>
+                <span 
+                  className="status-badge"
+                  style={{ backgroundColor: getStatusColor(sessionData.status) }}
+                >
+                  {sessionData.status.toUpperCase()}
+                </span>
+              </div>
+            </div>
+            
+            <div className="dashboard-controls">
+              <div className="control-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={autoRefresh}
+                    onChange={(e) => setAutoRefresh(e.target.checked)}
+                  />
+                  Auto Refresh
+                </label>
+                <select
+                  value={refreshInterval}
+                  onChange={(e) => setRefreshInterval(parseInt(e.target.value))}
+                  disabled={!autoRefresh}
+                >
+                  <option value={1000}>1s</option>
+                  <option value={5000}>5s</option>
+                  <option value={10000}>10s</option>
+                  <option value={30000}>30s</option>
+                </select>
+              </div>
+              
+              {sessionData.status === 'running' && (
+                <button onClick={stopCrawling} className="btn btn-danger">
+                  Stop Crawling
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="stats-grid">
+            <div className="stat-card">
+              <div className="stat-icon">{'\ud83d\udd0d'}</div>
+              <div className="stat-content">
+                <h3>{stats?.totalDiscovered || 0}</h3>
+                <p>Pages Discovered</p>
+              </div>
+            </div>
+            
+            <div className="stat-card">
+              <div className="stat-icon">{'\u2705'}</div>
+              <div className="stat-content">
+                <h3>{stats?.totalProcessed || 0}</h3>
+                <p>Pages Processed</p>
+              </div>
+            </div>
+            
+            <div className="stat-card">
+              <div className="stat-icon">{'\u274c'}</div>
+              <div className="stat-content">
+                <h3>{stats?.totalFailed || 0}</h3>
+                <p>Pages Failed</p>
+              </div>
+            </div>
+            
+            <div className="stat-card">
+              <div className="stat-icon">{'\u26a1'}</div>
+              <div className="stat-content">
+                <h3>{stats?.processingRate || 0}</h3>
+                <p>Pages/Min</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="progress-section">
+            <h3>Overall Progress</h3>
+            <div className="progress-bar-container">
+              <div className="progress-bar">
+                <div 
+                  className="progress-fill"
+                  style={{
+                    width: `${stats?.totalDiscovered > 0 ? (stats?.totalProcessed / stats?.totalDiscovered) * 100 : 0}%`
+                  }}
+                ></div>
+              </div>
+              <div className="progress-text">
+                {stats?.totalDiscovered > 0 
+                  ? `${Math.round((stats?.totalProcessed / stats?.totalDiscovered) * 100)}%`
+                  : '0%'
+                }
+              </div>
+            </div>
+          </div>
+
+          <div className="session-info-section">
+            <h3>Session Information</h3>
+            <div className="info-grid">
+              <div className="info-item">
+                <label>Start Time:</label>
+                <span>{new Date(sessionData.startTime).toLocaleString()}</span>
+              </div>
+              <div className="info-item">
+                <label>Duration:</label>
+                <span>{formatDuration(Date.now() - new Date(sessionData.startTime).getTime())}</span>
+              </div>
+              <div className="info-item">
+                <label>Success Rate:</label>
+                <span>
+                  {stats?.totalProcessed > 0 
+                    ? `${Math.round((stats?.totalProcessed / (stats?.totalProcessed + stats?.totalFailed)) * 100)}%`
+                    : '0%'
+                  }
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Main MassiveCrawlerApp Component
+    const MassiveCrawlerApp = () => {
+      const [currentView, setCurrentView] = useState('config');
+      const [sessionId, setSessionId] = useState(null);
+      const [config, setConfig] = useState({});
+      const [isStarting, setIsStarting] = useState(false);
+      const [error, setError] = useState(null);
+      const [url, setUrl] = useState('');
+
+      const startCrawling = async () => {
+        if (!url || !url.trim()) {
+          setError('Please enter a valid URL');
+          return;
+        }
+
+        setIsStarting(true);
+        setError(null);
+
+        try {
+          const response = await fetch('/api/massive-crawler/start', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              url: url.trim(),
+              options: config
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            setSessionId(data.sessionId);
+            setCurrentView('dashboard');
+          } else {
+            setError(data.error || 'Failed to start crawling');
+          }
+        } catch (error) {
+          setError('Network error: ' + error.message);
+        } finally {
+          setIsStarting(false);
+        }
+      };
+
+      const handleSessionEnd = (sessionData) => {
+        console.log('Session ended:', sessionData);
+      };
+
+      const resetToConfig = () => {
+        setSessionId(null);
+        setCurrentView('config');
+        setError(null);
+      };
+
+      return (
+        <div className="massive-crawler-app">
+          <header className="app-header">
+            <div className="header-content">
+              <h1>Visual RAG Pro - Massive Crawler</h1>
+              <p>V5.2-01: Intelligent Website Crawling System</p>
+            </div>
+            
+            <nav className="header-nav">
+              <button
+                className={`nav-button ${currentView === 'config' ? 'active' : ''}`}
+                onClick={() => setCurrentView('config')}
+              >
+                Configuration
+              </button>
+              <button
+                className={`nav-button ${currentView === 'dashboard' ? 'active' : ''}`}
+                onClick={() => sessionId && setCurrentView('dashboard')}
+                disabled={!sessionId}
+              >
+                Dashboard
+              </button>
+            </nav>
+          </header>
+
+          {error && (
+            <div className="error-banner">
+              <div className="error-content">
+                <span className="error-icon">{'\u26a0\ufe0f'}</span>
+                <span className="error-message">{error}</span>
+                <button className="error-close" onClick={() => setError(null)}>{'\u2715'}</button>
+              </div>
+            </div>
+          )}
+
+          <main className="app-main">
+            {currentView === 'config' && (
+              <div className="config-view">
+                <div className="url-input-section">
+                  <h2>Start Massive Crawling</h2>
+                  <div className="url-input-container">
+                    <input
+                      type="text"
+                      placeholder="Enter website URL (e.g., https://example.com)"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      className={`url-input ${url && !validateUrl(url) ? 'invalid' : ''}`}
+                      onKeyPress={(e) => e.key === 'Enter' && startCrawling()}
+                    />
+                    <button
+                      onClick={startCrawling}
+                      disabled={!url || !validateUrl(url) || isStarting}
+                      className="start-button"
+                    >
+                      {isStarting ? 'Starting...' : 'Start Crawling'}
+                    </button>
+                  </div>
+                  {url && !validateUrl(url) && (
+                    <p className="url-error">Please enter a valid URL (e.g., https://example.com)</p>
+                  )}
+                </div>
+
+                <CrawlingConfig 
+                  onConfigChange={setConfig}
+                  initialConfig={config}
+                />
+              </div>
+            )}
+
+            {currentView === 'dashboard' && sessionId && (
+              <div className="dashboard-view">
+                <div className="dashboard-header">
+                  <button onClick={resetToConfig} className="back-button">
+                    {'\u2190'} Back to Configuration
+                  </button>
+                  <div className="session-info">
+                    <span className="session-id-display">Session: {sessionId}</span>
+                  </div>
+                </div>
+                
+                <CrawlingDashboard
+                  sessionId={sessionId}
+                  onSessionEnd={handleSessionEnd}
+                />
+              </div>
+            )}
+          </main>
+
+          <footer className="app-footer">
+            <p>Visual RAG Pro V5.2-01 - Massive Website Crawling System</p>
+            <p>Intelligent crawling with adaptive rate limiting, duplicate detection, and real-time monitoring</p>
+          </footer>
+        </div>
+      );
+    };
+
+    // Render the app
+    ReactDOM.render(<MassiveCrawlerApp />, document.getElementById('root'));
+  </script>
+</body>
+</html>

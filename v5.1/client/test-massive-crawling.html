@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Massive Crawling - Visual RAG Pro V5.2-01</title>
+  
+  <!-- React and dependencies -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/MassiveCrawlerApp.css">
+  <link rel="stylesheet" href="styles/CrawlingConfig.css">
+  <link rel="stylesheet" href="styles/CrawlingDashboard.css">
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    #root {
+      min-height: 100vh;
+    }
+    
+    .loading-fallback {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: white;
+      font-size: 18px;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .test-suggestions {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .test-suggestions h3 {
+      margin: 0 0 15px 0;
+      color: #2c3e50;
+    }
+
+    .test-url {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .test-url:hover {
+      background: #e9ecef;
+    }
+
+    .test-url .url {
+      font-family: monospace;
+      color: #667eea;
+      font-weight: 500;
+    }
+
+    .test-url .description {
+      color: #6c757d;
+      font-size: 14px;
+    }
+
+    .massive-config {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .massive-config h3 {
+      margin: 0 0 15px 0;
+      color: #2c3e50;
+    }
+
+    .config-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .config-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .config-field label {
+      font-weight: 500;
+      color: #495057;
+      font-size: 14px;
+    }
+
+    .config-field input,
+    .config-field select {
+      padding: 8px 12px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .config-field small {
+      color: #6c757d;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div class="loading-fallback">
+      <div class="loading-spinner"></div>
+      <span>Cargando Visual RAG Pro V5.2-01...</span>
+    </div>
+  </div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const validateUrl = (url) => {
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    const TestMassiveCrawler = () => {
+      const [url, setUrl] = useState('');
+      const [config, setConfig] = useState({
+        crawler: {
+          maxConcurrency: 8,
+          maxDepth: 5,
+          rateLimitDelay: 500,
+          timeout: 45000,
+          retryAttempts: 3,
+          retryDelay: 3000
+        },
+        discovery: {
+          maxLinksPerPage: 500,
+          excludePatterns: [
+            /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|tar|gz)$/i,
+            /\/api\//i,
+            /\/admin\//i,
+            /\/login/i,
+            /\/logout/i,
+            /\/register/i,
+            /\/signup/i,
+            /\/user\//i,
+            /\/profile\//i,
+            /javascript:/i,
+            /mailto:/i,
+            /tel:/i
+          ]
+        },
+        rateLimiter: {
+          defaultDelay: 500,
+          maxDelay: 8000,
+          minDelay: 200,
+          adaptiveMode: true,
+          errorThreshold: 2,
+          successThreshold: 8
+        }
+      });
+      const [isStarting, setIsStarting] = useState(false);
+      const [error, setError] = useState(null);
+      const [sessionId, setSessionId] = useState(null);
+
+      const testUrls = [
+        {
+          url: 'https://httpbin.org',
+          description: 'Sitio de testing simple (1-2 páginas)'
+        },
+        {
+          url: 'https://docs.python.org',
+          description: 'Documentación Python (50+ páginas)'
+        },
+        {
+          url: 'https://developer.mozilla.org',
+          description: 'MDN Web Docs (100+ páginas)'
+        },
+        {
+          url: 'https://www.wikipedia.org',
+          description: 'Wikipedia (1000+ páginas)'
+        },
+        {
+          url: 'https://react.dev',
+          description: 'React Documentation (30+ páginas)'
+        },
+        {
+          url: 'https://nodejs.org',
+          description: 'Node.js Docs (20+ páginas)'
+        }
+      ];
+
+      const startCrawling = async () => {
+        if (!url || !url.trim()) {
+          setError('Please enter a valid URL');
+          return;
+        }
+
+        setIsStarting(true);
+        setError(null);
+
+        try {
+          const response = await fetch('/api/massive-crawler/start', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              url: url.trim(),
+              options: config
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            setSessionId(data.sessionId);
+            // Abrir dashboard en nueva pestaña
+            window.open(`/massive-crawler.html?session=${data.sessionId}`, '_blank');
+          } else {
+            setError(data.error || 'Failed to start crawling');
+          }
+        } catch (error) {
+          setError('Network error: ' + error.message);
+        } finally {
+          setIsStarting(false);
+        }
+      };
+
+      const selectTestUrl = (testUrl) => {
+        setUrl(testUrl.url);
+      };
+
+      return (
+        <div className="massive-crawler-app">
+          <header className="app-header">
+            <div className="header-content">
+              <h1>Visual RAG Pro - Massive Crawler Test</h1>
+              <p>V5.2-01: Prueba de Crawling Masivo</p>
+            </div>
+          </header>
+
+          {error && (
+            <div className="error-banner">
+              <div className="error-content">
+                <span className="error-icon">{'\u26a0\ufe0f'}</span>
+                <span className="error-message">{error}</span>
+                <button className="error-close" onClick={() => setError(null)}>{'\u2715'}</button>
+              </div>
+            </div>
+          )}
+
+          <main className="app-main">
+            <div className="test-suggestions">
+              <h3>URLs de Prueba Recomendadas</h3>
+              {testUrls.map((test, index) => (
+                <div key={index} className="test-url" onClick={() => selectTestUrl(test)}>
+                  <span className="url">{test.url}</span>
+                  <span className="description">{test.description}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="massive-config">
+              <h3>Configuración para Crawling Masivo</h3>
+              <div className="config-grid">
+                <div className="config-field">
+                  <label>Max Concurrency:</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="20"
+                    value={config.crawler.maxConcurrency}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      crawler: { ...config.crawler, maxConcurrency: parseInt(e.target.value) }
+                    })}
+                  />
+                  <small>Hilos paralelos (1-20)</small>
+                </div>
+                
+                <div className="config-field">
+                  <label>Max Depth:</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={config.crawler.maxDepth}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      crawler: { ...config.crawler, maxDepth: parseInt(e.target.value) }
+                    })}
+                  />
+                  <small>Profundidad máxima (1-10)</small>
+                </div>
+                
+                <div className="config-field">
+                  <label>Rate Limit Delay:</label>
+                  <input
+                    type="number"
+                    min="100"
+                    max="10000"
+                    step="100"
+                    value={config.crawler.rateLimitDelay}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      crawler: { ...config.crawler, rateLimitDelay: parseInt(e.target.value) }
+                    })}
+                  />
+                  <small>Delay entre peticiones (ms)</small>
+                </div>
+                
+                <div className="config-field">
+                  <label>Max Links per Page:</label>
+                  <input
+                    type="number"
+                    min="10"
+                    max="1000"
+                    step="10"
+                    value={config.discovery.maxLinksPerPage}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      discovery: { ...config.discovery, maxLinksPerPage: parseInt(e.target.value) }
+                    })}
+                  />
+                  <small>Enlaces máximos por página</small>
+                </div>
+              </div>
+            </div>
+
+            <div className="url-input-section">
+              <h2>Iniciar Crawling Masivo</h2>
+              <div className="url-input-container">
+                <input
+                  type="text"
+                  placeholder="Enter website URL for massive crawling..."
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className={`url-input ${url && !validateUrl(url) ? 'invalid' : ''}`}
+                  onKeyPress={(e) => e.key === 'Enter' && startCrawling()}
+                />
+                <button
+                  onClick={startCrawling}
+                  disabled={!url || !validateUrl(url) || isStarting}
+                  className="start-button"
+                >
+                  {isStarting ? 'Starting Massive Crawler...' : 'Start Massive Crawling'}
+                </button>
+              </div>
+              {url && !validateUrl(url) && (
+                <p className="url-error">Please enter a valid URL (e.g., https://example.com)</p>
+              )}
+              {sessionId && (
+                <p style={{color: '#28a745', marginTop: '10px'}}>
+                  {'\u2705'} Crawling iniciado! Session ID: {sessionId}
+                </p>
+              )}
+            </div>
+          </main>
+
+          <footer className="app-footer">
+            <p>Visual RAG Pro V5.2-01 - Massive Website Crawling System</p>
+            <p>Configurado para crawling masivo con alta concurrencia y profundidad</p>
+          </footer>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<TestMassiveCrawler />, document.getElementById('root'));
+  </script>
+</body>
+</html>

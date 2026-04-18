@@ -1,0 +1,13 @@
+{
+  "url": "https://httpbin.org",
+  "title": "httpbin.org",
+  "depth": 0,
+  "parentUrl": null,
+  "domain": "httpbin.org",
+  "timestamp": "2026-04-18T15:01:44.124Z",
+  "statusCode": 200,
+  "contentType": "text/html; charset=utf-8",
+  "pageId": "48412cec1d6abc44f06f0c9d4098e94f",
+  "screenshotPath": "pages/screenshots/48412cec1d6abc44f06f0c9d4098e94f.png",
+  "htmlPath": "pages/html/48412cec1d6abc44f06f0c9d4098e94f.html"
+}

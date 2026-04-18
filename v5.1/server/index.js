@@ -15,13 +15,15 @@ app.use('/api/screenshot', require('./routes/screenshot'))
 app.use('/api/extract', require('./routes/extract'))
 app.use('/api/chunk', require('./routes/chunk'))
 app.use('/api/export', require('./routes/export'))
+app.use('/api/crawl', require('./routes/crawl'))
+app.use('/api/massive-crawler', require('./routes/massiveCrawler'))
 
 // Static files (serve after API routes)
 app.use(express.static(path.join(__dirname, '../client')))
 
 // Serve client fallback
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/index-new.html'))
+  res.sendFile(path.join(__dirname, '../client/index.html'))
 })
 
 // Start server

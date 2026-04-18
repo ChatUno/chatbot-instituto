@@ -1,0 +1,148 @@
+{
+  "domain": "docs.python.org",
+  "startTime": "2026-04-18T15:04:21.018Z",
+  "endTime": "2026-04-18T15:04:22.838Z",
+  "status": "completed",
+  "config": {
+    "crawler": {
+      "maxConcurrency": 8,
+      "maxDepth": 5,
+      "rateLimitDelay": 500,
+      "timeout": 45000,
+      "retryAttempts": 3,
+      "retryDelay": 3000
+    },
+    "discovery": {
+      "maxLinksPerPage": 500,
+      "excludePatterns": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    "rateLimiter": {
+      "defaultDelay": 500,
+      "maxDelay": 8000,
+      "minDelay": 200,
+      "adaptiveMode": true,
+      "errorThreshold": 2,
+      "successThreshold": 8
+    }
+  },
+  "stats": {
+    "totalDiscovered": 0,
+    "totalProcessed": 0,
+    "totalFailed": 0,
+    "totalSkipped": 0,
+    "totalDuplicates": 0,
+    "processingRate": 0,
+    "averageResponseTime": 0,
+    "dataSize": 0,
+    "successRate": 0,
+    "discoveryRate": 0,
+    "duplicateRate": 0,
+    "duration": {
+      "milliseconds": 1820,
+      "seconds": 1.82,
+      "minutes": 0.03,
+      "hours": 0
+    },
+    "categoryDistribution": {
+      "homepage": 0,
+      "navigation": 0,
+      "content": 0,
+      "documents": 0,
+      "media": 0,
+      "forms": 0,
+      "other": 0
+    }
+  },
+  "categories": {
+    "homepage": 0,
+    "navigation": 0,
+    "content": 0,
+    "documents": 0,
+    "media": 0,
+    "forms": 0,
+    "other": 0
+  },
+  "pages": [],
+  "errors": [],
+  "duplicates": [],
+  "timeline": [
+    {
+      "type": "report_initialized",
+      "timestamp": "2026-04-18T15:04:21.018Z",
+      "data": {
+        "domain": "docs.python.org"
+      }
+    },
+    {
+      "type": "config_updated",
+      "timestamp": "2026-04-18T15:04:21.018Z",
+      "data": {
+        "crawler": {
+          "maxConcurrency": 8,
+          "maxDepth": 5,
+          "rateLimitDelay": 500,
+          "timeout": 45000,
+          "retryAttempts": 3,
+          "retryDelay": 3000
+        },
+        "discovery": {
+          "maxLinksPerPage": 500,
+          "excludePatterns": [
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        },
+        "rateLimiter": {
+          "defaultDelay": 500,
+          "maxDelay": 8000,
+          "minDelay": 200,
+          "adaptiveMode": true,
+          "errorThreshold": 2,
+          "successThreshold": 8
+        }
+      }
+    },
+    {
+      "type": "crawling_started",
+      "timestamp": "2026-04-18T15:04:21.018Z",
+      "data": {
+        "baseUrl": "https://docs.python.org",
+        "domain": "docs.python.org"
+      }
+    },
+    {
+      "type": "crawling_completed",
+      "timestamp": "2026-04-18T15:04:22.838Z",
+      "data": {
+        "totalDiscovered": 1,
+        "totalProcessed": 1,
+        "totalFailed": 0,
+        "startTime": "2026-04-18T15:04:21.009Z",
+        "endTime": "2026-04-18T15:04:22.838Z"
+      }
+    }
+  ]
+}
