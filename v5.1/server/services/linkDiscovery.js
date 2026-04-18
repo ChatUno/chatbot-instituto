@@ -4,39 +4,98 @@ const crypto = require('crypto');
 class LinkDiscovery {
   constructor(options = {}) {
     this.maxLinksPerPage = options.maxLinksPerPage || 200;
-    this.excludePatterns = options.excludePatterns || [
-      /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|tar|gz)$/i,
-      /\/api\//i,
-      /\/admin\//i,
+    
+    // Handle exclude patterns - convert strings to RegExp objects
+    const defaultPatterns = [
+      /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|tar|gz|7z|exe|dmg|iso|img|bin)$/i,
       /\/login/i,
       /\/logout/i,
       /\/register/i,
-      /\/cart/i,
+      /\/signup/i,
+      /\/auth\//i,
+      /\/oauth/i,
+      /\/sso/i,
+      /\/forgot/i,
+      /\/reset/i,
       /\/checkout/i,
+      /\/cart/i,
+      /\/payment/i,
+      /\/billing/i,
+      /\/account/i,
+      /\/profile/i,
+      /\/settings/i,
       /\/user\//i,
-      /\/profile\//i,
-      /\/settings\//i,
+      /\/admin\//i,
       /javascript:/i,
       /mailto:/i,
       /tel:/i,
       /sms:/i,
       /ftp:/i,
-      /#.*$/i
+      /irc:/i,
+      /magnet:/i,
+      /#.*$/,
+      /\.(css|js|json|xml|txt|log|tmp|cache|bak|old|orig|copy|swp)$/i
     ];
     
-    this.includePatterns = options.includePatterns || [
+    this.excludePatterns = this.processPatterns(options.excludePatterns || defaultPatterns);
+    
+    this.includePatterns = this.processPatterns(options.includePatterns || [
+      // Allow HTML files
       /\.html?$/i,
       /\.php$/i,
       /\.asp$/i,
       /\.jsp$/i,
       /\.cfm$/i,
-      /\.(\/|\/index\.(html?|php|asp|jsp|cfm))?$/
-    ];
+      // Allow extensionless URLs (like MDN, Wikipedia, etc.)
+      /^https?:\/\/[^\/]+\/(?:[^\/]+\/)*[^\/.]*$/,
+      // Allow index files
+      /\.(\/|\/index\.(html?|php|asp|jsp|cfm))?$/,
+      // Allow common web paths
+      /\/docs\//i,
+      /\/api\//i,
+      /\/blog\//i,
+      /\/community\//i,
+      /\/learn\//i,
+      /\/web\//i,
+      /\/en-US\//i,
+      /\/es\//i
+    ]);
 
     this.domainWhitelist = new Set();
     this.domainBlacklist = new Set();
     this.discoveredLinks = new Map();
     this.linkHashes = new Set();
+  }
+
+  processPatterns(patterns) {
+    console.log(`[LinkDiscovery] Processing ${patterns?.length || 0} patterns`);
+    
+    return patterns.map(pattern => {
+      if (typeof pattern === 'string') {
+        // Convert string patterns to RegExp objects
+        try {
+          const regex = new RegExp(pattern);
+          console.log(`[LinkDiscovery] Converted string to RegExp: ${pattern} -> ${regex}`);
+          return regex;
+        } catch (error) {
+          console.warn('Invalid regex pattern:', pattern);
+          return null;
+        }
+      } else if (pattern instanceof RegExp) {
+        console.log(`[LinkDiscovery] Keeping existing RegExp: ${pattern}`);
+        return pattern;
+      } else if (pattern && typeof pattern === 'object') {
+        // Handle empty objects from JSON serialization
+        console.log(`[LinkDiscovery] Skipping empty object pattern`);
+        return null;
+      } else if (pattern === null || pattern === undefined) {
+        console.log(`[LinkDiscovery] Skipping null/undefined pattern`);
+        return null;
+      } else {
+        console.log(`[LinkDiscovery] Skipping invalid pattern type: ${typeof pattern}`, pattern);
+        return null;
+      }
+    }).filter(pattern => pattern !== null);
   }
 
   setDomainWhitelist(domains) {
@@ -69,9 +128,10 @@ class LinkDiscovery {
   }
 
   async extractLinksFromHTML(html, baseUrl, targetDomain) {
-    // Create a simple DOM parser without external dependencies
     const links = [];
-    const linkRegex = /<a\s+(?:[^>]*?\s+)?href\s*=\s*["']([^"']+)["'][^>]*>(.*?)<\/a>/gi;
+    
+    // More robust regex for link extraction - handles multiline and attributes
+    const linkRegex = /<a\s+[^>]*?href\s*=\s*["']([^"']+)["'][^>]*>(.*?)<\/a>/gis;
     let match;
 
     while ((match = linkRegex.exec(html)) !== null) {
@@ -86,6 +146,28 @@ class LinkDiscovery {
             text: text || '',
             depth: 0
           });
+        }
+      } catch (error) {
+        // Invalid URL, skip
+      }
+    }
+
+    // Additional extraction for links in different formats
+    const additionalRegex = /href\s*=\s*["']([^"']+)["']/gi;
+    while ((match = additionalRegex.exec(html)) !== null) {
+      const href = match[1];
+      
+      try {
+        const absoluteUrl = this.resolveUrl(href, baseUrl);
+        if (absoluteUrl && this.isValidUrl(absoluteUrl, targetDomain)) {
+          // Avoid duplicates
+          if (!links.find(link => link.url === absoluteUrl)) {
+            links.push({
+              url: absoluteUrl,
+              text: '',
+              depth: 0
+            });
+          }
         }
       } catch (error) {
         // Invalid URL, skip
@@ -167,33 +249,53 @@ class LinkDiscovery {
   }
 
   filterLinks(links, targetDomain) {
-    return links.filter(link => {
+    console.log(`[LinkDiscovery] Filtering ${links.length} links for domain ${targetDomain}`);
+    console.log(`[LinkDiscovery] Exclude patterns count: ${this.excludePatterns.length}`);
+    console.log(`[LinkDiscovery] Include patterns count: ${this.includePatterns.length}`);
+    
+    const filteredLinks = links.filter(link => {
       const url = link.url;
       
       // Check exclude patterns
       for (const pattern of this.excludePatterns) {
-        if (pattern.test(url)) return false;
+        if (pattern && pattern.test && pattern.test(url)) {
+          console.log(`[LinkDiscovery] Excluded by pattern: ${url}`);
+          return false;
+        }
       }
 
       // Check include patterns
       if (this.includePatterns.length > 0) {
         let matchesInclude = false;
         for (const pattern of this.includePatterns) {
-          if (pattern.test(url)) {
+          if (pattern && pattern.test && pattern.test(url)) {
             matchesInclude = true;
             break;
           }
         }
-        if (!matchesInclude) return false;
+        if (!matchesInclude) {
+          console.log(`[LinkDiscovery] Excluded - no include pattern match: ${url}`);
+          return false;
+        }
       }
 
-      // Additional filtering
-      if (this.isLikelyBinaryFile(url)) return false;
-      if (this.isLikelyApiEndpoint(url)) return false;
-      if (this.isLikelyAuthenticationPage(url)) return false;
+      // Additional filtering - only filter binary files, allow API endpoints for documentation sites
+      if (this.isLikelyBinaryFile(url)) {
+        console.log(`[LinkDiscovery] Excluded - binary file: ${url}`);
+        return false;
+      }
+      if (this.isLikelyAuthenticationPage(url)) {
+        console.log(`[LinkDiscovery] Excluded - auth page: ${url}`);
+        return false;
+      }
 
       return true;
     });
+    
+    console.log(`[LinkDiscovery] Filtered to ${filteredLinks.length} links`);
+    console.log(`[LinkDiscovery] First 5 filtered links:`, filteredLinks.slice(0, 5).map(l => l.url));
+    
+    return filteredLinks;
   }
 
   deduplicateLinks(links) {
@@ -261,19 +363,7 @@ class LinkDiscovery {
     return binaryExtensions.some(ext => urlLower.includes(ext));
   }
 
-  isLikelyApiEndpoint(url) {
-    const apiPatterns = [
-      /\/api\//i,
-      /\/v\d+\//i,
-      /\.json$/i,
-      /\.xml$/i,
-      /\?format=/i,
-      /\/rest\//i,
-      /\/graphql/i
-    ];
-    
-    return apiPatterns.some(pattern => pattern.test(url));
-  }
+  // Removed isLikelyApiEndpoint - we want to allow API endpoints for documentation sites
 
   isLikelyAuthenticationPage(url) {
     const authPatterns = [

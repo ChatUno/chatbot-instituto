@@ -1,0 +1,1158 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light dark" data-renderer="BlogPost"><head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Image formats: Color models for humans and devices</title>
+          
+          <script>try {
+  document.documentElement.dataset.theme =
+    localStorage.getItem("theme") || "light dark";
+} catch (error) {
+  console.warn("Unable to set theme", error);
+}
+
+try {
+  if (localStorage.getItem("nop") === "yes") {
+    document.documentElement.dataset["nop"] = "yes";
+  }
+} catch (error) {
+  console.warn("Unable to set nop", error);
+}
+</script>
+          <link rel="stylesheet" href="/static/client/styles-global.396ee18213bb0bd7.css" fetchpriority="high"><link rel="stylesheet" href="/static/client/styles-blog-post.d0b92f36d3ccd2ae.css" fetchpriority="high"><link rel="stylesheet" href="/static/client/styles-content-section.2ee991ba88f986cf.css" fetchpriority="high"><link rel="stylesheet" href="/static/client/styles-heading-anchor.0eec5185ab9425b7.css" fetchpriority="high"><link rel="stylesheet" href="/static/client/styles-page-layout.5a4354f33e894319.css" fetchpriority="high"><link rel="stylesheet" href="/static/client/styles-a11y-menu.5796ee87cb69f93f.css" fetchpriority="high"><link rel="stylesheet" href="/static/client/styles-navigation.3a34ee593a554c40.css" fetchpriority="high"><link rel="stylesheet" href="/static/client/styles-logo.aea5ff6edf1b9cfb.css" fetchpriority="high"><link rel="stylesheet" href="/static/client/styles-menu.3376b3e11656fba0.css" fetchpriority="high"><link rel="stylesheet" href="/static/client/styles-breadcrumbs-bar.9a51a3c76a6231d0.css" fetchpriority="high"><link rel="stylesheet" href="/static/client/styles-breadcrumbs.d06ce8d09f42feb8.css" fetchpriority="high"><link rel="stylesheet" href="/static/client/styles-footer.a2850e459e2d290b.css" fetchpriority="high">
+          <link rel="preload" href="/static/client/jetbrains-mono-latin.119994ed445212c7.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="low"><link rel="preload" href="/static/client/inter-latin.9a3b1bc220d426ef.woff2" as="font" type="font/woff2" crossorigin="anonymous" fetchpriority="low">
+          <script data-cfasync="false" data-report-only="on" data-prompt="0" src="https://transcend-cdn.com/cm/d556c3a1-e57c-4bdf-a490-390a1aebf6dd/airgap.js"></script>
+          <script src="/static/client/runtime.c294a6bdc7a42570.js" type="module"></script><script src="/static/client/1111.53dba753dc3eb961.js" type="module"></script><script src="/static/client/8903.f870aafb338b203a.js" type="module"></script><script src="/static/client/index.9a449352d879bbd5.js" type="module"></script>
+          
+    <link rel="icon" sizes="32x32" href="https://developer.mozilla.org/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="https://developer.mozilla.org/favicon.svg">
+   <meta name="description" content="Images help bring more color and life to the web. This post describes how images are represented by humans and on different devices, with details about color spaces and vision theory."><meta name="og:url" content="https://developer.mozilla.org/en-US/blog/color-models-humans-devices/"><meta name="og:title" content="Image formats: Color models for humans and devices | MDN Blog"><meta name="og:locale" content="en_US"><meta name="og:description" content="Images help bring more color and life to the web. This post describes how images are represented by humans and on different devices, with details about color spaces and vision theory."><meta name="og:image" content="https://developer.mozilla.org/mdn-social-image.46ac2375.png"><meta name="og:image:type" content="image/png"><meta name="og:image:height" content="1024"><meta name="og:image:width" content="1024"><meta name="og:image:alt" content="The MDN logo"><meta name="og:site_name" content="MDN Web Docs"><meta name="twitter:card" content="summary"><meta name="twitter:creator" content="MozDevNet">
+          <link rel="canonical" href="https://developer.mozilla.org/en-US/blog/color-models-humans-devices/">
+          <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+          <link rel="manifest" href="/manifest.json">
+          <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="MDN Web Docs">
+          <link rel="alternate" type="application/rss+xml" title="MDN Blog RSS Feed" href="https://developer.mozilla.org/en-US/blog/rss.xml">
+        </head>
+        
+      <body class="page-layout">
+        <ul class="a11y-menu">
+      <li>
+        <a href="#content">Skip to main content</a>
+      </li>
+      <li>
+        <a href="#search">Skip to search</a>
+      </li>
+    </ul>
+        <div class="page-layout__banner" data-scheme="">
+          <mdn-placement-top></mdn-placement-top>
+        </div>
+        <header class="page-layout__header">
+          
+      <nav class="navigation" data-scheme="" data-open="false">
+        <div class="navigation__logo">
+      <a href="/en-US/" class="logo">
+        <svg class="logo__image" width="83" height="24" viewBox="0 0 83 24" role="img">
+          <title>MDN</title>
+          <path class="logo__letter" d="M9.4 0 2.81 21.17H.12L6.69 0H9.4Zm2.38 0v21.17H9.4V0h2.4Zm9.27 0-6.56 21.17H11.8L18.36 0h2.69Zm2.39 0v21.17h-2.4V0h2.4Z"></path>
+          <path class="logo__text" d="M45.55 16.83h-3.93v-1.27h.87v-3.63c0-.85-.16-1.45-.48-1.82a1.65 1.65 0 0 0-1.3-.52c-.74 0-1.3.25-1.66.78a2.98 2.98 0 0 0-.58 1.58v3.59h1.38v1.26h-3.93v-1.26h.87v-3.6c0-.88-.16-1.48-.48-1.83a1.7 1.7 0 0 0-1.29-.52 1.93 1.93 0 0 0-1.65.75 2.85 2.85 0 0 0-.58 1.6v3.62h1.59v1.27h-4.64v-1.27h1.37V9.75h-1.4V8.46h3.08v1.47c.28-.48.62-.87 1.08-1.2a3 3 0 0 1 1.68-.45c.67 0 1.22.16 1.73.48.5.32.85.8 1.03 1.47.25-.57.62-1.03 1.13-1.4.5-.37 1.1-.55 1.81-.55.8 0 1.5.25 2.05.75.55.51.85 1.3.85 2.35v4.18h1.4v1.27Zm9.77 0H52.3v-1.66c-.27.51-.66.95-1.13 1.29-.56.4-1.23.59-1.9.55-1.11 0-2-.37-2.67-1.12a4.41 4.41 0 0 1-1-3.06c0-1.15.3-2.2.93-3.15.6-.94 1.58-1.43 2.94-1.43 1.36 0 2.25.5 2.83 1.5V5.22h-2V3.93h3.63v11.63h1.38v1.27Zm-3.06-3.86v-1.02a2.28 2.28 0 0 0-.73-1.67 2.4 2.4 0 0 0-1.66-.65 2.18 2.18 0 0 0-1.88.9 3.63 3.63 0 0 0-.65 2.2c0 .95.23 1.68.7 2.19.45.5 1.03.76 1.7.76.73 0 1.33-.3 1.79-.88.48-.6.71-1.21.73-1.83Zm14.14 3.86h-4.43v-1.27h1.37v-3.63c0-.85-.16-1.45-.5-1.82a1.68 1.68 0 0 0-1.31-.52c-.71 0-1.29.23-1.7.69a2.52 2.52 0 0 0-.67 1.6v3.66h1.38v1.26H56.1v-1.26h1.38v-5.8h-1.42V8.47h3.12V9.9c.6-1.06 1.57-1.6 2.92-1.6.83 0 1.54.26 2.12.77.57.5.85 1.28.85 2.34v4.19h1.38v1.24h-.05Z"></path>
+          <path class="logo__cursor" d="M67.71 21.98H83V24H67.71v-2.02Z"></path>
+        </svg>
+      </a>
+    </div>
+        <div class="navigation__search" data-view="mobile">
+          <mdn-search-button></mdn-search-button>
+        </div>
+        <button class="navigation__button" type="button" aria-expanded="false" aria-controls="navigation__popup" aria-label="Toggle navigation"></button>
+        <div class="navigation__popup" id="navigation__popup">
+          <div class="navigation__menu">
+      <nav class="menu">
+        <div class="menu__tab" data-section="html">
+            <mdn-dropdown loaded="">
+                  <button class="menu__tab-button" type="button" slot="button" aria-expanded="false" aria-controls="uid_36w3po50l8i">
+                    <span class="menu__tab-label">HTML</span>
+                  </button>
+                  <div class="menu__panel" slot="dropdown" id="uid_36w3po50l8i">
+                    <p class="menu__panel-title">
+                      <a href="/en-US/docs/Web/HTML" data-glean-id="menu_click_menu: html -> /en-US/docs/Web/HTML">HTML: Markup language</a>
+                    </p>
+                    <div class="menu__panel-content">
+                      <dl>
+                              <dt>HTML reference</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Web/HTML/Reference/Elements" data-glean-id="menu_click_submenu: html -> /en-US/docs/Web/HTML/Reference/Elements">Elements</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/HTML/Reference/Global_attributes" data-glean-id="menu_click_submenu: html -> /en-US/docs/Web/HTML/Reference/Global_attributes">Global attributes</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/HTML/Reference/Attributes" data-glean-id="menu_click_submenu: html -> /en-US/docs/Web/HTML/Reference/Attributes">Attributes</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/HTML/Reference" aria-label="See all HTML references" title="See all HTML references" data-glean-id="menu_click_submenu: html -> /en-US/docs/Web/HTML/Reference">See all…</a>
+                              </li>
+                        </ul></dd>
+                            </dl><dl>
+                              <dt>HTML guides</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Web/HTML/Guides/Responsive_images" data-glean-id="menu_click_submenu: html -> /en-US/docs/Web/HTML/Guides/Responsive_images">Responsive images</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/HTML/Guides/Cheatsheet" data-glean-id="menu_click_submenu: html -> /en-US/docs/Web/HTML/Guides/Cheatsheet">HTML cheatsheet</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/HTML/Guides/Date_and_time_formats" data-glean-id="menu_click_submenu: html -> /en-US/docs/Web/HTML/Guides/Date_and_time_formats">Date &amp; time formats</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/HTML/Guides" aria-label="See all HTML guides" title="See all HTML guides" data-glean-id="menu_click_submenu: html -> /en-US/docs/Web/HTML/Guides">See all…</a>
+                              </li>
+                        </ul></dd>
+                            </dl><dl>
+                              <dt>Markup languages</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Web/SVG" data-glean-id="menu_click_submenu: html -> /en-US/docs/Web/SVG">SVG</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/MathML" data-glean-id="menu_click_submenu: html -> /en-US/docs/Web/MathML">MathML</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/XML" data-glean-id="menu_click_submenu: html -> /en-US/docs/Web/XML">XML</a>
+                              </li>
+                        </ul></dd>
+                            </dl>
+                    </div>
+                  </div>
+                </mdn-dropdown>
+          </div><div class="menu__tab" data-section="css">
+            <mdn-dropdown loaded="">
+                  <button class="menu__tab-button" type="button" slot="button" aria-expanded="false" aria-controls="uid_p1hoxqr3czo">
+                    <span class="menu__tab-label">CSS</span>
+                  </button>
+                  <div class="menu__panel" slot="dropdown" id="uid_p1hoxqr3czo">
+                    <p class="menu__panel-title">
+                      <a href="/en-US/docs/Web/CSS" data-glean-id="menu_click_menu: css -> /en-US/docs/Web/CSS">CSS: Styling language</a>
+                    </p>
+                    <div class="menu__panel-content">
+                      <dl>
+                              <dt>CSS reference</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Web/CSS/Reference/Properties" data-glean-id="menu_click_submenu: css -> /en-US/docs/Web/CSS/Reference/Properties">Properties</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/Reference/Selectors" data-glean-id="menu_click_submenu: css -> /en-US/docs/Web/CSS/Reference/Selectors">Selectors</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/Reference/At-rules" data-glean-id="menu_click_submenu: css -> /en-US/docs/Web/CSS/Reference/At-rules">At-rules</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/Reference/Values" data-glean-id="menu_click_submenu: css -> /en-US/docs/Web/CSS/Reference/Values">Values</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/Reference" aria-label="See all CSS references" title="See all CSS references" data-glean-id="menu_click_submenu: css -> /en-US/docs/Web/CSS/Reference">See all…</a>
+                              </li>
+                        </ul></dd>
+                            </dl><dl>
+                              <dt>CSS guides</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Web/CSS/Guides/Box_model/Introduction" data-glean-id="menu_click_submenu: css -> /en-US/docs/Web/CSS/Guides/Box_model/Introduction">Box model</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/Guides/Animations/Using" data-glean-id="menu_click_submenu: css -> /en-US/docs/Web/CSS/Guides/Animations/Using">Animations</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/Guides/Flexible_box_layout/Basic_concepts" data-glean-id="menu_click_submenu: css -> /en-US/docs/Web/CSS/Guides/Flexible_box_layout/Basic_concepts">Flexbox</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/Guides/Colors/Applying_color" data-glean-id="menu_click_submenu: css -> /en-US/docs/Web/CSS/Guides/Colors/Applying_color">Colors</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/Guides" aria-label="See all CSS guides" title="See all CSS guides" data-glean-id="menu_click_submenu: css -> /en-US/docs/Web/CSS/Guides">See all…</a>
+                              </li>
+                        </ul></dd>
+                            </dl><dl>
+                              <dt>Layout cookbook</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Web/CSS/How_to/Layout_cookbook/Column_layouts" data-glean-id="menu_click_submenu: css -> /en-US/docs/Web/CSS/How_to/Layout_cookbook/Column_layouts">Column layouts</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/How_to/Layout_cookbook/Center_an_element" data-glean-id="menu_click_submenu: css -> /en-US/docs/Web/CSS/How_to/Layout_cookbook/Center_an_element">Centering an element</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/How_to/Layout_cookbook/Card" data-glean-id="menu_click_submenu: css -> /en-US/docs/Web/CSS/How_to/Layout_cookbook/Card">Card component</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/How_to/Layout_cookbook" data-glean-id="menu_click_submenu: css -> /en-US/docs/Web/CSS/How_to/Layout_cookbook">See all…</a>
+                              </li>
+                        </ul></dd>
+                            </dl>
+                    </div>
+                  </div>
+                </mdn-dropdown>
+          </div><div class="menu__tab" data-section="javascript">
+            <mdn-dropdown loaded="">
+                  <button class="menu__tab-button" type="button" slot="button" aria-expanded="false" aria-controls="uid_1bprhe42tkq">
+                    <span class="menu__tab-label" data-type="long">JavaScript</span><span class="menu__tab-label" data-type="short">JS</span>
+                  </button>
+                  <div class="menu__panel" slot="dropdown" id="uid_1bprhe42tkq">
+                    <p class="menu__panel-title">
+                      <a href="/en-US/docs/Web/JavaScript" data-glean-id="menu_click_menu: javascript -> /en-US/docs/Web/JavaScript">JavaScript: Scripting language</a>
+                    </p>
+                    <div class="menu__panel-content">
+                      <dl>
+                              <dt>JS reference</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Web/JavaScript/Reference/Global_Objects" data-glean-id="menu_click_submenu: javascript -> /en-US/docs/Web/JavaScript/Reference/Global_Objects">Standard built-in objects</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/JavaScript/Reference/Operators" data-glean-id="menu_click_submenu: javascript -> /en-US/docs/Web/JavaScript/Reference/Operators">Expressions &amp; operators</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/JavaScript/Reference/Statements" data-glean-id="menu_click_submenu: javascript -> /en-US/docs/Web/JavaScript/Reference/Statements">Statements &amp; declarations</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/JavaScript/Reference/Functions" data-glean-id="menu_click_submenu: javascript -> /en-US/docs/Web/JavaScript/Reference/Functions">Functions</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/JavaScript/Reference" aria-label="See all JavaScript references" title="See all JavaScript references" data-glean-id="menu_click_submenu: javascript -> /en-US/docs/Web/JavaScript/Reference">See all…</a>
+                              </li>
+                        </ul></dd>
+                            </dl><dl>
+                              <dt>JS guides</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling" data-glean-id="menu_click_submenu: javascript -> /en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling">Control flow &amp; error handing</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/JavaScript/Guide/Loops_and_iteration" data-glean-id="menu_click_submenu: javascript -> /en-US/docs/Web/JavaScript/Guide/Loops_and_iteration">Loops and iteration</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/JavaScript/Guide/Working_with_objects" data-glean-id="menu_click_submenu: javascript -> /en-US/docs/Web/JavaScript/Guide/Working_with_objects">Working with objects</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/JavaScript/Guide/Using_classes" data-glean-id="menu_click_submenu: javascript -> /en-US/docs/Web/JavaScript/Guide/Using_classes">Using classes</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/JavaScript/Guide" aria-label="See all JavaScript guides" title="See all JavaScript guides" data-glean-id="menu_click_submenu: javascript -> /en-US/docs/Web/JavaScript/Guide">See all…</a>
+                              </li>
+                        </ul></dd>
+                            </dl>
+                    </div>
+                  </div>
+                </mdn-dropdown>
+          </div><div class="menu__tab" data-section="webapis">
+            <mdn-dropdown loaded="">
+                  <button class="menu__tab-button" type="button" slot="button" aria-expanded="false" aria-controls="uid_phltav4g3od">
+                    <span class="menu__tab-label">Web APIs</span>
+                  </button>
+                  <div class="menu__panel" slot="dropdown" id="uid_phltav4g3od">
+                    <p class="menu__panel-title">
+                      <a href="/en-US/docs/Web/API" data-glean-id="menu_click_menu: webapis -> /en-US/docs/Web/API">Web APIs: Programming interfaces</a>
+                    </p>
+                    <div class="menu__panel-content">
+                      <dl>
+                              <dt>Web API reference</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Web/API/File_System_API" data-glean-id="menu_click_submenu: webapis -> /en-US/docs/Web/API/File_System_API">File system API</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/API/Fetch_API" data-glean-id="menu_click_submenu: webapis -> /en-US/docs/Web/API/Fetch_API">Fetch API</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/API/Geolocation_API" data-glean-id="menu_click_submenu: webapis -> /en-US/docs/Web/API/Geolocation_API">Geolocation API</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/API/HTML_DOM_API" data-glean-id="menu_click_submenu: webapis -> /en-US/docs/Web/API/HTML_DOM_API">HTML DOM API</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/API/Push_API" data-glean-id="menu_click_submenu: webapis -> /en-US/docs/Web/API/Push_API">Push API</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/API/Service_Worker_API" data-glean-id="menu_click_submenu: webapis -> /en-US/docs/Web/API/Service_Worker_API">Service worker API</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/API" aria-label="See all Web API guides" title="See all Web API guides" data-glean-id="menu_click_submenu: webapis -> /en-US/docs/Web/API">See all…</a>
+                              </li>
+                        </ul></dd>
+                            </dl><dl>
+                              <dt>Web API guides</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Web/API/Web_Animations_API/Using_the_Web_Animations_API" data-glean-id="menu_click_submenu: webapis -> /en-US/docs/Web/API/Web_Animations_API/Using_the_Web_Animations_API">Using the Web animation API</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/API/Fetch_API/Using_Fetch" data-glean-id="menu_click_submenu: webapis -> /en-US/docs/Web/API/Fetch_API/Using_Fetch">Using the Fetch API</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/API/History_API/Working_with_the_History_API" data-glean-id="menu_click_submenu: webapis -> /en-US/docs/Web/API/History_API/Working_with_the_History_API">Working with the History API</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/API/Web_Speech_API/Using_the_Web_Speech_API" data-glean-id="menu_click_submenu: webapis -> /en-US/docs/Web/API/Web_Speech_API/Using_the_Web_Speech_API">Using the Web speech API</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/API/Web_Workers_API/Using_web_workers" data-glean-id="menu_click_submenu: webapis -> /en-US/docs/Web/API/Web_Workers_API/Using_web_workers">Using web workers</a>
+                              </li>
+                        </ul></dd>
+                            </dl>
+                    </div>
+                  </div>
+                </mdn-dropdown>
+          </div><div class="menu__tab" data-section="all">
+            <mdn-dropdown loaded="">
+                  <button class="menu__tab-button" type="button" slot="button" aria-expanded="false" aria-controls="uid_87hhfakwx1f">
+                    <span class="menu__tab-label">All</span>
+                  </button>
+                  <div class="menu__panel" slot="dropdown" id="uid_87hhfakwx1f">
+                    <p class="menu__panel-title">
+                      <a href="/en-US/docs/Web" data-glean-id="menu_click_menu: all -> /en-US/docs/Web">All web technology</a>
+                    </p>
+                    <div class="menu__panel-content">
+                      <dl>
+                              <dt>Technologies</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Web/Accessibility" data-glean-id="menu_click_submenu: all -> /en-US/docs/Web/Accessibility">Accessibility</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/HTTP" data-glean-id="menu_click_submenu: all -> /en-US/docs/Web/HTTP">HTTP</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/URI" data-glean-id="menu_click_submenu: all -> /en-US/docs/Web/URI">URI</a>
+                              </li><li>
+                                <a href="/en-US/docs/Mozilla/Add-ons/WebExtensions" data-glean-id="menu_click_submenu: all -> /en-US/docs/Mozilla/Add-ons/WebExtensions">Web extensions</a>
+                              </li><li>
+                                <a href="/en-US/docs/WebAssembly" data-glean-id="menu_click_submenu: all -> /en-US/docs/WebAssembly">WebAssembly</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/WebDriver" data-glean-id="menu_click_submenu: all -> /en-US/docs/Web/WebDriver">WebDriver</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web" aria-label="See all web technology references" title="See all web technology references" data-glean-id="menu_click_submenu: all -> /en-US/docs/Web">See all…</a>
+                              </li>
+                        </ul></dd>
+                            </dl><dl>
+                              <dt>Topics</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Web/Media" data-glean-id="menu_click_submenu: all -> /en-US/docs/Web/Media">Media</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/Performance" data-glean-id="menu_click_submenu: all -> /en-US/docs/Web/Performance">Performance</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/Privacy" data-glean-id="menu_click_submenu: all -> /en-US/docs/Web/Privacy">Privacy</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/Security" data-glean-id="menu_click_submenu: all -> /en-US/docs/Web/Security">Security</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/Progressive_web_apps" data-glean-id="menu_click_submenu: all -> /en-US/docs/Web/Progressive_web_apps">Progressive web apps</a>
+                              </li>
+                        </ul></dd>
+                            </dl>
+                    </div>
+                  </div>
+                </mdn-dropdown>
+          </div><div class="menu__tab" data-section="learn">
+            <mdn-dropdown loaded="">
+                  <button class="menu__tab-button" type="button" slot="button" aria-expanded="false" aria-controls="uid_rbpzsm5n5he">
+                    <span class="menu__tab-label">Learn</span>
+                  </button>
+                  <div class="menu__panel" slot="dropdown" id="uid_rbpzsm5n5he">
+                    <p class="menu__panel-title">
+                      <a href="/en-US/docs/Learn_web_development" data-glean-id="menu_click_menu: learn -> /en-US/docs/Learn_web_development">Learn web development</a>
+                    </p>
+                    <div class="menu__panel-content">
+                      <dl>
+                              <dt>Frontend developer course</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Learn_web_development/Getting_started" data-glean-id="menu_click_submenu: learn -> /en-US/docs/Learn_web_development/Getting_started">Getting started modules</a>
+                              </li><li>
+                                <a href="/en-US/docs/Learn_web_development/Core" data-glean-id="menu_click_submenu: learn -> /en-US/docs/Learn_web_development/Core">Core modules</a>
+                              </li><li>
+                                <a class="" href="/en-US/curriculum/" data-glean-id="menu_click_submenu: learn -> /en-US/curriculum/">MDN Curriculum</a>
+                              </li><li>
+                                <a class="external" href="https://scrimba.com/frontend-path-c0j?via=mdn-learn-navbar" data-glean-id="menu_click_submenu: learn -> https://scrimba.com/frontend-path-c0j?via=mdn-learn-navbar">Check out the video course from Scrimba, our partner</a>
+                              </li>
+                        </ul></dd>
+                            </dl><dl>
+                              <dt>Learn HTML</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Learn_web_development/Core/Structuring_content" data-glean-id="menu_click_submenu: learn -> /en-US/docs/Learn_web_development/Core/Structuring_content">Structuring content with HTML module</a>
+                              </li>
+                        </ul></dd>
+                            </dl><dl>
+                              <dt>Learn CSS</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Learn_web_development/Core/Styling_basics" data-glean-id="menu_click_submenu: learn -> /en-US/docs/Learn_web_development/Core/Styling_basics">CSS styling basics module</a>
+                              </li><li>
+                                <a href="/en-US/docs/Learn_web_development/Core/CSS_layout" data-glean-id="menu_click_submenu: learn -> /en-US/docs/Learn_web_development/Core/CSS_layout">CSS layout module</a>
+                              </li>
+                        </ul></dd>
+                            </dl><dl>
+                              <dt>Learn JavaScript</dt>
+                              <dd><ul>
+                          <li>
+                                <a href="/en-US/docs/Learn_web_development/Core/Scripting" data-glean-id="menu_click_submenu: learn -> /en-US/docs/Learn_web_development/Core/Scripting">Dynamic scripting with JavaScript module</a>
+                              </li>
+                        </ul></dd>
+                            </dl>
+                    </div>
+                  </div>
+                </mdn-dropdown>
+          </div><div class="menu__tab" data-section="tools">
+            <mdn-dropdown loaded="">
+                  <button class="menu__tab-button" type="button" slot="button" aria-expanded="false" aria-controls="uid_1n77q41h43t">
+                    <span class="menu__tab-label">Tools</span>
+                  </button>
+                  <div class="menu__panel" slot="dropdown" id="uid_1n77q41h43t">
+                    <p class="menu__panel-title">
+                      Discover our tools
+                    </p>
+                    <div class="menu__panel-content">
+                      <ul>
+                          <li>
+                                <a class="menu__panel-icon" data-icon="circle-play" href="/en-US/play" data-glean-id="menu_click_submenu: tools -> /en-US/play">Playground</a>
+                              </li><li>
+                                <a class="menu__panel-icon" data-icon="shield-check" href="/en-US/observatory" data-glean-id="menu_click_submenu: tools -> /en-US/observatory">HTTP Observatory</a>
+                              </li>
+                        </ul><ul>
+                          <li>
+                                <a href="/en-US/docs/Web/CSS/Guides/Backgrounds_and_borders/Border-image_generator" data-glean-id="menu_click_submenu: tools -> /en-US/docs/Web/CSS/Guides/Backgrounds_and_borders/Border-image_generator">Border-image generator</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/Guides/Backgrounds_and_borders/Border-radius_generator" data-glean-id="menu_click_submenu: tools -> /en-US/docs/Web/CSS/Guides/Backgrounds_and_borders/Border-radius_generator">Border-radius generator</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/Guides/Backgrounds_and_borders/Box-shadow_generator" data-glean-id="menu_click_submenu: tools -> /en-US/docs/Web/CSS/Guides/Backgrounds_and_borders/Box-shadow_generator">Box-shadow generator</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/Guides/Colors/Color_format_converter" data-glean-id="menu_click_submenu: tools -> /en-US/docs/Web/CSS/Guides/Colors/Color_format_converter">Color format converter</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/Guides/Colors/Color_mixer" data-glean-id="menu_click_submenu: tools -> /en-US/docs/Web/CSS/Guides/Colors/Color_mixer">Color mixer</a>
+                              </li><li>
+                                <a href="/en-US/docs/Web/CSS/Guides/Shapes/Shape_generator" data-glean-id="menu_click_submenu: tools -> /en-US/docs/Web/CSS/Guides/Shapes/Shape_generator">Shape generator</a>
+                              </li>
+                        </ul>
+                    </div>
+                  </div>
+                </mdn-dropdown>
+          </div><div class="menu__tab" data-section="about">
+            <mdn-dropdown loaded="">
+                  <button class="menu__tab-button" type="button" slot="button" aria-expanded="false" aria-controls="uid_wja8c3bs2">
+                    <span class="menu__tab-label">About</span>
+                  </button>
+                  <div class="menu__panel" slot="dropdown" id="uid_wja8c3bs2">
+                    <p class="menu__panel-title">
+                      Get to know MDN better
+                    </p>
+                    <div class="menu__panel-content">
+                      <ul>
+                          <li>
+                                <a class="menu__panel-icon" data-icon="mdn-m" href="/en-US/about" data-glean-id="menu_click_submenu: about -> /en-US/about">About MDN</a>
+                              </li><li>
+                                <a class="menu__panel-icon" data-icon="chart-no-axes-combined" href="/en-US/advertising" data-glean-id="menu_click_submenu: about -> /en-US/advertising">Advertise with us</a>
+                              </li>
+                        </ul><ul>
+                          <li>
+                                <a class="menu__panel-icon" data-icon="users" href="/en-US/community" data-glean-id="menu_click_submenu: about -> /en-US/community">Community</a>
+                              </li><li>
+                                <a class="menu__panel-icon external" data-icon="github" href="https://github.com/mdn" data-glean-id="menu_click_submenu: about -> https://github.com/mdn">MDN on GitHub</a>
+                              </li>
+                        </ul>
+                    </div>
+                  </div>
+                </mdn-dropdown>
+          </div><div class="menu__tab" data-section="blog">
+            <a class="menu__tab-link" href="/en-US/blog/" data-glean-id="menu_click_link: top-level -> /en-US/blog/">Blog</a>
+          </div>
+      </nav>
+    </div>
+          <div class="navigation__search" data-view="desktop">
+            <mdn-search-button></mdn-search-button>
+          </div>
+          <mdn-user-menu></mdn-user-menu>
+        </div>
+      </nav>
+      <mdn-search-modal id="search"></mdn-search-modal>
+     
+      <div class="breadcrumbs-bar" data-scheme="">
+         
+      <ol class="breadcrumbs" vocab="https://schema.org/" typeof="BreadcrumbList">
+        
+            <li property="itemListElement" typeof="ListItem">
+              <a href="/en-US/blog/" property="item" typeof="WebPage"><span property="name">MDN Blog</span></a>
+              <meta property="position" content="1">
+            </li>
+          
+            <li property="itemListElement" typeof="ListItem">
+              <a href="/en-US/blog/color-models-humans-devices/" property="item" typeof="WebPage"><span property="name">Image formats: Color models for humans and devices</span></a>
+              <meta property="position" content="2">
+            </li>
+          
+      </ol>
+    
+        
+        <mdn-color-theme></mdn-color-theme>
+        <mdn-language-switcher locale="en-US" native="English (US)" translations="[{&quot;locale&quot;:&quot;en-US&quot;,&quot;title&quot;:&quot;Image formats: Color models for humans and devices&quot;,&quot;native&quot;:&quot;English (US)&quot;}]" url="/en-US/blog/color-models-humans-devices/"></mdn-language-switcher>
+      </div>
+    
+        </header>
+        <div class="page-layout__main">
+      <article id="content" class="blog-post">
+        <aside class="blog-post__toc">
+          <nav class="blog-toc">
+    <h2>In this article</h2>
+    <ul>
+      <li><a href="#images_on_the_screen">Images on the screen</a></li><li><a href="#images_in_the_human_eye_and_brain">Images in the human eye and brain</a></li><li><a href="#colors_in_research_and_on_paper">Colors in research and on paper</a></li><li><a href="#color_spaces">Color spaces</a></li><li><a href="#the_most_common_space_srgb_and_its_friend_yuv">The most common space sRGB and its friend YUV</a></li><li><a href="#humans_and_devices_perceive_things_differently">Humans and devices perceive things differently</a></li><li><a href="#from_camera_to_screen">From camera to screen</a></li><li><a href="#wrapping_up">Wrapping up</a></li>
+    </ul>
+  </nav>
+          <mdn-placement-sidebar></mdn-placement-sidebar>
+        </aside>
+        <div class="blog-post__content blog-post-content">
+          <header class="blog-post-content__header">
+            <figure class="blog-post-header__image">
+    <img alt="Color models for humans and devices title. Overlapping RGB circles, a color palette, the CSS logo, and a squirrel." src="./featured.png" height="420" width="800">
+  </figure>
+            
+            <h1 class="blog-post-header__heading">Image formats: Color models for humans and devices</h1>
+            <div class="blog-post-header__author-read-time">
+              <!--lit-part LzVZ8IXXqQU=-->
+    <!--lit-part lTQa1GcEeD8=--> <!--lit-node 0--><a href="https://hellsquirrel.dev/en/blog" class="external blog-post-author" target="_blank" rel="noreferrer">
+          <!--lit-part JlV0cUVu8Nk=--><!--lit-node 0--><img class="blog-post-author__avatar" src="/en-US/blog/author/polina-gurtovaia/avatar.jpg" alt="Author avatar" loading="eager">
+      <!--lit-part-->Polina Gurtovaia<!--/lit-part--> <!--/lit-part-->
+        </a><!--/lit-part--> <!--lit-part LyNua6ecL5A=-->
+    <time class="date">
+      <!--lit-part-->May 6, 2025<!--/lit-part-->
+    </time>
+  <!--/lit-part-->
+    <!--lit-part q8Xd1R1bIgc=--><span class="read-time"><!--lit-part-->17 minutes read<!--/lit-part-->
+  </span><!--/lit-part-->
+  <!--/lit-part-->
+            </div>
+          </header>
+          <main class="blog-post-content__content">
+            
+    <section class="content-section">
+    
+    <p>Images are everywhere on the web. Every day, I view, create, send, and edit multiple images, and add images to my applications in several different ways. But what makes images look the same or look different and in which cases? I've even written blog posts about images, and the more I learn the more I discover how much happens behind the scenes to make an image <strong>look right</strong>. In this blog post series, I explain core principles that most image formats use, from the way our eyes see light, to how devices interpret and reproduce color.</p>
+<p>If you're a developer, designer, or just curious about why your images don't always look the same across devices, this post dives into color vision theory and the mathematics behind color representation to explain how color and images are represented, transformed, and perceived by both humans and machines.</p>
+  </section><section class="content-section" aria-labelledby="images_on_the_screen">
+    <!--lit-part 1X3g51ZNf5A=--><!--lit-node 0--><h2 id="images_on_the_screen" class="heading"><!--lit-node 1--><a class="heading-anchor" href="#images_on_the_screen">Images on the screen</a></h2><!--/lit-part-->
+    <p>If we start from the screen, an image is a set of lightened areas represented by screen <a href="/docs/Glossary/Device_pixel">pixels</a>. Every screen pixel emits light with a different intensity and wavelength. This difference in wavelength is perceived as a difference in color by humans (and by cats as well, but that's a different story).</p>
+<div class="notecard note">
+<p><strong>Note:</strong>
+Light can be considered either as a tiny set of particles (photons) or as an invisible electromagnetic wave. You should take into account that only a few devices can emit a "pure" (monochromatic) color—the color of only one wavelength. Most of the time we perceive a mixture of different wavelengths as a color, not a single wavelength. Diodes in our displays don't emit a "pure" color.</p>
+</div>
+  </section><section class="content-section" aria-labelledby="images_in_the_human_eye_and_brain">
+    <!--lit-part acGRZbvXdYY=--><!--lit-node 0--><h2 id="images_in_the_human_eye_and_brain" class="heading"><!--lit-node 1--><a class="heading-anchor" href="#images_in_the_human_eye_and_brain">Images in the human eye and brain</a></h2><!--/lit-part-->
+    <p>The light from the image on the screen passes through the pupil, refracts through the lens, and focuses on the retina. The retina contains special cells called rods and cones. Rods help us see in low light, but they don't detect different wavelengths—that's why everything looks like shades of gray in the dark. However, in daylight, rods aren't active. Mosts of the models we are interested in are built for daylight conditions.</p>
+<p>Cones are responsible for color vision. There are three types, and each type is sensitive to slightly different wavelength spectrum. S-cones are most sensitive to <strong>blue</strong>, M-cones to <strong>green</strong>, and L-cones to <strong>red</strong>. The signals from these cells take light sensitivity into account. The retina processes signals from all these cells and the signal is sent to the brain.</p>
+<p>In essence, a light signal can be broken down into three responses from different cell types, each covering a broad spectrum. Our brain and nervous system can't process this spectrum directly, so they use mechanisms to interpret it. Essentially, red, green, and blue information is mapped onto three other parameters: luminance, red-green, and blue-yellow. This mapping allows us to distinguish one color from another. In reality, colors don't exist—they're just how we humans perceive electromagnetic waves.</p>
+<div class="notecard note">
+<p><strong>Note:</strong>
+Brightness and <a href="/docs/Web/Accessibility/Guides/Colors_and_Luminance#luminance_and_perception">luminance</a> are different concepts. Luminance is a physical quantity measured in candelas per square meter, while brightness is based on human perception and related to light conditions (e.g., whether the lamp is on or off).</p>
+</div>
+<p>The brain is much better at detecting patterns and edges than slow-changing gradients. There are also specialized mechanisms responsible for edge detection. However, humans are less sensitive to high-frequency spatial components.</p>
+<p><img src="/en-US/blog/color-models-humans-devices/raven.jpg" alt="Image comparison showing an original photo of a raven on a bench alongside an edge-detected version of the same image." width="1720" height="1130" loading="lazy"></p>
+<p>The original image is on the left and the image on the right is the output of an edge detection algorithm. Despite the fact that most of the information from the original image is removed, you can still perceive a raven on a bench.</p>
+<p>How people perceive images greatly influences how image data is stored and processed. Image formats aren't about saving pixels in the most efficient way possible—they need to compress information while considering human perception and the characteristics of the display device.</p>
+  </section><section class="content-section" aria-labelledby="colors_in_research_and_on_paper">
+    <!--lit-part GsuJpVX3zeY=--><!--lit-node 0--><h2 id="colors_in_research_and_on_paper" class="heading"><!--lit-node 1--><a class="heading-anchor" href="#colors_in_research_and_on_paper">Colors in research and on paper</a></h2><!--/lit-part-->
+    <p>The <a href="https://cie.co.at/" class="external" target="_blank">CIE</a> (International Commission on Illumination) conducted numerous experiments to create color models that represent how the average observer perceives light.
+The first example shows how an average observer perceives different wavelengths (i.e., different colors):</p>
+<p><img src="/en-US/blog/color-models-humans-devices/sensitivity-luma.svg" alt="Graph showing human eye sensitivity to different wavelengths of light in daylight conditions, with a peak sensitivity in the green spectrum around 555nm." width="1863" height="1238" loading="lazy"></p>
+<p>It might be apparent from the diagram that we are much more sensitive to green light.
+The mechanics of cones in the eye leads to the first color representation which you may be familiar with: <strong>RGB</strong> for red, green, and blue for each cone type. And we have CIE graphs for this—color matching functions. These functions represent different responses from different type of cones.</p>
+<p><img src="/en-US/blog/color-models-humans-devices/sensitivity-color.svg" alt="Graph showing color matching functions for human vision: three curves representing how the eye responds to different wavelengths of light had different shapes, with peaks in the blue, green, and red regions misaligned along the spectrum." width="1863" height="1238" loading="lazy"></p>
+<p>We can use this graph to get RGB representation for the color. To get three numbers, we need to get a sum of responses for every wavelength that the light contains. These numbers will represent our signal. And yes, <em>different</em> light signals can have identical RGB components.</p>
+<p>You might also notice a problem with the previous graph: red sensitivity becomes negative, and of course, there are no negative colors. To fix this, the CIE came up with a different color representation called XYZ, which is a simple transformation of RGB that doesn't have negative values.
+As a result, we have a graph like this:</p>
+<p><img src="/en-US/blog/color-models-humans-devices/sensitivity-xyz.svg" alt="Graph showing XYZ color matching functions: three curves representing standardized response values across the visible light spectrum from 400nm to 700nm, with X peaking in blue-green region, Y in green region matching human luminance sensitivity, and Z primarily in blue region." width="1863" height="1238" loading="lazy"></p>
+<p>Let's look at how it's derived from RGB:</p>
+<figure class="table-container"><math display="block">
+  <mi>Y</mi>
+  <mo>=</mo>
+  <mn>0.2126</mn>
+  <mo>⁢</mo>
+  <mi>R</mi>
+  <mo>+</mo>
+  <mn>0.7152</mn>
+  <mo>⁢</mo>
+  <mi>G</mi>
+  <mo>+</mo>
+  <mn>0.0722</mn>
+  <mo>⁢</mo>
+  <mi>B</mi>
+</math></figure>
+<p>Note a big coefficient for green color. The human eye is most sensitive to green light, so the coefficient for green should be quite high. Y represents perceptual brightness, which is crucial because humans can quickly notice changes in brightness. That's why this information needs to be stored and represented as accurately as possible. X and Z are responsible for color. This allows us to separate color information from brightness, which is related to how the brain processes signals.</p>
+  </section><section class="content-section" aria-labelledby="color_spaces">
+    <!--lit-part qdR5oyCRQTs=--><!--lit-node 0--><h2 id="color_spaces" class="heading"><!--lit-node 1--><a class="heading-anchor" href="#color_spaces">Color spaces</a></h2><!--/lit-part-->
+    <p>Now we have three numbers to represent a light signal. All possible triplets of these numbers constitute a color space. We can also represent this as a 3D shape. If you have a Mac, you can use the <a href="https://support.apple.com/guide/colorsync-utility/welcome/mac" class="external" target="_blank">ColorSync Utility</a> app to see how it looks.</p>
+<p>However, 3D is not always convenient. Let's flatten the picture by throwing away luminance (Y). We will get a famous chromaticity diagram.</p>
+<div class="notecard note">
+<p><strong>Note:</strong>
+Before plotting chromaticity, we need to normalize X and Z values by dividing them by X + Y + Z.</p>
+</div>
+<p><img src="/en-US/blog/color-models-humans-devices/cie.png" alt="CIE chromaticity diagram showing the horseshoe-shaped spectrum of visible colors mapped on a 2D plane, with wavelengths around the perimeter and white at the center." width="563" height="572" loading="lazy"></p>
+<p>The saddle-like figure represents all colors that can be perceived by a standard CIE observer. The problem with this diagram and with XYZ color space is that it doesn't represent the difference between colors as an observer perceives it. It's also inefficient for encoding pixel values because many XYZ values do not map to perceivable colors, which results in wasted bits.</p>
+<p>However, XYZ is a very useful tool for constructing device-specific color spaces. Each device has its own unique color rendering characteristics. For example, two red objects may appear slightly different on two devices. To account for this, device-specific color spaces were introduced.</p>
+<p>Here is a rough idea of how it works: we take a red color signal that corresponds to <code>(1, 0, 0)</code> and measure the device-emitted light, calculating the XYZ for this point. Then we do the same for green, blue, and white (white is when all values for RGB are at maximum). These XYZ points are called <em>RGB color primaries</em>.</p>
+<p>And voila, we get a set of coefficients to convert device-specific RGB primaries to device-independent XYZ values and back. RGB, which we typically use on the web, is called <em>sRGB</em> or <em>standard RGB</em>. It's a set of coefficients specific for "standard" device. Here they are:</p>
+<figure class="table-container"><math display="block">
+  <mfenced open="[" close="]">
+    <mtable>
+      <mtr>
+        <mtd>
+          <msub><mi>R</mi><mi>linear</mi></msub><mo>*</mo>
+        </mtd>
+      </mtr>
+      <mtr>
+        <mtd>
+          <msub><mi>G</mi><mi>linear</mi></msub><mo>*</mo>
+        </mtd>
+      </mtr>
+      <mtr>
+        <mtd>
+          <msub><mi>B</mi><mi>linear</mi></msub>
+          <mo>*</mo>
+        </mtd>
+      </mtr>
+    </mtable>
+  </mfenced>
+  <mo>=</mo>
+  <mfenced open="[" close="]">
+    <mtable>
+      <mtr>
+        <mtd><mn>3.2406</mn></mtd>
+        <mtd><mo>-</mo><mn>1.5372</mn></mtd>
+        <mtd><mo>-</mo><mn>0.4986</mn></mtd>
+      </mtr>
+      <mtr>
+        <mtd><mo>-</mo><mn>0.9689</mn></mtd>
+        <mtd><mn>1.8758</mn></mtd>
+        <mtd><mn>0.0415</mn></mtd>
+      </mtr>
+      <mtr>
+        <mtd><mn>0.0557</mn></mtd>
+        <mtd><mo>-</mo><mn>0.2040</mn></mtd>
+        <mtd><mn>1.0570</mn></mtd>
+      </mtr>
+    </mtable>
+  </mfenced>
+  <mo>⋅</mo>
+  <mfenced open="[" close="]">
+    <mtable>
+      <mtr><mtd><mi>X</mi></mtd></mtr>
+      <mtr><mtd><mi>Y</mi></mtd></mtr>
+      <mtr><mtd><mi>Z</mi></mtd></mtr>
+    </mtable>
+  </mfenced>
+</math></figure>
+<figure class="table-container"><math display="block">
+  <mfenced open="[" close="]">
+    <mtable>
+      <mtr><mtd><mi>X</mi></mtd></mtr>
+      <mtr><mtd><mi>Y</mi></mtd></mtr>
+      <mtr><mtd><mi>Z</mi></mtd></mtr>
+    </mtable>
+  </mfenced>
+  <mo>=</mo>
+  <mfenced open="[" close="]">
+    <mtable>
+      <mtr>
+        <mtd><mn>0.4124</mn></mtd>
+        <mtd><mn>0.3576</mn></mtd>
+        <mtd><mn>0.1805</mn></mtd>
+      </mtr>
+      <mtr>
+        <mtd><mn>0.2126</mn></mtd>
+        <mtd><mn>0.7152</mn></mtd>
+        <mtd><mn>0.0722</mn></mtd>
+      </mtr>
+      <mtr>
+        <mtd><mn>0.0193</mn></mtd>
+        <mtd><mn>0.1192</mn></mtd>
+        <mtd><mn>0.9505</mn></mtd>
+      </mtr>
+    </mtable>
+  </mfenced>
+  <mo>⋅</mo>
+  <mfenced open="[" close="]">
+    <mtable>
+      <mtr><mtd><msub><mi>R</mi> <mi>linear</mi></msub><mo>*</mo></mtd></mtr>
+      <mtr><mtd><msub><mi>G</mi> <mi>linear</mi></msub><mo>*</mo></mtd></mtr>
+      <mtr><mtd><msub><mi>B</mi> <mi>linear</mi></msub><mo>*</mo></mtd></mtr>
+    </mtable>
+  </mfenced>
+</math></figure>
+<p>sRGB cannot represent all possible colors human eye can perceive. Let's go back to our diagram. Here are all the possible colors:</p>
+<p><img src="/en-US/blog/color-models-humans-devices/cie.png" alt="CIE chromaticity diagram showing the horseshoe-shaped boundary of visible colors with pure spectral colors along the curved edge and white point in the center. Color regions are visible as a rainbow spectrum of hues." width="563" height="572" loading="lazy"></p>
+<p>And here are the points used to get RGB coefficients for sRGB. We're bounded by the sRGB triangle, so we can't represent more colors:</p>
+<p><img src="/en-US/blog/color-models-humans-devices/srgb.png" alt="CIE chromaticity diagram for visible colors with a triangle inside representing the limited sRGB color space. The vast green area outside of the triangle is labelled with crying emoji and 'can't reach here'." width="1800" height="1800" loading="lazy"></p>
+  </section><section class="content-section" aria-labelledby="color_in_the_lab">
+    <!--lit-part TpZ760vo1fM=--><!--lit-node 0--><h3 id="color_in_the_lab" class="heading"><!--lit-node 1--><a class="heading-anchor" href="#color_in_the_lab">Color in the L*a*b*</a></h3><!--/lit-part-->
+    <p>To address the issue with color distances, CIE introduced another color space—CIE L*a*b* which can be derived from XYZ. To make it represent color proximity similar to human perception, all coordinates in XYZ are transformed in a specific way. These transformations are not linear (it would be impossible to represent color proximity with linear transformations only). L* represents lightness and derived from Y, a* and b* represent the color dimensions and derived from X and Z.</p>
+<p>Lab color space uses two axes to represent color: <code>a*</code> and <code>b*</code>. <code>a*</code> encodes a red-green component, while <code>b*</code> encodes blue-yellow. There is no way to represent light signal with both strong green and red components in the L*a*b* color space. Hovewer, <code>a*</code> and <code>b*</code> can be negative. For RGB, it's impossible as well: if we do something like <code>(1, 1, 0)</code>, we will get yellow.</p>
+<p>Let's see how it works on the example of converting RGB to Lab.</p>
+<figure class="table-container"><table>
+<thead>
+<tr>
+<th>Color</th>
+<th>sRGB</th>
+<th>Lab (L*, a*, b*)</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Red</td>
+<td>1, 0, 0</td>
+<td>53.23, 80.11, 67.22</td>
+<td><strong>+a*</strong> (strong red), <strong>+b*</strong> (yellowish)</td>
+</tr>
+<tr>
+<td>Green</td>
+<td>0, 1, 0</td>
+<td>87.74, -86.18, 83.19</td>
+<td><strong>-a*</strong> (strong green), <strong>+b*</strong> (yellowish)</td>
+</tr>
+<tr>
+<td>Blue</td>
+<td>0, 0, 1</td>
+<td>32.30, 79.20, -107.85</td>
+<td><strong>+a*</strong> (reddish tint), <strong>-b*</strong> (strong blue)</td>
+</tr>
+<tr>
+<td>Yellow</td>
+<td>1, 1, 0</td>
+<td>97.14, -21.55, 94.49</td>
+<td><strong>-a*</strong> (slight green), <strong>+b*</strong> (strong yellow)</td>
+</tr>
+</tbody>
+</table></figure>
+<p>These types of color spaces are called <strong>opponent-based</strong>. How the brain processes signals is encoded into the color space. The distance between two colors in Lab space is designed to map to perceptual distance. Look at the example: in the first row the distance between two colors is 7.5, in the second row it's 148.09.</p>
+<mdn-code-example hidden="" class="brush: css hidden live-sample___color-comparison notranslate live-sample---color-comparison"></mdn-code-example>
+<mdn-code-example hidden="" class="brush: html hidden live-sample___color-comparison notranslate live-sample---color-comparison"></mdn-code-example>
+<mdn-live-sample-result></mdn-live-sample-result>
+<p>If two colors look similar to people, they will have a smaller distance between them in the Lab space.</p>
+<p>And there is more! CIE L*a*b* doesn't depend on any device, since it's derived from XYZ. However, this derivation takes the light condition into account for another human perception feature: <a href="https://en.wikipedia.org/wiki/Chromatic_adaptation" class="external" target="_blank">chromatic adaptation</a>. To calculate Lab values, we need to provide XYZ coordinates for "normal daylight conditions", which is often referenced as a white point (or "D65"). The final formula can be found <a href="https://en.wikipedia.org/wiki/CIELAB_color_space#Converting_between_CIELAB_and_CIEXYZ_coordinates" class="external" target="_blank">on Wikipedia</a>.</p>
+  </section><section class="content-section" aria-labelledby="a_more_intuitive_lab_transformation">
+    <!--lit-part 8Vzu73kCxSw=--><!--lit-node 0--><h3 id="a_more_intuitive_lab_transformation" class="heading"><!--lit-node 1--><a class="heading-anchor" href="#a_more_intuitive_lab_transformation">A More Intuitive L*a*b transformation</a></h3><!--/lit-part-->
+    <p>If you're feeling overwhelmed or confused at this point, let's try to understand with some other examples.
+Look at the following two Lab colors and try to guess how they are related:</p>
+<pre class="brush: plain notranslate">63.76,  29.08, 66.2
+63.76, -66.2,  29.08
+</pre>
+<p>If you're not sure, look at a transformation of the L*a*b* space called LCH (lightness, chroma, hue). Lightness remains the same, C is a square root of a*<sup>2</sup> + b*<sup>2</sup> and H is an angle in degrees. This representation is more intuitive for most people. Let's convert the previous colors to LCH to see what we get:</p>
+<pre class="brush: plain notranslate">63.76, 72.31, 66.29
+63.76, 72.31, 156.29
+</pre>
+<p>So now we have the same lightness, the same intensity, but a different hue!</p>
+<mdn-code-example hidden="" class="brush: html hidden live-sample___lch-representation notranslate live-sample---lch-representation"></mdn-code-example>
+<mdn-code-example hidden="" class="brush: css hidden live-sample___lch-representation notranslate live-sample---lch-representation"></mdn-code-example>
+<mdn-code-example class="brush: css live-sample___lch-representation notranslate live-sample---lch-representation"></mdn-code-example>
+<mdn-live-sample-result></mdn-live-sample-result>
+  </section><section class="content-section" aria-labelledby="modern_lab">
+    <!--lit-part 6UT4i/Dbr2s=--><!--lit-node 0--><h3 id="modern_lab" class="heading"><!--lit-node 1--><a class="heading-anchor" href="#modern_lab">Modern L*a*b*</a></h3><!--/lit-part-->
+    <p>CIE L*a*b* space was developed long ago in 1976 and it's not the only Lab which exists nowdays. <a href="https://www.w3.org/TR/css-color-4/#lab-colors" class="external" target="_blank">CSS Color Module Level 4</a> specifies two labs. First one is CIE L*a*b* and another one Oklab.</p>
+<div class="notecard note">
+<p><strong>Note:</strong>
+CSS Color Module Level 4 also defines <a href="/docs/Glossary/Color_space">additional CSS mappings</a> for color spaces discussed earlier.</p>
+</div>
+<p>Oklab was developed much later in 2020 and aims to fix several issues with CIE L*a*b*.</p>
+<ul>
+<li>Oklab is <em>even more</em> uniform especially for blue hues.</li>
+<li>Oklab is better for machines as there's more stable numeric calculations.</li>
+<li>Oklab is derived from sRGB, so it's more familiar and intuitive for developers.</li>
+</ul>
+<p>Oklab has its own LCH representation called Oklch. It's calculated similarly to LCH components and it aims to be even more uniform and intuitive.</p>
+  </section><section class="content-section" aria-labelledby="the_most_common_space_srgb_and_its_friend_yuv">
+    <!--lit-part nv7OUWFdpew=--><!--lit-node 0--><h2 id="the_most_common_space_srgb_and_its_friend_yuv" class="heading"><!--lit-node 1--><a class="heading-anchor" href="#the_most_common_space_srgb_and_its_friend_yuv">The most common space sRGB and its friend YUV</a></h2><!--/lit-part-->
+    <p>L*a*b* and XYZ are rich color spaces, which can represent every color human can perceive. However, they're not very efficient for storing pixel values due to their wide range of values. Also, they are <em>modern</em>, designed to work with devices that can afford to waste some bits representing tiny details of color and luminance.</p>
+<p>Images and video formats typically work with the sRGB color space, and GPU hardware is optimized for sRGB (we'll discuss this later). RGB is inspired by how the human eye works (red, green, and blue); however, it's not very convenient for image processing. That's why another color space is used - YUV. YUV is a set of three values Y (luminance), U (blue-difference), and V (red-difference). The main benefit of this space is that it separates color (U and V) from luminance (Y).</p>
+<div class="notecard note">
+<p><strong>Note:</strong>
+There is some confusion around naming for the luminance, red-green, and blue-yellow systems. You can find references to YUV, YCbCr, and Y'CbCr. It looks like YUV and YCbCr can be used interchangeably. However, Y and Y' are different things. Note that in comparison L*a*b* YUV is not perceptually uniform.</p>
+</div>
+<p>If you look at image codec source code, most likely you will find a lot of lines related to conversion to and from YUV. Don't forget that sRGB is device-dependent. If we take a rectangle filled with some color, let's say <code>(0, 255, 0)</code> (green), it will look different on different devices.
+Let's look how YUV coordinates are derived from RGB. We saw this principle before, first we separate luminance:</p>
+<figure class="table-container"><math display="block">
+  <mi>Y</mi>
+  <mo>=</mo>
+  <mn>0.299</mn>
+  <mo>⋅</mo>
+  <mi>R</mi>
+  <mo>+</mo>
+  <mn>0.587</mn>
+  <mo>⋅</mo>
+  <mi>G</mi>
+  <mo>+</mo>
+  <mn>0.114</mn>
+  <mo>⋅</mo>
+  <mi>B</mi>
+</math></figure>
+<p>And again, we saw that green light makes the biggest contribution. U and V are a Blue and Red difference from Y.
+Note that coefficients in the denominator are to scale U and V from -0.5 to 0.5:</p>
+<figure class="table-container"><math display="block">
+  <mi>U</mi>
+  <mo>=</mo>
+  <mfrac>
+    <mrow>
+      <mi>B</mi>
+      <mo>-</mo>
+      <mi>Y</mi>
+    </mrow>
+    <mn>1.402</mn>
+  </mfrac>
+</math></figure>
+<figure class="table-container"><math display="block">
+  <mi>V</mi>
+  <mo>=</mo>
+  <mfrac>
+    <mrow>
+      <mi>R</mi>
+      <mo>-</mo>
+      <mi>Y</mi>
+    </mrow>
+    <mn>1.772</mn>
+  </mfrac>
+</math></figure>
+<p>Let's try on a squirrel and compare the original image with separate Y, U, and V channels:</p>
+<p><img src="/en-US/blog/color-models-humans-devices/squirrel.jpg" alt="Comparison of a color image of a squirrel with its separated YUV channels: the original color image, monochrome Y channel showing luminance detail, monochrome U channel showing blue-yellow differences, and monochrome V channel showing red-green differences." width="1021" height="1816" loading="lazy"></p>
+<p>This separation is so important because people are more sensitive to luminance than to color. To process an image correctly, it often makes sense to do some transformations on the Y channel only, or use different transformations for Y and UV channels. These channels are typically compressed differently.</p>
+  </section><section class="content-section" aria-labelledby="humans_and_devices_perceive_things_differently">
+    <!--lit-part wD7+1Ws0hYw=--><!--lit-node 0--><h2 id="humans_and_devices_perceive_things_differently" class="heading"><!--lit-node 1--><a class="heading-anchor" href="#humans_and_devices_perceive_things_differently">Humans and devices perceive things differently</a></h2><!--/lit-part-->
+    <p>Let's discuss another feature of our perception - how we perceive brightness, which is very different from how devices reproduce it. We perceive brightness logarithmically, while devices reproduce it linearly. Logarithmic perception means that we can distinguish wide range of brightness. For example, a log 5 scale (1: 100000) is fine; it can be even bigger if our eyes are adapted to environmental conditions.
+If you're curious to dig deeper, this effect is described by the <a href="https://en.wikipedia.org/wiki/Weber%E2%80%93Fechner_law" class="external" target="_blank">Weber-Fechner law</a>.</p>
+<p>This is an issue because the range of brightness that common devices can capture and display is much smaller than the range that we can perceive.
+Many professional cameras and displays support <a href="https://en.wikipedia.org/wiki/High_dynamic_range" class="external" target="_blank">wider range of brightnesses</a>, so it varies widely.
+Let's consider an example:
+which gradient looks more even?</p>
+<mdn-code-example hidden="" class="brush: css hidden live-sample___linear-gradient notranslate live-sample---linear-gradient"></mdn-code-example>
+<mdn-code-example hidden="" class="brush: html hidden live-sample___linear-gradient notranslate live-sample---linear-gradient"></mdn-code-example>
+<mdn-code-example class="brush: css live-sample___linear-gradient notranslate live-sample---linear-gradient"></mdn-code-example>
+<mdn-live-sample-result></mdn-live-sample-result>
+<p>For most people, the first gradient looks smoother, and the true "linear" gradient is the second one.
+If you look at the example more closely, you might notice some little lies. The first gradient has 128 (255 / 2) in the middle. It's exactly linear, right? It's actually not, because the RGB values we use in CSS are <em>gamma corrected</em>. Gamma correction is used to provide a better perceptual picture and store bits more efficiently.</p>
+<p>To get a gamma-corrected value from the linear one, we scale the value to [0, 1] and then use a power function (as Weber-Fechner law suggests). We use 2.2 as a power because it's close to how human perception works.</p>
+<p>The real formula which is used in sRGB is a little more complicated, but it's very close to the above. Here is an actual transformation: every channel R, G, B is transformed in the same way.</p>
+<figure class="table-container"><math display="block">
+  <msub>
+    <mi>C</mi>
+    <mtext>srgb</mtext>
+  </msub>
+  <mo>=</mo>
+  <mrow>
+    <mo>{</mo>
+    <mtable>
+      <mtr>
+        <mtd>
+          <mn>12.92</mn>
+          <mo>⋅</mo>
+          <msub>
+            <mi>C</mi>
+            <mtext>linear</mtext>
+          </msub>
+        </mtd>
+        <mtd>
+          <mtext>if</mtext>
+          <mo>&nbsp;</mo>
+          <msub>
+            <mi>C</mi>
+            <mtext>linear</mtext>
+          </msub>
+          <mo>≤</mo>
+          <mn>0.0031308</mn>
+        </mtd>
+      </mtr>
+      <mtr>
+        <mtd>
+          <mn>1.055</mn>
+          <mo>⋅</mo>
+          <msup>
+            <msub>
+              <mi>C</mi>
+              <mtext>linear</mtext>
+            </msub>
+            <mfrac>
+              <mn>1</mn>
+              <mn>2.4</mn>
+            </mfrac>
+          </msup>
+          <mo>-</mo>
+          <mn>0.055</mn>
+        </mtd>
+        <mtd>
+          <mtext>if</mtext>
+          <mo>&nbsp;</mo>
+          <msub>
+            <mi>C</mi>
+            <mtext>linear</mtext>
+          </msub>
+          <mo>&gt;</mo>
+          <mn>0.0031308</mn>
+        </mtd>
+      </mtr>
+    </mtable>
+  </mrow>
+</math></figure>
+<p>This also gives dark shadows 'more bits'. The 'real' avarage is somewhere around 180, not 128. This is aligned with how human perception works - we are more sensitive to dark shadows.</p>
+<p>Y' is a gamma corrected version of Y. It's calculated in the same way as Y, but with gamma corrected R, G, B. The particular formula used for gamma correction is color space dependent. This is called <em>transfer function</em>.</p>
+  </section><section class="content-section" aria-labelledby="from_camera_to_screen">
+    <!--lit-part iGxi2bO+Mf0=--><!--lit-node 0--><h2 id="from_camera_to_screen" class="heading"><!--lit-node 1--><a class="heading-anchor" href="#from_camera_to_screen">From camera to screen</a></h2><!--/lit-part-->
+    <p>Quite often, we want to take a photo on our phone and share this photo on our favorite social network. When your friend looks at the photo on her laptop, it's nice if the the colors look the same, right?</p>
+<p>To make this happen, the colors captured by the phone camera should be mapped to the colors on the screen properly. Remember that efficient color spaces are <a href="/docs/Glossary/Gamut"><em>device-dependent</em></a>. Which means, for example, that the <code>(127, 0, 0)</code> RGB value has different colors on different devices. To align colors, an additional channel of information is encoded to the image. There are three things specific to a device color space:</p>
+<ol>
+<li>Three color primaries</li>
+<li>A white point</li>
+<li>A transfer function</li>
+</ol>
+<p>Let's see how it works for <a href="/en-US/docs/Web/Media/Guides/Formats/Image_types#avif_image">AVIF images</a>.
+Like many image formats, AVIF tries to do its best to reproduce colors accurately. It uses two things to do so: a color profile and CICP (Coding-independent code points). A color profile is used in most image formats generated on the device where the image was created and allows to reconstruct colors properly. It provides precise color control and contains coefficients to color primaries, transfer function and white point. It also may store lookup tables with pre-calculated transformations.
+CICP are typically used in video, and it's much simpler than ICC profiles.</p>
+<div class="notecard note">
+<p><strong>Note:</strong>
+You can find a great explainer on the <a href="https://github.com/AOMediaCodec/libavif/wiki/CICP" class="external" target="_blank">libavif wiki on GitHub</a>.</p>
+</div>
+<p>It consists of three values. Every value references rows from tables in the <a href="https://www.itu.int/rec/T-REC-H.273-201612-I/en" class="external" target="_blank">publicly available H.273 standard</a>.</p>
+<dl>
+<dt id="mc"><a href="#mc"><strong>MC</strong></a></dt>
+<dd>
+<p>A set of coefficients to convert RGB to whatever color space you want. Typically to convert RGB to YUV.</p>
+</dd>
+<dt id="tc"><a href="#tc"><strong>TC</strong></a></dt>
+<dd>
+<p>A non-linear transfer function to take into account device-specific characteristics and perform gamma correction.</p>
+</dd>
+<dt id="cp"><a href="#cp"><strong>CP</strong></a></dt>
+<dd>
+<p>Color primaries to convert RGB to XYZ.</p>
+</dd>
+</dl>
+<p>For example, it could be 1/13/6, which means to take rows 1, 13, and 6 from the specific tables in the standard. If the image contains a color profile, the CP and TC values are taken from the profile, but MC is still taken from the CICP.</p>
+<p>Let's look at how the process works for AVIF images. We are reading CICP and getting 2/2/6, which means:</p>
+<ul>
+<li>CP - unspecified</li>
+<li>TC - unspecified</li>
+<li>MC #6 defines standard RGB to YUV conversion which is the same that JPEG uses.</li>
+</ul>
+<p>To get more information, we need to look at the ICC profile. Here we find color primaries, a transfer function and white point.
+This information is used to convert a decoded bytestream to the device color space. During this process, the image might be converted to XYZ and an intermediate color space, and then to the device color space.</p>
+<p>The decoding process is oustide of the scope of this post, but one thing to mention is that MC coefficients are used. The result is sent to the GPU and displayed on the screen.</p>
+  </section><section class="content-section" aria-labelledby="what_if_i_want_stunning_photos">
+    <!--lit-part Q3CHuDLdkWA=--><!--lit-node 0--><h3 id="what_if_i_want_stunning_photos" class="heading"><!--lit-node 1--><a class="heading-anchor" href="#what_if_i_want_stunning_photos">What if I want stunning photos?</a></h3><!--/lit-part-->
+    <p><img src="/en-US/blog/color-models-humans-devices/sunset-ldr.jpg" alt="Photo of a sunset with a city skyline where the sky is properly exposed but the buildings appear as dark silhouettes." width="2048" height="1365" loading="lazy"></p>
+<p>When I look at a sunset, I can see both the sky and the details of the buildings. However, if I take a single photo in JPEG format, I have to choose between capturing the sky or the buildings. In this case, the bright sky is well-exposed, but the buildings merge into a single dark blur.</p>
+<p>How can we make it better? The range of colors and brightness levels we can perceive is much wider than what low-end devices can capture and reproduce. This wide range is typically referred to as <em>high dynamic range</em> (HDR).</p>
+<p>To get the best out of an image, we need four things:</p>
+<ul>
+<li>A device capable of capturing a wide range of colors and brightness levels (such as a professional camera or certain smartphone cameras)</li>
+<li>A file format that can efficiently store this range</li>
+<li>Software that can properly decode the image</li>
+<li>A display that can accurately reproduce the range</li>
+</ul>
+<p>If all these conditions are met, we get images with more detailed shadows and highlights, along with vivid colors. However, if any of these conditions are not met, we end up with an SDR (Standard Dynamic Range) image.</p>
+<p>Professional cameras excel at capturing HDR photos. They use a lossless RAW format, which is significantly larger than standard image files. With proper post-processing, details can be revealed by applying different transformations to various parts of the image.</p>
+<p><img src="/en-US/blog/color-models-humans-devices/sunset-processed.jpg" alt="An HDR sunset photo showing both the vibrant orange sky and detailed city skyline buildings." width="2048" height="1365" loading="lazy"></p>
+<p>As for software - modern browsers support HDR on <em>some</em> operating systems.</p>
+<p>Many screens can reproduce HDR images, but if a device is not capable of displaying HDR, the image must be converted to SDR. To preserve details, different <a href="https://en.wikipedia.org/wiki/Tone_mapping" class="external" target="_blank">tone mapping techniques</a> can be used. These techniques can be applied automatically by the browser or manually by the user. Without tone mapping, the image may appear too dark, too bright, or dull.</p>
+<p>Let's check how it works in your circumstances. Compare two images:</p>
+<mdn-code-example hidden="" class="brush: css hidden live-sample___hdr-comparison notranslate live-sample---hdr-comparison"></mdn-code-example>
+<mdn-code-example hidden="" class="brush: html hidden live-sample___hdr-comparison notranslate live-sample---hdr-comparison"></mdn-code-example>
+<mdn-live-sample-result></mdn-live-sample-result>
+<p>If the second image looks more vibrant, your device and browser can render HDR images.</p>
+<p>The problem with tone mapping is that it is applied uniformly across the entire image. A better approach is to adjust brightness for specific areas—or even per pixel—using a gain map. You can think of a gain map as a grayscale version of the image, where each pixel's actual brightness is multiplied by the corresponding value from the gain map. This gain map is embedded in the image file. While JPEG and AVIF support gain maps, the feature remains unstandardized and experimental.</p>
+<p>Even if a display can reproduce HDR, storing and transferring RAW files is expensive and inefficient. The most straightforward solution is to use a modern image format with a higher bit depth—such as AVIF. AVIF can store 10 or 12 bits per channel, allowing for a much wider range of colors and brightness levels.</p>
+  </section><section class="content-section" aria-labelledby="wrapping_up">
+    <!--lit-part wNxtuoLg4Yg=--><!--lit-node 0--><h2 id="wrapping_up" class="heading"><!--lit-node 1--><a class="heading-anchor" href="#wrapping_up">Wrapping up</a></h2><!--/lit-part-->
+    <p>In this post, we learned how human perception influences the way light signals are represented in devices.
+Let's summarize what we covered:</p>
+<p>Color spaces are used to represent light signals. Some color spaces are device-specific, while others are universal and independent of the device. Certain color spaces, like sRGB, are optimized for representing light signals in images and videos. Others, like LCH (Lightness, Chroma, Hue), are designed to represent color relationships in a way that aligns with human perception.</p>
+<p>To maintain consistent color across devices, we must convert from a device-specific color space to a universal color space (e.g., sRGB or XYZ) and back. Additionally, special transformations, like gamma correction, are applied to account for the non-linear way humans perceive light and color. Some color spaces allow separate color from lightness which is very beneficial for image compression, as we will see in the next post.</p>
+  </section>
+  
+          </main>
+          <footer class="blog-post-content__footer">
+            <!--lit-part DBcMX3Xmtro=--><div class="blog-post-previous-next"><!--lit-part Trx9QqutGvg=-->
+        <!--lit-node 0--><a href="/en-US/blog/h1-element-styles/" class="blog-post-previous-next__previous">
+          <article>
+            <h2>
+              <strong><!--lit-part-->Previous post<!--/lit-part--></strong>
+              <!--lit-part-->Default styles for h1 elements are changing<!--/lit-part-->
+            </h2>
+          </article>
+        </a>
+      <!--/lit-part--> <!--lit-part 5xmcrbT2NtE=-->
+        <!--lit-node 0--><a href="/en-US/blog/mdn-turns-20/" class="blog-post-previous-next__next">
+          <article>
+            <h2>
+              <strong><!--lit-part-->Next post<!--/lit-part--></strong>
+              <!--lit-part-->Celebrating 20 years of MDN<!--/lit-part-->
+            </h2>
+          </article>
+        </a>
+      <!--/lit-part--></div><!--/lit-part-->
+          </footer>
+        </div>
+      </article>
+    </div>
+        <div class="page-layout__footer">
+      <mdn-placement-bottom></mdn-placement-bottom>
+      <footer class="footer">
+        <div class="footer__mdn">
+          <div class="footer__intro">
+            <a class="footer__logo" href="/" aria-label="MDN logo"><!--lit-part anjj6IBmI8g=--><svg xmlns="http://www.w3.org/2000/svg" width="83" height="24" viewBox="0 0 83 24"><title>MDN</title><path d="M9.4 0 2.81 21.17H.12L6.69 0zm2.38 0v21.17H9.4V0h2.4Zm9.27 0-6.56 21.17H11.8L18.36 0zm2.39 0v21.17h-2.4V0zm22.11 16.83h-3.93v-1.27h.87v-3.63c0-.85-.16-1.45-.48-1.82a1.65 1.65 0 0 0-1.3-.52c-.74 0-1.3.25-1.66.78a3 3 0 0 0-.58 1.58v3.59h1.38v1.26h-3.93v-1.26h.87v-3.6c0-.88-.16-1.48-.48-1.83a1.7 1.7 0 0 0-1.29-.52 1.93 1.93 0 0 0-1.65.75 2.85 2.85 0 0 0-.58 1.6v3.62h1.59v1.27h-4.64v-1.27h1.37V9.75h-1.4V8.46h3.08v1.47c.28-.48.62-.87 1.08-1.2a3 3 0 0 1 1.68-.45c.67 0 1.22.16 1.73.48.5.32.85.8 1.03 1.47.25-.57.62-1.03 1.13-1.4.5-.37 1.1-.55 1.81-.55.8 0 1.5.25 2.05.75.55.51.85 1.3.85 2.35v4.18h1.4zm9.77 0H52.3v-1.66c-.27.51-.66.95-1.13 1.29-.56.4-1.23.59-1.9.55-1.11 0-2-.37-2.67-1.12a4.4 4.4 0 0 1-1-3.06c0-1.15.3-2.2.93-3.15.6-.94 1.58-1.43 2.94-1.43s2.25.5 2.83 1.5V5.22h-2V3.93h3.63v11.63h1.38v1.27Zm-3.06-3.86v-1.02a2.28 2.28 0 0 0-.73-1.67 2.4 2.4 0 0 0-1.66-.65 2.18 2.18 0 0 0-1.88.9 3.63 3.63 0 0 0-.65 2.2c0 .95.23 1.68.7 2.19.45.5 1.03.76 1.7.76.73 0 1.33-.3 1.79-.88.48-.6.71-1.21.73-1.83m14.14 3.86h-4.43v-1.27h1.37v-3.63c0-.85-.16-1.45-.5-1.82a1.68 1.68 0 0 0-1.31-.52c-.71 0-1.29.23-1.7.69a2.52 2.52 0 0 0-.67 1.6v3.66h1.38v1.26H56.1v-1.26h1.38v-5.8h-1.42V8.47h3.12V9.9c.6-1.06 1.57-1.6 2.92-1.6.83 0 1.54.26 2.12.77.57.5.85 1.28.85 2.34v4.19h1.38v1.24h-.05Zm1.31 5.15H83V24H67.71z"></path></svg><!--/lit-part--></a>
+            <p>
+              Your blueprint for a better internet.
+            </p>
+          </div>
+
+          <ul class="footer__socials">
+            
+                <li>
+                  <a href="https://github.com/mdn/" target="_blank" rel="noopener" aria-label="MDN on GitHub" data-icon="github"></a>
+                </li>
+              
+                <li>
+                  <a href="https://bsky.app/profile/developer.mozilla.org" target="_blank" rel="noopener" aria-label="MDN on Bluesky" data-icon="bluesky"></a>
+                </li>
+              
+                <li>
+                  <a href="https://x.com/mozdevnet" target="_blank" rel="noopener" aria-label="MDN on X" data-icon="x"></a>
+                </li>
+              
+                <li>
+                  <a href="https://mastodon.social/@mdn" target="_blank" rel="noopener" aria-label="MDN on Mastodon" data-icon="mastodon"></a>
+                </li>
+              
+                <li>
+                  <a href="/en-US/blog/rss.xml" target="_blank" rel="noopener" aria-label="MDN blog RSS feed" data-icon="rss"></a>
+                </li>
+              
+          </ul>
+
+          
+              <dl class="footer__links">
+                <dt>MDN</dt>
+                <dd>
+                  <ul>
+                    
+                        <li>
+                          <a href="/en-US/about" class="" target="" rel="">
+                            About
+                          </a>
+                        </li>
+                      
+                        <li>
+                          <a href="/en-US/blog/" class="" target="" rel="">
+                            Blog
+                          </a>
+                        </li>
+                      
+                        <li>
+                          <a href="https://www.mozilla.org/en-US/careers/listings/" class="external" target="_blank" rel="noopener">
+                            Mozilla careers
+                          </a>
+                        </li>
+                      
+                        <li>
+                          <a href="/en-US/advertising" class="" target="" rel="">
+                            Advertise with us
+                          </a>
+                        </li>
+                      
+                        <li>
+                          <a href="/en-US/plus" class="" target="" rel="">
+                            MDN Plus
+                          </a>
+                        </li>
+                      
+                        <li>
+                          <a href="https://support.mozilla.org/products/mdn-plus" class="external" target="_blank" rel="noopener">
+                            Product help
+                          </a>
+                        </li>
+                      
+                  </ul>
+                </dd>
+              </dl>
+            
+              <dl class="footer__links">
+                <dt>Contribute</dt>
+                <dd>
+                  <ul>
+                    
+                        <li>
+                          <a href="/en-US/community" class="" target="" rel="">
+                            MDN Community
+                          </a>
+                        </li>
+                      
+                        <li>
+                          <a href="/en-US/docs/MDN/Community" class="" target="" rel="">
+                            Community resources
+                          </a>
+                        </li>
+                      
+                        <li>
+                          <a href="/en-US/docs/MDN/Writing_guidelines" class="" target="" rel="">
+                            Writing guidelines
+                          </a>
+                        </li>
+                      
+                        <li>
+                          <a href="/discord" class="external" target="_blank" rel="noopener">
+                            MDN Discord
+                          </a>
+                        </li>
+                      
+                        <li>
+                          <a href="https://github.com/mdn" class="external" target="_blank" rel="noopener">
+                            MDN on GitHub
+                          </a>
+                        </li>
+                      
+                  </ul>
+                </dd>
+              </dl>
+            
+              <dl class="footer__links">
+                <dt>Developers</dt>
+                <dd>
+                  <ul>
+                    
+                        <li>
+                          <a href="/en-US/docs/Web" class="" target="" rel="">
+                            Web technologies
+                          </a>
+                        </li>
+                      
+                        <li>
+                          <a href="/en-US/docs/Learn_web_development" class="" target="" rel="">
+                            Learn web development
+                          </a>
+                        </li>
+                      
+                        <li>
+                          <a href="/en-US/docs/MDN/Guides" class="" target="" rel="">
+                            Guides
+                          </a>
+                        </li>
+                      
+                        <li>
+                          <a href="/en-US/docs/MDN/Tutorials" class="" target="" rel="">
+                            Tutorials
+                          </a>
+                        </li>
+                      
+                        <li>
+                          <a href="/en-US/docs/Glossary" class="" target="" rel="">
+                            Glossary
+                          </a>
+                        </li>
+                      
+                        <li>
+                          <a href="https://hacks.mozilla.org/" class="external" target="_blank" rel="noopener">
+                            Hacks blog
+                          </a>
+                        </li>
+                      
+                  </ul>
+                </dd>
+              </dl>
+            
+        </div>
+
+        <div class="footer__mozilla">
+          <a class="footer__logo" href="https://www.mozilla.org/" aria-label="Mozilla logo"><!--lit-part lm0Fgmo9xYQ=--><svg xmlns="http://www.w3.org/2000/svg" width="128" height="30" viewBox="0 0 256 60"><title>Mozilla</title><path d="m13.32 22.1 5.1 24.3h2.1l5.1-24.3H39.3v37.34h-7.26V28.46h-2.1l-6.96 30.98h-7.02L9.02 28.46h-2.1v31H-.35V22.1h13.66Zm45.12 8.74c8.73 0 13.8 5.15 13.8 14.57S67.14 60 58.44 60c-8.73 0-13.8-5.17-13.8-14.59 0-9.43 5.07-14.57 13.8-14.57m0 23.34c4.1 0 6.16-2.1 6.16-6.73v-4.12c0-4.62-2.06-6.73-6.16-6.73s-6.15 2.1-6.15 6.73v4.12c0 4.63 2.05 6.73 6.15 6.73m17.68-.14 14.82-17.26H76.32v-5.41h23.31v5.4L84.84 54.05h15.03v5.4H76.13v-5.41Zm28.07-22.67h10.7v28.07h-7.25V36.77h-3.48v-5.4zm3.44-9.27h7.26v5.4h-7.25v-5.4Zm12.62 0h10.72v37.34h-7.24V27.5h-3.48zm16.08 0h10.7v37.34h-7.25V27.5h-3.48v-5.4zm27.8 8.74c4.24 0 7.08 2.05 7.87 5.63h2.1v-5.1h8.88v5.4h-3.47v17.28h3.47v5.4h-4.25c-3 0-4.63-1.63-4.63-4.62v-.48H172c-.78 3.58-3.63 5.63-7.88 5.63-6.68 0-11.4-5.59-11.4-14.58 0-9 4.72-14.55 11.4-14.55m2.2 23.34c4.1 0 5.93-2.1 5.93-6.73v-4.12c0-4.62-1.82-6.73-5.94-6.73-3.99 0-5.92 2.1-5.92 6.73v4.13c0 4.62 1.92 6.72 5.93 6.72m46.28 5.27h-7.26V0h7.26zm6.3-28.41h30.8v-2.1l-20.4-7.32v-5.88l20.4-7.33v-2.1h-24.27V0h30.79v12l-16.62 5.63v2.11l16.61 5.64v12H218.9zm0-24.73h6.5v6.52h-6.5z"></path></svg><!--/lit-part--></a>
+          <ul>
+            
+                <li>
+                  <a href="https://www.mozilla.org/privacy/websites/" class="external">Website Privacy Notice</a>
+                </li>
+              
+                <li>
+                  <a href="https://www.mozilla.org/en-US/privacy/websites/data-preferences/" class="external">Telemetry Settings</a>
+                </li>
+              
+                <li>
+                  <a href="https://www.mozilla.org/about/legal/terms/mozilla" class="external">Legal</a>
+                </li>
+              
+                <li>
+                  <a href="https://www.mozilla.org/about/governance/policies/participation/" class="external">Community Participation Guidelines</a>
+                </li>
+              
+          </ul>
+          <p>
+            Visit <a href="https://www.mozilla.org/">Mozilla Corporation’s</a> not-for-profit parent, the <a href="https://foundation.mozilla.org/">Mozilla Foundation</a>.<br>
+            Portions of this content are ©1998–2026 by individual mozilla.org contributors. Content available under <a href="/docs/MDN/Writing_guidelines/Attrib_copyright_license">a Creative Commons license</a>.
+          </p>
+        </div>
+      </footer>
+    </div>
+      
+    
+      
+    </body><div id="transcend-consent-manager" style="position: fixed; z-index: 2147483647;"></div></html>

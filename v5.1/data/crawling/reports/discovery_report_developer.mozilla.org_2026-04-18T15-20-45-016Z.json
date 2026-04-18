@@ -1,0 +1,230 @@
+{
+  "domain": "developer.mozilla.org",
+  "startTime": "2026-04-18T15:20:42.027Z",
+  "endTime": "2026-04-18T15:20:45.016Z",
+  "status": "completed",
+  "config": {
+    "crawler": {
+      "maxConcurrency": 10,
+      "maxDepth": 6,
+      "rateLimitDelay": 300,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "timeout": 60000,
+      "retryAttempts": 3,
+      "retryDelay": 2000
+    },
+    "queue": {
+      "maxQueueSize": 50000,
+      "batchSize": 200
+    },
+    "discovery": {
+      "maxLinksPerPage": 1000,
+      "excludePatterns": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      "includePatterns": []
+    },
+    "rateLimiter": {
+      "defaultDelay": 300,
+      "maxDelay": 5000,
+      "minDelay": 100,
+      "adaptiveMode": true,
+      "errorThreshold": 2,
+      "successThreshold": 8
+    },
+    "retry": {
+      "maxAttempts": 4,
+      "baseDelay": 1000,
+      "maxDelay": 15000,
+      "backoffFactor": 2,
+      "jitter": true
+    },
+    "duplicate": {
+      "similarityThreshold": 0.85,
+      "maxCacheSize": 500000,
+      "enableContentHashing": true,
+      "enableUrlNormalization": true,
+      "enableTitleMatching": true
+    },
+    "reporting": {
+      "realTimeUpdates": true,
+      "includeScreenshots": true,
+      "maxReportHistory": 100
+    }
+  },
+  "stats": {
+    "totalDiscovered": 0,
+    "totalProcessed": 0,
+    "totalFailed": 0,
+    "totalSkipped": 0,
+    "totalDuplicates": 0,
+    "processingRate": 0,
+    "averageResponseTime": 0,
+    "dataSize": 0,
+    "successRate": 0,
+    "discoveryRate": 0,
+    "duplicateRate": 0,
+    "duration": {
+      "milliseconds": 2989,
+      "seconds": 2.99,
+      "minutes": 0.05,
+      "hours": 0
+    },
+    "categoryDistribution": {
+      "homepage": 0,
+      "navigation": 0,
+      "content": 0,
+      "documents": 0,
+      "media": 0,
+      "forms": 0,
+      "other": 0
+    }
+  },
+  "categories": {
+    "homepage": 0,
+    "navigation": 0,
+    "content": 0,
+    "documents": 0,
+    "media": 0,
+    "forms": 0,
+    "other": 0
+  },
+  "pages": [],
+  "errors": [],
+  "duplicates": [],
+  "timeline": [
+    {
+      "type": "report_initialized",
+      "timestamp": "2026-04-18T15:20:42.029Z",
+      "data": {
+        "domain": "developer.mozilla.org"
+      }
+    },
+    {
+      "type": "config_updated",
+      "timestamp": "2026-04-18T15:20:42.029Z",
+      "data": {
+        "crawler": {
+          "maxConcurrency": 10,
+          "maxDepth": 6,
+          "rateLimitDelay": 300,
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "timeout": 60000,
+          "retryAttempts": 3,
+          "retryDelay": 2000
+        },
+        "queue": {
+          "maxQueueSize": 50000,
+          "batchSize": 200
+        },
+        "discovery": {
+          "maxLinksPerPage": 1000,
+          "excludePatterns": [
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
+          ],
+          "includePatterns": []
+        },
+        "rateLimiter": {
+          "defaultDelay": 300,
+          "maxDelay": 5000,
+          "minDelay": 100,
+          "adaptiveMode": true,
+          "errorThreshold": 2,
+          "successThreshold": 8
+        },
+        "retry": {
+          "maxAttempts": 4,
+          "baseDelay": 1000,
+          "maxDelay": 15000,
+          "backoffFactor": 2,
+          "jitter": true
+        },
+        "duplicate": {
+          "similarityThreshold": 0.85,
+          "maxCacheSize": 500000,
+          "enableContentHashing": true,
+          "enableUrlNormalization": true,
+          "enableTitleMatching": true
+        },
+        "reporting": {
+          "realTimeUpdates": true,
+          "includeScreenshots": true,
+          "maxReportHistory": 100
+        }
+      }
+    },
+    {
+      "type": "crawling_started",
+      "timestamp": "2026-04-18T15:20:42.029Z",
+      "data": {
+        "baseUrl": "https://developer.mozilla.org",
+        "domain": "developer.mozilla.org"
+      }
+    },
+    {
+      "type": "crawling_completed",
+      "timestamp": "2026-04-18T15:20:45.016Z",
+      "data": {
+        "totalDiscovered": 1,
+        "totalProcessed": 1,
+        "totalFailed": 0,
+        "startTime": "2026-04-18T15:20:42.018Z",
+        "endTime": "2026-04-18T15:20:45.016Z"
+      }
+    }
+  ]
+}

@@ -1,10 +1,10 @@
 {
   "url": "https://iesjuandelanuza.catedu.es/",
   "title": "IES Juan de Lanuza",
-  "depth": 0,
-  "parentUrl": null,
+  "depth": 2,
+  "parentUrl": "https://iesjuandelanuza.catedu.es",
   "domain": "iesjuandelanuza.catedu.es",
-  "timestamp": "2026-04-18T14:59:01.099Z",
+  "timestamp": "2026-04-18T15:52:47.605Z",
   "statusCode": 200,
   "contentType": "text/html; charset=UTF-8",
   "pageId": "736338bdece2e0554c953de803db4916",

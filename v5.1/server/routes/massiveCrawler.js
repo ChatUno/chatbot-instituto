@@ -111,7 +111,21 @@ router.post('/start', async (req, res) => {
     
     // Initialize reporting
     await session.discoveryReporting.initialize(new URL(url).hostname);
-    session.discoveryReporting.updateConfig(options);
+    
+    // Process the configuration to handle patterns before saving to report
+    const processedOptions = {
+      ...options,
+      discovery: {
+        ...options.discovery,
+        excludePatterns: options.discovery?.excludePatterns?.map(pattern => 
+          pattern instanceof RegExp ? pattern.toString() : pattern
+        ) || [],
+        includePatterns: options.discovery?.includePatterns?.map(pattern => 
+          pattern instanceof RegExp ? pattern.toString() : pattern
+        ) || []
+      }
+    };
+    session.discoveryReporting.updateConfig(processedOptions);
 
     // Start crawling
     session.status = 'running';
