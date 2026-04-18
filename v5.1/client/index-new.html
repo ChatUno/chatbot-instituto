@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V5.1 Visual RAG - Sistema de Ingestión Inteligente</title>
+  <link rel="stylesheet" href="styles-new.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-content">
+      <div class="loading-logo">
+        <div class="logo-icon">V5.1</div>
+        <div class="logo-text">Visual RAG</div>
+      </div>
+      <div class="loading-progress">
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+        <div class="progress-text">Iniciando sistema...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Application -->
+  <div id="app" class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo-section">
+          <div class="logo">
+            <div class="logo-icon">V5.1</div>
+            <div class="logo-text">Visual RAG</div>
+          </div>
+          <div class="subtitle">Sistema de Ingestión Inteligente - IES Juan de Lanuza</div>
+        </div>
+        <div class="header-actions">
+          <button id="status-btn" class="btn btn-ghost">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Estado DB
+          </button>
+          <button id="settings-btn" class="btn btn-ghost">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            Configuración
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Progress Bar -->
+      <div class="progress-indicator">
+        <div class="progress-steps">
+          <div class="step active" data-step="1">
+            <div class="step-number">1</div>
+            <div class="step-label">Captura</div>
+          </div>
+          <div class="step" data-step="2">
+            <div class="step-number">2</div>
+            <div class="step-label">Extracción</div>
+          </div>
+          <div class="step" data-step="3">
+            <div class="step-number">3</div>
+            <div class="step-label">Chunking</div>
+          </div>
+          <div class="step" data-step="4">
+            <div class="step-number">4</div>
+            <div class="step-label">Revisión</div>
+          </div>
+          <div class="step" data-step="5">
+            <div class="step-number">5</div>
+            <div class="step-label">Exportación</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 1: Capture -->
+      <section id="step-1" class="step-section active">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+              <path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            Captura de Página Web
+          </h2>
+          <p class="section-description">Ingresa la URL que deseas procesar para extraer contenido</p>
+        </div>
+        
+        <div class="capture-form">
+          <div class="input-group">
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+              </svg>
+              <input 
+                type="url" 
+                id="url-input" 
+                placeholder="https://iesjuandelanuza.catedu.es/"
+                class="input-field"
+                autocomplete="off"
+              >
+            </div>
+            <button id="capture-btn" class="btn btn-primary">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                <path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              Capturar Página
+            </button>
+          </div>
+          
+          <div id="capture-status" class="status-message"></div>
+        </div>
+      </section>
+
+      <!-- Step 2: Extract -->
+      <section id="step-2" class="step-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+            </svg>
+            Extracción de Texto con IA
+          </h2>
+          <p class="section-description">La IA analizará la captura y extraerá el texto y enlaces relevantes</p>
+        </div>
+
+        <div class="extract-section">
+          <div class="screenshot-preview" id="screenshot-preview">
+            <div class="preview-placeholder">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <p>Vista previa de la captura</p>
+            </div>
+          </div>
+          
+          <div class="extract-actions">
+            <button id="extract-btn" class="btn btn-secondary">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+              </svg>
+              Extraer Texto
+            </button>
+          </div>
+          
+          <div id="extract-status" class="status-message"></div>
+          
+          <div id="extracted-content" class="extracted-content" style="display: none;">
+            <div class="content-tabs">
+              <button class="tab-btn active" data-tab="text">Texto Extraído</button>
+              <button class="tab-btn" data-tab="links">Enlaces</button>
+              <button class="tab-btn" data-tab="metadata">Metadatos</button>
+            </div>
+            
+            <div class="tab-content">
+              <div id="text-tab" class="tab-pane active">
+                <div class="text-content">
+                  <div class="text-header">
+                    <h3>Contenido Extraído</h3>
+                    <div class="text-stats">
+                      <span class="stat">Palabras: <strong id="word-count">0</strong></span>
+                      <span class="stat">Caracteres: <strong id="char-count">0</strong></span>
+                    </div>
+                  </div>
+                  <div id="extracted-text" class="extracted-text"></div>
+                </div>
+              </div>
+              
+              <div id="links-tab" class="tab-pane">
+                <div class="links-content">
+                  <h3>Enlaces Encontrados</h3>
+                  <div id="extracted-links" class="links-list"></div>
+                </div>
+              </div>
+              
+              <div id="metadata-tab" class="tab-pane">
+                <div class="metadata-content">
+                  <h3>Metadatos de Extracción</h3>
+                  <div class="metadata-grid">
+                    <div class="metadata-item">
+                      <label>Modelo IA:</label>
+                      <span id="ai-model">-</span>
+                    </div>
+                    <div class="metadata-item">
+                      <label>Tokens Usados:</label>
+                      <span id="tokens-used">-</span>
+                    </div>
+                    <div class="metadata-item">
+                      <label>URL Original:</label>
+                      <span id="original-url">-</span>
+                    </div>
+                    <div class="metadata-item">
+                      <label>Fecha Captura:</label>
+                      <span id="capture-date">-</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 3: Chunking -->
+      <section id="step-3" class="step-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
+            Generación de Chunks Semánticos
+          </h2>
+          <p class="section-description">División inteligente del contenido en fragmentos coherentes</p>
+        </div>
+
+        <div class="chunking-section">
+          <div class="chunking-controls">
+            <div class="control-group">
+              <label for="chunk-size">Tamaño de Chunk:</label>
+              <select id="chunk-size" class="select-field">
+                <option value="small">Pequeño (50-150 palabras)</option>
+                <option value="medium" selected>Mediano (150-300 palabras)</option>
+                <option value="large">Grande (300-500 palabras)</option>
+              </select>
+            </div>
+            
+            <div class="control-group">
+              <label for="chunk-overlap">Solapamiento:</label>
+              <select id="chunk-overlap" class="select-field">
+                <option value="none">Ninguno</option>
+                <option value="small" selected>Pequeño (10%)</option>
+                <option value="medium">Mediano (25%)</option>
+                <option value="large">Grande (50%)</option>
+              </select>
+            </div>
+          </div>
+
+          <button id="generate-chunks-btn" class="btn btn-secondary">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            Generar Chunks
+          </button>
+          
+          <div id="chunking-status" class="status-message"></div>
+          
+          <div id="chunks-preview" class="chunks-preview" style="display: none;">
+            <div class="chunks-header">
+              <h3>Chunks Generados</h3>
+              <div class="chunks-stats">
+                <span class="stat">Total: <strong id="total-chunks">0</strong></span>
+                <span class="stat">Calidad Promedio: <strong id="avg-quality">0%</strong></span>
+              </div>
+            </div>
+            
+            <div class="chunks-filters">
+              <button class="filter-btn active" data-filter="all">Todos</button>
+              <button class="filter-btn" data-filter="approved">Aprobados</button>
+              <button class="filter-btn" data-filter="rejected">Rechazados</button>
+              <button class="filter-btn" data-filter="pending">Pendientes</button>
+            </div>
+            
+            <div id="chunks-container" class="chunks-container"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 4: Review -->
+      <section id="step-4" class="step-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Revisión y Edición de Chunks
+          </h2>
+          <p class="section-description">Revisa, edita y aprueba los chunks antes de exportarlos</p>
+        </div>
+
+        <div class="review-section">
+          <div class="review-toolbar">
+            <div class="bulk-actions">
+              <button id="select-all-btn" class="btn btn-ghost">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                Seleccionar Todo
+              </button>
+              <button id="approve-selected-btn" class="btn btn-success">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M5 13l4 4L19 7"/>
+                </svg>
+                Aprobar Seleccionados
+              </button>
+              <button id="reject-selected-btn" class="btn btn-danger">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+                Rechazar Seleccionados
+              </button>
+            </div>
+            
+            <div class="review-stats">
+              <div class="stat-card">
+                <div class="stat-number" id="approved-count">0</div>
+                <div class="stat-label">Aprobados</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="rejected-count">0</div>
+                <div class="stat-label">Rechazados</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="edited-count">0</div>
+                <div class="stat-label">Editados</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="pending-count">0</div>
+                <div class="stat-label">Pendientes</div>
+              </div>
+            </div>
+          </div>
+          
+          <div id="review-chunks-container" class="review-chunks-container"></div>
+        </div>
+      </section>
+
+      <!-- Step 5: Export -->
+      <section id="step-5" class="step-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Exportación a Base de Datos
+          </h2>
+          <p class="section-description">Exporta los chunks aprobados a la base de datos del chatbot</p>
+        </div>
+
+        <div class="export-section">
+          <div class="export-summary">
+            <h3>Resumen de Exportación</h3>
+            <div class="summary-grid">
+              <div class="summary-item">
+                <div class="summary-icon">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div class="summary-content">
+                  <div class="summary-number" id="export-ready-count">0</div>
+                  <div class="summary-label">Chunks Listos</div>
+                </div>
+              </div>
+              
+              <div class="summary-item">
+                <div class="summary-icon">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+                  </svg>
+                </div>
+                <div class="summary-content">
+                  <div class="summary-number" id="current-db-count">-</div>
+                  <div class="summary-label">En DB Actual</div>
+                </div>
+              </div>
+              
+              <div class="summary-item">
+                <div class="summary-icon">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div class="summary-content">
+                  <div class="summary-number" id="last-backup">-</div>
+                  <div class="summary-label">Último Backup</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="export-actions">
+            <button id="export-btn" class="btn btn-primary" disabled>
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              Exportar Chunks
+            </button>
+            
+            <button id="view-backups-btn" class="btn btn-ghost">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Ver Backups
+            </button>
+          </div>
+          
+          <div id="export-status" class="status-message"></div>
+          
+          <div id="export-results" class="export-results" style="display: none;">
+            <div class="results-header">
+              <h3>Resultados de Exportación</h3>
+            </div>
+            <div class="results-content">
+              <div class="result-item success">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span>Chunks exportados: <strong id="exported-count">0</strong></span>
+              </div>
+              <div class="result-item info">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span>Total en DB: <strong id="total-after-export">0</strong></span>
+              </div>
+              <div class="result-item warning">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <span>Duplicados omitidos: <strong id="skipped-duplicates">0</strong></span>
+              </div>
+              <div class="result-item info">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span>Backup creado: <strong id="backup-created">-</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Global Loading Overlay -->
+    <div id="global-loading" class="global-loading" style="display: none;">
+      <div class="loading-backdrop"></div>
+      <div class="loading-modal">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Procesando...</div>
+        <div class="loading-progress">
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Modal for Confirmations -->
+    <div id="confirm-modal" class="modal" style="display: none;">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Confirmar Acción</h3>
+          <button class="modal-close" id="modal-close">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p id="modal-message">¿Estás seguro de realizar esta acción?</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="modal-cancel">Cancelar</button>
+          <button class="btn btn-primary" id="modal-confirm">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app-new.js"></script>
+</body>
+</html>
